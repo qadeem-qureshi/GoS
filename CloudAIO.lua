@@ -1,4 +1,4 @@
-local version = 1
+local version = 2
 require ("DLib")
 
 up=Updater.new("Cloudhax23/GOS/master/CloudAIO.lua", "CloudAIO", version)
