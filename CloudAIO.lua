@@ -545,51 +545,44 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
-        local target = GetCurrentTarget()
-        if ValidTarget(target, math.huge) then
-                if KeyIsDown(32) then
-                        castE(target)
-                        castQ(target)
-                        castW(target)
-                        castR(target)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1200) then
+ 
+-- Q cast
+        if GetCastName(myHero, _Q) == "GravesClusterShot" then
+                local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,false,true)
+                        if Config.Q then
+                        if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+                        CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+                        end
                 end
         end
-end
--- End
--- W cast
- )function castW( target )
-    if Config.W then
-        pred = GetPredictionForPlayer(GetOrigin(target),target,GetMoveSpeed(target),math.huge,500,GetCastRange(myHero,_W),900,false,true)
-        if IsInDistance(target, GetCastRange(myHero,_W)) and CanUseSpell(myHero,_W) == READY and pred.HitChance == 1 then      
-                CastSkillShot(_W,pred.PredPos.x,pred.PredPos.y,pred.PredPos.z)
+-- W Cast
+    if GetCastName(myHero, _W) == "GravesSmokeGrenade" then
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1600,50,false,true)
+            if Config.W then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
         end
-end
--- Q cast
-function castQ( target )
-    if Config.Q then
-        pred = GetPredictionForPlayer(GetOrigin(target),target,GetMoveSpeed(target),math.huge,500,GetCastRange(myHero,_Q),900,false,true)
-        if IsInDistance(target, GetCastRange(myHero,_Q)) and CanUseSpell(myHero,_Q) == READY and pred.HitChance == 1 then      
-                CastSkillShot(_Q,pred.PredPos.x,pred.PredPos.y,pred.PredPos.z)
+    end
+-- E Cast 
+    if GetCastName(myHero, _E) == "GravesMove" then
+            if Config.E then
+        CastSkillShot(_E, GetMousePos().x, GetMousePos().y, GetMousePos().z)
+            end
         end
-end
--- E cast
-end
- function castE( target )  
-    if Config.E then
-            if IsInDistance(target, GetCastRange(myHero,_E)) and CanUseSpell(myHero,_E) == READY then    
-                CastSkillShot(_E, GetMousePos().x, GetMousePos().y, GetMousePos().z)
-        end
-end
- 
--- R cast
--- R cast
-function castR( target )
-pred = GetPredictionForPlayer(GetOrigin(target),target,GetMoveSpeed(target),math.huge,500,GetCastRange(myHero,_R),950,false,true)
-        if CanUseSpell(myHero_R) == READY and pred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and CalcDamage(myHero, target, (150*GetCastLevel(myHero,_R)+100+1.5*GetBonusDmg(myHero)), 0) > GetCurrentHP(target) then
+-- R Cast 
+    if GetCastName(myHero, _R) == "GravesChargedShot" then
+        local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
+                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and CalcDamage(myHero, target, (150*GetCastLevel(myHero,_R)+100+1.5*GetBonusDmg(myHero)), 0) > GetCurrentHP(target) then
         CastSkillShot(_R,pred.PredPos.x,pred.PredPos.y,pred.PredPos.z)
         end
-  end
+    end
 end
 end
+end)
 end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Loaded</font>"))
