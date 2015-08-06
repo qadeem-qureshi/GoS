@@ -327,7 +327,7 @@ if GetCastName(myHero, _R) == "SyndraR" then
             if Config.R then
         if unit ~= nil then
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
-    CastTargetSpell(myHero, _R)
+    CastTargetSpell(unit, _R)
                 end
             end
         end
