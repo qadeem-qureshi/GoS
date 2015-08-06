@@ -1,3 +1,107 @@
+--Evelynn
+if GetObjectName(GetMyHero()) == "Evelynn" then
+--Menu
+Config = scriptConfig("Evelynn", "Evelynn")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+
+-- Evelynn W
+    if Config.W then
+        if GetCastName(myHero, _W) == "EvelynnW" then
+if CanUseSpell(myHero, _W) == READY then
+    CastTargetSpell(myHero,_W)
+                end
+            end
+        end
+-- Evelynn Q
+    if Config.Q then
+        if GetCastName(myHero, _Q) == "EvelynnQ" then
+if CanUseSpell(myHero, _Q) == READY then
+    CastTargetSpell(myHero,_Q)
+                end
+            end
+        end
+    -- Evelynn E
+   if Config.E then
+        if GetCastName(myHero, _E) == "EvelynnE" then
+if CanUseSpell(myHero, _E) == READY then
+    CastTargetSpell(unit,_E)
+                end
+    end
+end
+-- Evelynn R
+             if Config.R then
+if GetCastName(myHero, _R) == "EvelynnR" then
+    local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,650,55,false,true)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+    CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                end
+            end
+end
+end
+end
+end)
+end
+
+--Akali
+if GetObjectName(GetMyHero()) == "Akali" then
+--Menu
+Config = scriptConfig("Akali", "Akali")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 if Config.Q then
+        if GetCastName(myHero, _Q) == "AkaliMota" then
+if CanUseSpell(myHero, _Q) == READY then
+    CastTargetSpell(unit,_Q)
+                end
+            end
+        end
+             -- Akali E
+             if Config.E then
+if GetCastName(myHero, _E) == "AkaliShadowSwipe" then
+    local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,325,55,false,true)
+    if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 325) then
+    CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+                end
+            end
+-- Akali W
+    if Config.W then
+        if GetCastName(myHero, _W) == "AkaliSmokeBomb" then
+if CanUseSpell(myHero, _W) == READY then
+    CastTargetSpell(unit,_W)
+                end
+            end
+        end
+    -- Akali R
+   if Config.R then
+        if GetCastName(myHero, _R) == "AkaliShadowDance" then
+if CanUseSpell(myHero, _R) == READY then
+    CastTargetSpell(unit,_R)
+                end
+    end
+end
+end
+end
+end
+end)
+end
+
 --Menu
 if GetObjectName(GetMyHero()) == "Azir" then
 --Azir
