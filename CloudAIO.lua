@@ -1,9 +1,3 @@
-local version = 2
-require ("DLib")
-
-up=Updater.new("Cloudhax23/GOS/master/CloudAIO.lua", "CloudAIO", version)
-if up.newVersion() then 
-	up.update() end
 --Menu
 if GetObjectName(GetMyHero()) == "Azir" then
 --Azir
