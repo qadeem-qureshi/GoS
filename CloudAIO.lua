@@ -278,6 +278,7 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Stun", "Press to Stun", SCRIPT_PARAM_KEYDOWN, string.byte("T")) --Maxxel logic
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
@@ -330,6 +331,50 @@ if GetCastName(myHero, _R) == "SyndraR" then
                 end
             end
         end
+    end
+local unit = GetCurrentTarget() --Maxxxel logic
+local myHeroPos = GetOrigin(myHero)
+DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,1200,2,0,0xffff0000)
+    if Config.Stun then
+        if ValidTarget(unit,1200) then
+            local timea
+            local distanceStun=0
+            if timea~=nil and CanUseSpell(myHero, _Q) ~= READY and CanUseSpell(myHero, _E) ~= READY then
+                timea=nil
+            end
+        ---Values---
+            local enemyposition = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1200,50,true,true)
+            enemyposx=enemyposition.PredPos.x
+            enemyposy=enemyposition.PredPos.y
+            enemyposz=enemyposition.PredPos.z
+            local TargetPos = Vector(enemyposx,enemyposy,enemyposz)
+            if GetDistance(unit)>=700 then
+                distanceStun=GetDistance(unit)-700
+            end
+            if GetDistance(unit)<700 then
+                distanceStun=0
+            end
+            local firePos = TargetPos-(TargetPos-myHeroPos)*(distanceStun/GetDistance(unit)) 
+            local dPredict = GetDistance(myHero,firePosPoint)
+        ---Values end---
+            if CanUseSpell(myHero, _Q) == READY and CanUseSpell(myHero, _E) == READY and timea==nil then
+                if dPredict < 1200 then
+                    CastSkillShot(_Q,firePos.x,0,firePos.z)
+                    timea = GetTickCount()
+                end
+            end
+            if CanUseSpell(myHero, _E) == READY and timea~=GetTickCount() then
+                    CastSkillShot(_E,firePos.x,0,firePos.z)
+            end
+        end
+        Move()
+    end
+    
+    function Move()
+    local movePos = GenerateMovePos()
+    if GetDistance(GetMousePos()) > GetHitBox(myHero) then
+        MoveToXYZ(movePos.x, 0, movePos.z)
+    end
     end
 end
 end
