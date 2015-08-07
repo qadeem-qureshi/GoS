@@ -47,11 +47,13 @@ if CanUseSpell(myHero, _Q) == READY then
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 10000) then
             CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
             end
-end
+        end
+    end
 end
 end
 end)
 end
+
 -- Irelia
 if GetObjectName(GetMyHero()) == "Irelia" then
 --Menu
@@ -538,7 +540,6 @@ if ValidTarget(unit, 1200) then
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
-                CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 375) then
             CastTargetSpell(myHero,_R)
             end
         end
