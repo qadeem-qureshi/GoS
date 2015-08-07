@@ -444,7 +444,7 @@ OnLoop(function(myHero)
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.2 and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(myHero) then
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
             CastTargetSpell(myHero,_R)
             end
         end
@@ -484,6 +484,7 @@ if ValidTarget(unit, 1200) then
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
+                CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 375) then
             CastTargetSpell(myHero,_R)
             end
         end
