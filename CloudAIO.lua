@@ -1,3 +1,68 @@
+-- Riven
+if GetObjectName(GetMyHero()) == "Riven" then
+--Menu
+Config = scriptConfig("Riven", "Riven")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 --Riven E
+                 if GetCastName(myHero, _E) == "RivenFeint" then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,true,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+                 -- Riven Q
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "RivenTriCleave" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 260) then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+    -- Riven W
+   if GetCastName(myHero, _W) == "RivenMartyr" then
+            if Config.W then
+                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,125,50,false,true)
+                 if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 125) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+    -- Cast R
+   if GetCastName(myHero, _R) == "RivenFengShuiEngine" then
+            if Config.R then
+                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 900) then
+            CastTargetSpell(myHero, _R)
+            end
+        end
+    end
+    --Cast R windslash
+       if GetCastName(myHero, _R) == "rivenizunablade" then
+            if Config.R then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,900,50,false,true)
+                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 900) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Riven Loaded</font>"))
+end
 -- Ziggs
 if GetObjectName(GetMyHero()) == "Ziggs" then
 --Menu
@@ -72,7 +137,7 @@ AutoIgnite()
             if Config.R then
                           if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.3 and
                     CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) then
-            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
+            CastTargetSpell(myHero, _W)
             end
         end
     end
