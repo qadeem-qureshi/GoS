@@ -1,3 +1,61 @@
+-- Ziggs
+if GetObjectName(GetMyHero()) == "Ziggs" then
+--Menu
+Config = scriptConfig("Ziggs", "Ziggs")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 -- Ziggs Q
+
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "ZiggsQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1400,50,true,true)
+            if CanUseSpell(myHero, _Q) == READY then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+        -- Ziggs E
+                 if GetCastName(myHero, _E) == "ZiggsE" then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,true,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+    -- Ziggs W
+   if GetCastName(myHero, _W) == "ZiggsW" then
+            if Config.W then
+                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
+                          if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+-- Ziggs R
+   if GetCastName(myHero, _R) == "ZiggsR" then
+            if Config.R then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
+                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Ziggs Loaded</font>"))
+end
 -- Gangplank
 if GetObjectName(GetMyHero()) == "Gangplank" then
 --Menu
@@ -52,6 +110,7 @@ if CanUseSpell(myHero, _Q) == READY then
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Gangplank Loaded</font>"))
 end
 
 -- Irelia
@@ -103,6 +162,7 @@ if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1000) then
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Irelia Loaded</font>"))
 end
 
 --Evelynn
@@ -156,6 +216,7 @@ end
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Evelynn Loaded</font>"))
 end
 
 --Akali
@@ -207,6 +268,7 @@ end
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Akali Loaded</font>"))
 end
 
 --Menu
@@ -263,6 +325,7 @@ end
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Azir Loaded</font>"))
 end
 
 --Viktor
@@ -320,6 +383,7 @@ end
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Viktor Loaded</font>"))
 end
 -- VelKoz
 if GetObjectName(GetMyHero()) == "Velkoz" then
@@ -376,6 +440,7 @@ end
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Velkoz Loaded</font>"))
 end
 
 if GetObjectName(GetMyHero()) == "Syndra" then
@@ -486,6 +551,7 @@ DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,1200,2,0,0xffff0000)
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
 end
 -- Ekko
 if GetObjectName(GetMyHero()) == "Ekko" then
@@ -546,6 +612,7 @@ if ValidTarget(unit, 1200) then
     end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Ekko Loaded</font>"))
 end
 --Nidalee
 if GetObjectName(GetMyHero()) == "Nidalee" then
@@ -641,6 +708,7 @@ if GetCastName(myHero, _R) == "AspectOfTheCougar" then
         end
             end
     end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Nidalee Loaded</font>"))
  end
 -- Graves
 if GetObjectName(GetMyHero()) == "Graves" then
@@ -691,5 +759,6 @@ if ValidTarget(unit, 1200) then
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Graves Loaded</font>"))
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Loaded</font>"))
+
