@@ -1,3 +1,57 @@
+-- Gangplank
+if GetObjectName(GetMyHero()) == "Gangplank" then
+--Menu
+Config = scriptConfig("Gangplank", "Gangplank")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+  --Auto heal if under or 30% HP AND ENEMY IS IN 1000 RANGE.
+   if GetCastName(myHero, _W) == "GangplankW" then
+            if Config.R then
+                          if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.3 and
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 -- Gang Q
+
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "GangplankQWrapper" then
+if CanUseSpell(myHero, _Q) == READY then
+    CastTargetSpell(unit,_Q)
+                end
+            end
+        end
+        -- Gangplank E
+                 if GetCastName(myHero, _E) == "GangplankE" then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,false,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+-- Gangplank R
+   if GetCastName(myHero, _R) == "GangplankR" then
+            if Config.R then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,10000,50,false,true)
+                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.2 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 10000) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+end
+end
+end
+end)
+end
 -- Irelia
 if GetObjectName(GetMyHero()) == "Irelia" then
 --Menu
