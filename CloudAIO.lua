@@ -1,4 +1,57 @@
--- Version Check 1.7
+-- Version Check 1.8
+-- Udyr
+if GetObjectName(GetMyHero()) == "Udyr" then
+--Menu
+Config = scriptConfig("Udyr", "Udyr")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 
+                                  --Udyr E
+                 if GetCastName(myHero, _E) == "UdyrBearStance" then
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 125) then
+            CastTargetSpell(myHero,_E)
+            end
+        end
+    end
+                 -- Udyr Q
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "UdyrTigerStance" then
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 125) then
+                        CastTargetSpell(myHero,_E)
+            end
+        end
+    end
+                     -- Udyr W
+   if GetCastName(myHero, _W) == "UdyrTurtleStance" then
+            if Config.W then
+                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,false,true)
+                 if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 125) then
+            CastTargetSpell(myHero,_W)
+            end
+        end
+    end
+    -- Cast R
+   if GetCastName(myHero, _R) == "UdyrPhoenixStance" then
+            if Config.R then
+                  if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
+            CastTargetSpell(myHero, _R)
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Udyr Loaded</font>"))
+end
 -- Brand
 if GetObjectName(GetMyHero()) == "Brand" then
 --Menu
