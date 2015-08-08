@@ -52,6 +52,7 @@ if ValidTarget(unit, 1550) then
 end
 end
 end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Brand Loaded</font>"))
 end
 -- Fiora
 if GetObjectName(GetMyHero()) == "Fiora" then
