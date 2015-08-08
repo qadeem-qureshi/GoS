@@ -1,4 +1,4 @@
---Version Check 1.6
+-- Version Check 1.6.1 Fix line 77.
 -- Fiora
 if GetObjectName(GetMyHero()) == "Fiora" then
 --Menu
@@ -74,7 +74,7 @@ if ValidTarget(unit, 1550) then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,true,true)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
-            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z) then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z) 
             end
         end
     end
