@@ -1,4 +1,71 @@
 -- Version Check 1.8
+-- Gnar
+if GetObjectName(GetMyHero()) == "Gnar" then
+--Menu
+Config = scriptConfig("Gnar", "Gnar")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+--Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Q2", "Use Q2", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W2", "Use W2", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E2", "Use E2", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 
+                                                  -- Gnar Q
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "GnarQ" then
+            local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1100,50,true,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1100) then
+                        CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+                                  --Gnar E gnarbigqwe
+                 if Config.E then
+                 if GetCastName(myHero, _E) == "GnarE" then
+                    local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1100,50,true,true)
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1100) then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+                     -- Gnar W
+   if Config.W2 then
+   if GetCastName(myHero, _W) == "gnarbigw" then
+                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_W),50,false,true)
+                 if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and ValidTarget(unit, GetCastRange(myHero,_W)) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+                             if Config.Q2 then
+        if GetCastName(myHero, _Q) == "gnarbigq" then
+            local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1100,50,true,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1100) then
+                        CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+                     if Config.E2 then
+                 if GetCastName(myHero, _E) == "gnarbige" then
+                    local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,475,50,false,true)
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1100) then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+    
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Gnar Loaded</font>"))
+end
 -- Udyr
 if GetObjectName(GetMyHero()) == "Udyr" then
 --Menu
@@ -26,7 +93,7 @@ if ValidTarget(unit, 1550) then
                          if Config.Q then
         if GetCastName(myHero, _Q) == "UdyrTigerStance" then
             if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 125) then
-                        CastTargetSpell(myHero,_E)
+                        CastTargetSpell(myHero,_Q)
             end
         end
     end
@@ -726,15 +793,15 @@ if ValidTarget(unit, 1200) then
         end
     end
 -- Syndra Ultimate
-if GetCastName(myHero, _R) == "SyndraR" then
+   if GetCastName(myHero, _R) == "SyndraR" then
             if Config.R then
-        if unit ~= nil then
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
-    CastTargetSpell(unit, _R)
-                end
+                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 675) then
+            CastTargetSpell(unit, _R)
             end
         end
     end
+
 local unit = GetCurrentTarget() --Maxxxel logic
 local myHeroPos = GetOrigin(myHero)
 DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,1200,2,0,0xffff0000)
@@ -983,10 +1050,13 @@ if ValidTarget(unit, 1200) then
 -- R Cast 
     if GetCastName(myHero, _R) == "GravesChargedShot" then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
-                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and CalcDamage(myHero, target, (150*GetCastLevel(myHero,_R)+100+1.5*GetBonusDmg(myHero)), 0) > GetCurrentHP(target) then
+            if Config.R then
+                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) and RPred.HitChance == 1 then
         CastSkillShot(_R,pred.PredPos.x,pred.PredPos.y,pred.PredPos.z)
         end
     end
+end
 end
 end
 end)
