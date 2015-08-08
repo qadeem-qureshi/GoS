@@ -1,3 +1,60 @@
+--Version Check 1.6
+-- Fiora
+if GetObjectName(GetMyHero()) == "Fiora" then
+--Menu
+Config = scriptConfig("Fiora", "Fiora")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 
+                 -- Fiora Q
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "FioraQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,400,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 400) then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+                     -- Fiora W
+   if GetCastName(myHero, _W) == "FioraW" then
+            if Config.W then
+                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,750,50,false,true)
+                 if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 750) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+                 --Fiora E
+                 if GetCastName(myHero, _E) == "FioraE" then
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 260) then
+            CastTargetSpell(myHero,_E)
+            end
+        end
+    end
+    -- Cast R
+   if GetCastName(myHero, _R) == "FioraR" then
+            if Config.R then
+                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 500) then
+            CastTargetSpell(unit, _R)
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Fiora Loaded</font>"))
+end
+
 -- Riven
 if GetObjectName(GetMyHero()) == "Riven" then
 --Menu
