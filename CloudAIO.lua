@@ -163,7 +163,7 @@ end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Fiora Loaded</font>"))
 end
 
--- Riven
+--[[ Riven
 if GetObjectName(GetMyHero()) == "Riven" then
 --Menu
 Config = scriptConfig("Riven", "Riven")
@@ -228,7 +228,7 @@ end
 end
 end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Riven Loaded</font>"))
-end
+end]]
 -- Ziggs
 if GetObjectName(GetMyHero()) == "Ziggs" then
 --Menu
