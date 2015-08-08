@@ -17,7 +17,7 @@ if ValidTarget(unit, 1550) then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,true,true)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
-            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z) then
             end
         end
     end
@@ -26,9 +26,10 @@ if ValidTarget(unit, 1550) then
         if GetCastName(myHero, _Q) == "RivenTriCleave" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
             if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 260) then
-            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z) 
             end
         end
+                    AttackUnit(unit)
     end
     -- Riven W
    if GetCastName(myHero, _W) == "RivenMartyr" then
