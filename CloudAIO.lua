@@ -1,4 +1,59 @@
--- Version Check 1.9
+-- Version Check 2.1
+-- Leona
+if GetObjectName(GetMyHero()) == "Leona" then
+--Menu
+Config = scriptConfig("Leona", "Leona")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+    local unit = GetCurrentTarget()
+    if GetCastName(myHero, _W) == "LeonaSolarBarrier" then
+            if Config.W then
+                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.75 and
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+            CastTargetSpell(myHero,_W)
+            end
+        end
+    end
+AutoIgnite()
+if IWalkConfig.Combo then
+if ValidTarget(unit, 1550) then
+                 
+                                                  -- Leona Q
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "LeonaShieldOfDaybreak" then
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 625) then
+                        CastTargetSpell(unit,_Q)
+            end
+        end
+    end
+                                  --Leona E 
+                 if Config.E then
+                 if GetCastName(myHero, _E) == "LeonaZenithBlade" then
+                local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_E),50,false,true)
+                 if CanUseSpell(myHero, _E) == READY and IsObjectAlive(unit) and IsInDistance(unit, 700)  then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+                     -- Leona R
+                     if Config.R then
+                 if GetCastName(myHero, _R) == "LeonaSolarFlare" then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_R),50,false,true)
+                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.8 and
+                 CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1100) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Leona Loaded</font>"))
+end
 -- Swain
 if GetObjectName(GetMyHero()) == "Swain" then
 --Menu
@@ -9,6 +64,7 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
+       local unit = GetCurrentTarget()
     if GetCastName(myHero, _R) == "SwainMetamorphism" then
             if Config.R then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.3 and
@@ -19,7 +75,6 @@ OnLoop(function(myHero)
     end
 AutoIgnite()
 if IWalkConfig.Combo then
-local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  
                                                   -- Swain Q
@@ -291,7 +346,7 @@ end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Fiora Loaded</font>"))
 end
 
---[[ Riven
+-- Riven
 if GetObjectName(GetMyHero()) == "Riven" then
 --Menu
 Config = scriptConfig("Riven", "Riven")
@@ -322,7 +377,6 @@ if ValidTarget(unit, 1550) then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z) 
             end
         end
-                    AttackUnit(unit)
     end
     -- Riven W
    if GetCastName(myHero, _W) == "RivenMartyr" then
@@ -345,8 +399,8 @@ if ValidTarget(unit, 1550) then
     --Cast R windslash
        if GetCastName(myHero, _R) == "rivenizunablade" then
             if Config.R then
-                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,900,50,false,true)
-                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,false,true)
+                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 900) then
             CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
             end
@@ -356,7 +410,8 @@ end
 end
 end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Riven Loaded</font>"))
-end]]
+end
+
 -- Ziggs
 if GetObjectName(GetMyHero()) == "Ziggs" then
 --Menu
@@ -425,7 +480,7 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
-AutoIgnite()
+  local unit = GetCurrentTarget()
   --Auto heal if under or 30% HP AND ENEMY IS IN 1000 RANGE.
    if GetCastName(myHero, _W) == "GangplankW" then
             if Config.R then
@@ -435,8 +490,8 @@ AutoIgnite()
             end
         end
     end
+AutoIgnite()
 if IWalkConfig.Combo then
-local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  -- Gang Q
 
@@ -923,6 +978,7 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
+    local unit = GetCurrentTarget()
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.2 and
@@ -1113,8 +1169,7 @@ if ValidTarget(unit, 1200) then
 -- R Cast 
     if GetCastName(myHero, _R) == "GravesChargedShot" then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
-                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and CalcDamage(myHero, target, (150*GetCastLevel(myHero,_R)+100+1.5*GetBonusDmg(myHero)), 0) > GetCurrentHP(target) then
-        CastSkillShot(_R,pred.PredPos.x,pred.PredPos.y,pred.PredPos.z)
+                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 then
         end
     end
 end
