@@ -660,12 +660,12 @@ if CanUseSpell(myHero, _Q) == READY then
         end
     -- Viktor E
     local myorigin = GetOrigin(unit)
-local mymouse = GetMousePos() 
+local mymouse = GetCastRange(myHero,_E) 
 if Config.E then
         if GetCastName(myHero, _E) == "ViktorDeathRay" then
  local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,525,55,false,true)
 if CanUseSpell(myHero, _E) == READY then 
-    CastSkillShot3(_E,myorigin,mymouse)
+    CastSkillShot3(_E,myorigin,myorigin)
     end
 end
 end
@@ -793,15 +793,15 @@ if ValidTarget(unit, 1200) then
         end
     end
 -- Syndra Ultimate
-   if GetCastName(myHero, _R) == "SyndraR" then
+if GetCastName(myHero, _R) == "SyndraR" then
             if Config.R then
-                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 675) then
-            CastTargetSpell(unit, _R)
+        if unit ~= nil then
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
+    CastTargetSpell(unit, _R)
+                end
             end
         end
     end
-
 local unit = GetCurrentTarget() --Maxxxel logic
 local myHeroPos = GetOrigin(myHero)
 DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,1200,2,0,0xffff0000)
@@ -1050,13 +1050,10 @@ if ValidTarget(unit, 1200) then
 -- R Cast 
     if GetCastName(myHero, _R) == "GravesChargedShot" then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
-            if Config.R then
-                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) and RPred.HitChance == 1 then
+                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and CalcDamage(myHero, target, (150*GetCastLevel(myHero,_R)+100+1.5*GetBonusDmg(myHero)), 0) > GetCurrentHP(target) then
         CastSkillShot(_R,pred.PredPos.x,pred.PredPos.y,pred.PredPos.z)
         end
     end
-end
 end
 end
 end)
