@@ -75,6 +75,7 @@ Config.addParam("E2", "Use E2", SCRIPT_PARAM_ONOFF, true)
 OnLoop(function(myHero)
 AutoIgnite()
 if IWalkConfig.Combo then
+local mymouse = GetMousePos()
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  
@@ -90,9 +91,8 @@ if ValidTarget(unit, 1550) then
                                   --Gnar E gnarbigqwe
                  if Config.E then
                  if GetCastName(myHero, _E) == "GnarE" then
-                    local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1100,50,true,true)
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1100) then
-            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            CastSkillShot(_E, GetMousePos().x, GetMousePos().y, GetMousePos().z)
             end
         end
     end
@@ -724,8 +724,8 @@ if CanUseSpell(myHero, _Q) == READY then
 local mymouse = GetCastRange(myHero,_E) 
 if Config.E then
         if GetCastName(myHero, _E) == "ViktorDeathRay" then
- local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,525,55,false,true)
-if CanUseSpell(myHero, _E) == READY then 
+ local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
+if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1500) then 
     CastSkillShot3(_E,myorigin,myorigin)
     end
 end
@@ -857,7 +857,8 @@ if ValidTarget(unit, 1200) then
 if GetCastName(myHero, _R) == "SyndraR" then
             if Config.R then
         if unit ~= nil then
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
+            if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+    CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
     CastTargetSpell(unit, _R)
                 end
             end
@@ -1082,6 +1083,7 @@ OnLoop(function(myHero)
 AutoIgnite()
 if IWalkConfig.Combo then
 local unit = GetCurrentTarget()
+local mymouse = GetMousePos()
 if ValidTarget(unit, 1200) then
  
 -- Q cast
