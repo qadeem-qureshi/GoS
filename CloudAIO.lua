@@ -1,4 +1,82 @@
--- Version Check 2.1
+-- Version Check 2.2
+
+-- Riven
+if GetObjectName(GetMyHero()) == "Alistar" then
+--Menu
+Config = scriptConfig("Alistar", "Alistar")
+Config.addParam("QW", "Use QW Combo", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("WQ", "Use WQ Combo", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+       local unit = GetCurrentTarget()
+    if GetCastName(myHero, _R) == "FerociousHowl" then
+            if Config.R then
+                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.4 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+            CastSpell(_R)
+            end
+        end
+    end
+                for _, ally in pairs(GetAllyHeroes()) do
+            if Config.E then
+            if (GetCurrentHP(ally)/GetMaxHP(ally))<0.7 and
+                    CanUseSpell(myHero, _W) == READY and IsInDistance(ally, 575) then
+            CastSpell(_E)
+        end
+    end
+end
+    if GetCastName(myHero, _E) == "TriumphantRoar" then
+            if Config.E then
+                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.7 and
+                    CanUseSpell(myHero, _E) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+            CastSpell(_E)
+            end
+        end
+    end
+AutoIgnite()
+if IWalkConfig.Combo then
+if ValidTarget(unit, 1550) then
+                    -- Alistar W
+   if GetCastName(myHero, _W) == "Headbutt" then
+            if Config.WQ then
+                 if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 650) then
+           CastTargetSpell(unit, _W)
+            end
+        end
+    end
+                 -- Alistar Q
+                         if Config.WQ then
+        if GetCastName(myHero, _Q) == "Pulverize" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 365) then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z) 
+            end
+        end
+    end
+                     -- Alistar Q
+                         if Config.QW then
+        if GetCastName(myHero, _Q) == "Pulverize" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 365) then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z) 
+            end
+        end
+    end
+                        -- Alistar W
+   if GetCastName(myHero, _W) == "Headbutt" then
+            if Config.QW then
+                 if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 300) then
+           CastTargetSpell(unit, _W)
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Alistar Loaded</font>"))
+end
 -- Leona
 if GetObjectName(GetMyHero()) == "Leona" then
 --Menu
@@ -373,6 +451,7 @@ if ValidTarget(unit, 1550) then
                          if Config.Q then
         if GetCastName(myHero, _Q) == "RivenTriCleave" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
+        DelayAction(function() AttackUnit(unit) end, 1800)
             if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 260) then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z) 
             end
