@@ -1,4 +1,4 @@
--- Version Check 2.3 Fix alistar.
+-- Version Check 2.4 Fixed GP Q farm!!!!!!!!
 
 -- Alistar
 if GetObjectName(GetMyHero()) == "Alistar" then
@@ -22,7 +22,7 @@ OnLoop(function(myHero)
                 for _, ally in pairs(GetAllyHeroes()) do
             if Config.E then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.7 and
-                    CanUseSpell(myHero, _E) == READY and IsInDistance(ally, 575)  and IsObjectAlive(ally) then
+                    CanUseSpell(myHero, _W) == READY and IsInDistance(ally, 575)  and IsObjectAlive(ally) then
             CastSpell(_E)
         end
     end
@@ -557,6 +557,7 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("F", "LastHit", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
   local unit = GetCurrentTarget()
@@ -603,6 +604,25 @@ if CanUseSpell(myHero, _Q) == READY then
 end
 end
 end)
+OnLoop(function(myHero)
+if IWalkConfig.LastHit then
+      if Config.F then
+      for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+        local targetPos = GetOrigin(Q)
+        local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
+        local hp = GetCurrentHP(Q)
+        local dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
+        if dmg > hp then
+        if GetCastName(myHero, _Q) == "GangplankQWrapper" then
+if CanUseSpell(myHero, _Q) == READY then
+    CastTargetSpell(Q,_Q)
+                end
+            end
+        end
+          end
+        end
+      end
+    end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Gangplank Loaded</font>"))
 end
 
