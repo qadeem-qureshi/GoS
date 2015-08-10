@@ -1,6 +1,6 @@
 -- Version Check 2.2
 
--- Riven
+-- Alistar
 if GetObjectName(GetMyHero()) == "Alistar" then
 --Menu
 Config = scriptConfig("Alistar", "Alistar")
