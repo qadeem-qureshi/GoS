@@ -22,7 +22,7 @@ OnLoop(function(myHero)
                 for _, ally in pairs(GetAllyHeroes()) do
             if Config.E then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.7 and
-                    CanUseSpell(myHero, _W) == READY and IsInDistance(ally, 575)  and IsObjectAlive(ally) then
+                    CanUseSpell(myHero, _E) == READY and IsInDistance(ally, 575)  and IsObjectAlive(ally) then
             CastSpell(_E)
         end
     end
