@@ -1,68 +1,5 @@
--- Version Check 2.8 Yasuo Release! 
--- Yasuo
-if GetObjectName(GetMyHero()) == "Yasuo" then
---Menu
-Config = scriptConfig("Yasuo", "Yasuo")
-Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("F", "E to Minion (Combo)", SCRIPT_PARAM_ONOFF, true)
---Start
-OnLoop(function(myHero)
-  local unit = GetCurrentTarget()
-AutoIgnite()
-if IWalkConfig.Combo then
-if ValidTarget(unit, 1550) then
-                 -- Yasuo Q
+-- Version Check 2.7 Sona Release! 
 
-                         if Config.Q then
-                          local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,false,true)
-if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1200) and QPred.HitChance == 1 then
-    CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-                end
-            end
-        -- Yasuo E
-                 if GetCastName(myHero, _E) == "YasuoDashWrapper" then
-            if Config.E then
-            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 475) then
-            CastTargetSpell(unit,_E)
-            end
-        end
-    end
--- Yasuo R
-            if Config.R then
-                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1200,50,false,true)
-                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1200) then
-            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
-            end
-        end
-    end
-end
-end)
-
-OnLoop(function(myHero)
-if IWalkConfig.Combo then
-      if Config.F then
-      for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
-        local targetPos = GetOrigin(Q)
-        local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
-        local hp = GetCurrentHP(Q)
-        local dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
-        if dmg < hp or dmg > hp then
-        if GetCastName(myHero, _E) == "YasuoDashWrapper" then
-if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 475) then
-    CastTargetSpell(Q,_E)
-                end
-            end
-        end
-          end
-        end
-      end
-    end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Yasuo Loaded</font>"))
-end
 -- Sona
 if GetObjectName(GetMyHero()) == "Sona" then
 --Menu
@@ -1336,7 +1273,10 @@ if ValidTarget(unit, 1200) then
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
-            CastTargetSpell(myHero,_R)
+            if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+             CanUseSpell(myHero, _R) and IsInDistance(unit, 325) then 
+            CastTargetSpell(myHero,_R) 
+        end
             end
         end
     end
