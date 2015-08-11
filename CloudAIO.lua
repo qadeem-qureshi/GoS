@@ -1272,11 +1272,13 @@ if ValidTarget(unit, 1200) then
     end
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
-            if Config.R then
-            CastTargetSpell(myHero,_R)
+    if Config.R then
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 375) then
+    CastSpell(_R)
+                end
             end
         end
-    end
+end
 end
 end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Ekko Loaded</font>"))
