@@ -1,5 +1,53 @@
--- Version Check 2.4 Fixed GP Q farm!!!!!!!!
+-- Version Check 2.5 Rumble Release! Fixes.
 
+--Rumble
+if GetObjectName(GetMyHero()) == "Rumble" then
+--Menu
+Config = scriptConfig("Rumble", "Rumble")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1700) then
+
+-- Rumble Q
+        if GetCastName(myHero, _Q) == "RumbleFlameThrower" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,600,50,false,true)
+            if Config.Q then
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 600) and QPred.HitChance == 1 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+    -- Rumble E
+        if GetCastName(myHero, _E) == "RumbleGrenade" then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,true,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 850) and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+-- Rumble R
+    local myorigin = GetOrigin(unit)
+local mymouse = GetCastRange(myHero,_E) 
+if Config.R then
+        if GetCastName(myHero, _R) == "RumbleCarpetBomb" then
+if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
+    CastSkillShot3(_R,myorigin,myorigin)
+    end
+end
+end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Rumble Loaded</font>"))
+end
 -- Alistar
 if GetObjectName(GetMyHero()) == "Alistar" then
 --Menu
@@ -22,7 +70,7 @@ OnLoop(function(myHero)
                 for _, ally in pairs(GetAllyHeroes()) do
             if Config.E then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.7 and
-                    CanUseSpell(myHero, _W) == READY and IsInDistance(ally, 575)  and IsObjectAlive(ally) then
+                    CanUseSpell(myHero, _E) == READY and IsInDistance(ally, 575) and IsObjectAlive(ally) then
             CastSpell(_E)
         end
     end
@@ -529,7 +577,7 @@ if ValidTarget(unit, 1550) then
             if Config.W then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
                           if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
-                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) then
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
             end
         end
