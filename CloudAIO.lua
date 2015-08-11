@@ -1,4 +1,59 @@
--- Version Check 2.6 Khazix Release! Fix for lel.lua (Gnar2)
+-- Version Check 2.7 Sona Release! 
+
+-- Sona
+if GetObjectName(GetMyHero()) == "Sona" then
+--Menu
+Config = scriptConfig("Sona", "Sona")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+       local unit = GetCurrentTarget()
+                for _, ally in pairs(GetAllyHeroes()) do
+            if Config.W then
+            if (GetCurrentHP(ally)/GetMaxHP(ally))<0.6 and
+                    CanUseSpell(myHero, _W) == READY and IsInDistance(ally, 1000) and IsObjectAlive(ally) then
+            CastSpell(_W)
+        end
+    end
+end
+    if GetCastName(myHero, _W) == "SonaW" then
+            if Config.W then
+                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.5 and
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(myHero) then
+            CastSpell(_W)
+            end
+        end
+    end
+AutoIgnite()
+if IWalkConfig.Combo then
+if ValidTarget(unit, 1550) then
+                 -- Sona Q
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "SonaQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 850) then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z) 
+            end
+        end
+    end
+                     -- Sona R
+                         if Config.R then
+        if GetCastName(myHero, _R) == "SonaR" then
+        local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,false,true)
+             if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z) 
+            end
+        end
+    end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Sona Loaded</font>"))
+end
 --Khazix
 if GetObjectName(GetMyHero()) == "Khazix" then
 --Menu
