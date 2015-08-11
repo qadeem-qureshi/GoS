@@ -1,5 +1,70 @@
--- Version Check 2.7 Sona Release! 
+-- Version Check 2.8 Yasuo Release! 
 
+-- Yasuo
+if GetObjectName(GetMyHero()) == "Yasuo" then
+--Menu
+Config = scriptConfig("Yasuo", "Yasuo")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("F", "E to Minion (Combo)", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+--Start
+OnLoop(function(myHero)
+  local unit = GetCurrentTarget()
+AutoIgnite()
+if Config.Combo then
+if ValidTarget(unit, 1550) then
+                 -- Gang Q
+
+                         if Config.Q then
+                          local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,false,true)
+if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1200) and QPred.HitChance == 1 then
+    CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+                end
+            end
+        -- Yasuo E
+                 if GetCastName(myHero, _E) == "YasuoDashWrapper" then
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 475) then
+            CastTargetSpell(unit,_E)
+            end
+        end
+    end
+-- Yasuo R
+            if Config.R then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1200,50,false,true)
+                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1200) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+end
+end)
+
+OnLoop(function(myHero)
+if IWalkConfig.Combo then
+      if Config.F then
+      for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+        local targetPos = GetOrigin(Q)
+        local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
+        local hp = GetCurrentHP(Q)
+        local dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
+        if dmg < hp or dmg > hp then
+        if GetCastName(myHero, _E) == "YasuoDashWrapper" then
+if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 475) then
+    CastTargetSpell(Q,_E)
+                end
+            end
+        end
+          end
+        end
+      end
+    end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Yasuo Loaded</font>"))
+end
 -- Sona
 if GetObjectName(GetMyHero()) == "Sona" then
 --Menu
@@ -8,6 +73,7 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
        local unit = GetCurrentTarget()
@@ -28,7 +94,7 @@ end
         end
     end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 if ValidTarget(unit, 1550) then
                  -- Sona Q
                          if Config.Q then
@@ -62,10 +128,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1700) then
 
@@ -102,10 +169,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1700) then
 
@@ -150,6 +218,7 @@ Config.addParam("QW", "Use QW Combo", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("WQ", "Use WQ Combo", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
        local unit = GetCurrentTarget()
@@ -178,7 +247,7 @@ end
         end
     end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 if ValidTarget(unit, 1550) then
                     -- Alistar W
    if GetCastName(myHero, _W) == "Headbutt" then
@@ -227,6 +296,7 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
     local unit = GetCurrentTarget()
@@ -239,7 +309,7 @@ OnLoop(function(myHero)
         end
     end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 if ValidTarget(unit, 1550) then
                  
                                                   -- Leona Q
@@ -282,6 +352,7 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
        local unit = GetCurrentTarget()
@@ -294,7 +365,7 @@ OnLoop(function(myHero)
         end
     end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 if ValidTarget(unit, 1550) then
                  
                                                   -- Swain Q
@@ -346,10 +417,11 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Q2", "Use Q2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W2", "Use W2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E2", "Use E2", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local mymouse = GetMousePos()
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
@@ -410,10 +482,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  
@@ -463,10 +536,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  
@@ -518,10 +592,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  
@@ -574,10 +649,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  --Riven E
@@ -641,10 +717,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  -- Ziggs Q
@@ -700,6 +777,7 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "LastHit", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
   local unit = GetCurrentTarget()
@@ -723,7 +801,7 @@ OnLoop(function(myHero)
         end
     end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 if ValidTarget(unit, 1550) then
                  -- Gang Q
 
@@ -786,10 +864,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  -- Irelia Q
@@ -838,10 +917,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
 
@@ -892,10 +972,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
                  if Config.Q then
@@ -944,10 +1025,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
 
@@ -1001,10 +1083,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
 
@@ -1058,10 +1141,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
  
@@ -1116,10 +1200,11 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Stun", "Press to Stun", SCRIPT_PARAM_KEYDOWN, string.byte("T")) --Maxxel logic
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1200) then
  
@@ -1227,6 +1312,7 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
     local unit = GetCurrentTarget()
@@ -1239,7 +1325,7 @@ OnLoop(function(myHero)
         end
     end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1200) then
  
@@ -1295,6 +1381,7 @@ Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Q2", "Use Q2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W2", "Use W2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E2", "Use E2", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 -- Nidalee human heal --THANKS SNOWBALL
@@ -1307,7 +1394,7 @@ OnLoop(function(myHero)
     end
 end
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1500) then
  
@@ -1388,10 +1475,11 @@ Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-if IWalkConfig.Combo then
+if Config.Combo then
 local unit = GetCurrentTarget()
 local mymouse = GetMousePos()
 if ValidTarget(unit, 1200) then
