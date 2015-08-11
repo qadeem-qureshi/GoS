@@ -1,5 +1,44 @@
--- Version Check 2.5 Rumble Release! Fixes.
+-- Version Check 2.6 Khazix Release! Fix for lel.lua (Gnar2)
+--Khazix
+if GetObjectName(GetMyHero()) == "Khazix" then
+--Menu
+Config = scriptConfig("Khazix", "Khazix")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+if IWalkConfig.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1700) then
 
+    -- Khazix E
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_E),50,false,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+                         -- Khazix Q
+            if Config.Q then
+                 if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 325) then
+            CastTargetSpell(unit,_Q)
+            end
+        end
+-- Khazix Q
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,600,50,true,true)
+            if Config.Q then
+            if CanUseSpell(myHero, _W) == READY and IsInDistance(unit, 1000) and WPred.HitChance == 1 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+end
+end
+end)
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Khazix Loaded</font>"))
+end
 --Rumble
 if GetObjectName(GetMyHero()) == "Rumble" then
 --Menu
@@ -618,6 +657,16 @@ OnLoop(function(myHero)
             end
         end
     end
+       -- Auto R (ks)
+       if GetCastName(myHero, _R) == "GangplankR" then
+            if Config.R then
+                                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,10000,50,false,true)
+                          if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.2 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 10000) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
 AutoIgnite()
 if IWalkConfig.Combo then
 if ValidTarget(unit, 1550) then
@@ -878,7 +927,7 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "AzirR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,250,55,false,true)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
