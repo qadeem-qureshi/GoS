@@ -77,7 +77,7 @@ Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
        local unit = GetCurrentTarget()
-                if Config.W
+                if Config.W then
                 for _, ally in pairs(GetAllyHeroes()) do
             if Config.W then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.6 and
