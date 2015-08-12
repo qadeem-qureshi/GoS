@@ -1,4 +1,4 @@
--- Version Check 3.0 Fixes for Ekko ult!
+--Version 3.1 Rumble Ult Perfect Credits next to code.
 
 -- Yasuo
 if GetObjectName(GetMyHero()) == "Yasuo" then
@@ -227,12 +227,12 @@ if ValidTarget(unit, 1700) then
         end
     end
 -- Rumble R
-    local myorigin = GetOrigin(unit)
-local mymouse = GetCastRange(myHero,_E) 
+    local pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,1700,850,50,false,true)
+local posA = Vector(myHero) - 1700 * (Vector(myHero) - Vector(target)):normalized() -- Figured out from Deftsu Laiha code.
 if Config.R then
         if GetCastName(myHero, _R) == "RumbleCarpetBomb" then
 if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
-    CastSkillShot3(_R,myorigin,myorigin)
+    CastSkillShot3(_R,posA,pred.PredPos)
     end
 end
 end
