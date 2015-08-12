@@ -1,5 +1,4 @@
--- Version Check 2.9 Fixes for Brand logic (now checks for blaze(passive)) before shooting Q to unit location. 
---Fixed nidalee logic (no more tansform to cougar after Q is hit)
+-- Version Check 3.0 Fixes for Ekko ult!
 
 -- Yasuo
 if GetObjectName(GetMyHero()) == "Yasuo" then
@@ -35,10 +34,9 @@ if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1200) and QPred.HitCh
     end
 -- Yasuo R
             if Config.R then
-                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1200,50,false,true)
                      if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1200) then
-            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            CastTargetSpell(unit, _R)
             end
         end
     end
@@ -46,24 +44,54 @@ end
 end)
 
 OnLoop(function(myHero)
-if IWalkConfig.Combo then
+if Config.Combo then
       if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
         local targetPos = GetOrigin(Q)
         local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
         local hp = GetCurrentHP(Q)
         local dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
-        if dmg < hp or dmg > hp then
+        local unit = GetCurrentTarget()
+            if dmg < hp or dmg > hp then
+              if unit == nil then return end
+              elseif GotBuff(unit, "YasuoDashWrapper") > 1 then return end
         if GetCastName(myHero, _E) == "YasuoDashWrapper" then
 if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 475) then
     CastTargetSpell(Q,_E)
                 end
+
             end
         end
           end
-        end
+
       end
     end)
+OnProcessSpell(function(unit, spell) -- All of this is from ispired
+  myHero = GetMyHero()
+  if Config.W and unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GetDistance(unit) < 1500 then
+    if myHero == spell.target and spell.name:lower():find("attack") and GetRange(unit) >= 450 and CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 then
+      local wPos = GenerateWallPos(GetOrigin(unit))
+      CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
+    elseif spell.endPos then
+      local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GetDistance(unit, myHero))
+      if GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
+        local wPos = GenerateWallPos(GetOrigin(unit))
+        CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
+      end
+    end
+  end
+end)
+function GenerateWallPos(unitPos)
+    local tV = {x = (unitPos.x-GetMyHeroPos().x), z = (unitPos.z-GetMyHeroPos().z)}
+    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
+    return {x = GetMyHeroPos().x + 400 * tV.x / len, y = 0, z = GetMyHeroPos().z + 400 * tV.z / len}
+end
+
+function GenerateSpellPos(unitPos, spellPos, range)
+    local tV = {x = (spellPos.x-unitPos.x), z = (spellPos.z-unitPos.z)}
+    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
+    return {x = unitPos.x + range * tV.x / len, y = 0, z = unitPos.z + range * tV.z / len}
+end -- Inspireds END
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Yasuo Loaded</font>"))
 end
 -- Sona
@@ -1334,7 +1362,7 @@ if ValidTarget(unit, 1200) then
  
 -- Q cast
         if GetCastName(myHero, _Q) == "EkkoQ" then
-                local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1075,50,true,true)
+                local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1075,50,false,true)
                         if Config.Q then
                         if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
                         CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
@@ -1362,9 +1390,10 @@ if ValidTarget(unit, 1200) then
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
+                      local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,false,true)
             if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
-             CanUseSpell(myHero, _R) and IsInDistance(unit, 325) and GotBuff(unit, "EkkoStacks") or GotBuff(myHero, "ekkopassivespeed") then 
-            CastTargetSpell(myHero,_R) 
+             CanUseSpell(myHero, _R) and IsInDistance(unit, 325) and GotBuff(unit, "EkkoStacks") == 1 or GotBuff(myHero, "ekkopassivespeed") == 1 then 
+            CastSkillShot(_R,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z) 
         end
             end
         end
