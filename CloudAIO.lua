@@ -77,6 +77,7 @@ Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
        local unit = GetCurrentTarget()
+                if Config.W
                 for _, ally in pairs(GetAllyHeroes()) do
             if Config.W then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.6 and
@@ -556,7 +557,7 @@ if ValidTarget(unit, 1550) then
                          if Config.Q then
         if GetCastName(myHero, _Q) == "BrandBlaze" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1050,50,true,true)
-            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1050) and GotBuff(unit, "bradablaze") then
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1050) and GotBuff(unit, "bradablaze") == 1 then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
         end
@@ -1420,13 +1421,12 @@ if ValidTarget(unit, 1500) then
 -- Tansform to cougar
 if GetCastName(myHero, _R) == "AspectOfTheCougar" then
             if Config.R then
-        if unit ~= nil then
-    if CanUseSpell(myHero, _R) == READY and CanUseSpell(myHero, _W) == READY and CanUseSpell(myHero, _Q) ~= READY and IsInDistance(unit, 750) and GotBuff(unit, "Hunted") then
+              if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and 
+    CanUseSpell(myHero, _R) == READY and CanUseSpell(myHero, _W) == READY and CanUseSpell(myHero, _Q) ~= READY and IsInDistance(unit, 750) then
     CastTargetSpell(myHero, _R)
                 end
             end
         end
-    end
 -- Cougar attack Q
             if GetCastName(myHero, _Q) == "Takedown" then
         if Config.Q2 then
@@ -1454,8 +1454,8 @@ if GetCastName(myHero, _R) == "AspectOfTheCougar" then
 -- Transform back
     if GetCastName(myHero, _R) == "AspectOfTheCougar" then
         if Config.R then
-            if unit ~= nil then
-        if CanUseSpell(myHero, _R) == READY and CanUseSpell(myHero, _W) ~= READY and CanUseSpell(myHero, _Q) ~= READY then
+         if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and 
+    CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 750) and GotBuff(myHero, "nidaleepassivehunting") == 1 then
         CastSpell(_R)
                 end
             end
@@ -1463,7 +1463,6 @@ if GetCastName(myHero, _R) == "AspectOfTheCougar" then
         end
  
         end
-            end
     end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Nidalee Loaded</font>"))
  end
