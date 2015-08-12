@@ -86,6 +86,7 @@ OnLoop(function(myHero)
         end
     end
 end
+end
     if GetCastName(myHero, _W) == "SonaW" then
             if Config.W then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.5 and
