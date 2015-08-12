@@ -1,4 +1,5 @@
--- Version Check 2.8 Yasuo Release! 
+-- Version Check 2.9 Fixes for Brand logic (now checks for blaze(passive)) before shooting Q to unit location. 
+--Fixed nidalee logic (no more tansform to cougar after Q is hit)
 
 -- Yasuo
 if GetObjectName(GetMyHero()) == "Yasuo" then
@@ -558,7 +559,7 @@ if ValidTarget(unit, 1550) then
                          if Config.Q then
         if GetCastName(myHero, _Q) == "BrandBlaze" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1050,50,true,true)
-            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1050) and GotBuff(unit, "bradablaze") == 1 then
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1050) and GotBuff(unit, "brandablaze") == 1 then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
         end
@@ -575,7 +576,7 @@ if ValidTarget(unit, 1550) then
     -- Cast R
    if GetCastName(myHero, _R) == "BrandWildfire" then
             if Config.R then
-                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.38 and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 750) then
             CastTargetSpell(unit, _R)
             end
@@ -1066,7 +1067,7 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "AzirR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,250,55,false,true)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
+    if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 or (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.27 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
@@ -1125,7 +1126,7 @@ end
              if Config.R then
 if GetCastName(myHero, _R) == "ViktorChaosStorm" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+    if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
@@ -1165,7 +1166,7 @@ if ValidTarget(unit, 1550) then
     if Config.W then
         if GetCastName(myHero, _W) == "VelkozW" then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
-    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 1500) then
     CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
             end
@@ -1183,7 +1184,7 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "VelkozR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+    if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
@@ -1362,7 +1363,7 @@ if ValidTarget(unit, 1200) then
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
             if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
-             CanUseSpell(myHero, _R) and IsInDistance(unit, 325) then 
+             CanUseSpell(myHero, _R) and IsInDistance(unit, 325) and GotBuff(unit, "EkkoStacks") or GotBuff(myHero, "ekkopassivespeed") then 
             CastTargetSpell(myHero,_R) 
         end
             end
