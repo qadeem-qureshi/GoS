@@ -1,4 +1,4 @@
---Version 3.1 Rumble Ult Perfect Credits next to code.
+--Version 3.2 Calculations for 12/24 champs SUpports have no calculation.
 
 -- Yasuo
 if GetObjectName(GetMyHero()) == "Yasuo" then
@@ -34,9 +34,9 @@ if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1200) and QPred.HitCh
     end
 -- Yasuo R
             if Config.R then
-                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1200) then
-            CastTargetSpell(unit, _R)
+                    local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.50)
+                   if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1200) then
+            CastSpell(_R)
             end
         end
     end
@@ -50,9 +50,9 @@ if Config.Combo then
         local targetPos = GetOrigin(Q)
         local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
         local hp = GetCurrentHP(Q)
-        local dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
+        local Dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
         local unit = GetCurrentTarget()
-            if dmg < hp or dmg > hp then
+            if Dmg < hp or Dmg > hp then
               if unit == nil then return end
               elseif GotBuff(unit, "YasuoDashWrapper") > 1 then return end
         if GetCastName(myHero, _E) == "YasuoDashWrapper" then
@@ -229,9 +229,10 @@ if ValidTarget(unit, 1700) then
 -- Rumble R
     local pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,1700,850,50,false,true)
 local posA = Vector(myHero) - 1700 * (Vector(myHero) - Vector(target)):normalized() -- Figured out from Deftsu Laiha code.
+local ult = (GetCastLevel(myHero,_R)*55)+(GetBonusAP(myHero)*.30)
 if Config.R then
         if GetCastName(myHero, _R) == "RumbleCarpetBomb" then
-if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
+if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
     CastSkillShot3(_R,posA,pred.PredPos)
     end
 end
@@ -426,7 +427,8 @@ if ValidTarget(unit, 1550) then
     end
                      if Config.R then
                  if GetCastName(myHero, _R) == "SwainMetamorphism" then
-                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+                local ult = (GetCastLevel(myHero,_R)*50+130)+(GetBonusAP(myHero)*.2)
+                if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 700) then
             CastTargetSpell(myHero, _R)
             end
@@ -604,7 +606,8 @@ if ValidTarget(unit, 1550) then
     -- Cast R
    if GetCastName(myHero, _R) == "BrandWildfire" then
             if Config.R then
-                if (GetCurrentHP(unit)/GetMaxHP(unit))<0.38 and
+                local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.50)
+                if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 750) then
             CastTargetSpell(unit, _R)
             end
@@ -788,7 +791,8 @@ if ValidTarget(unit, 1550) then
    if GetCastName(myHero, _R) == "ZiggsR" then
             if Config.R then
                 local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
-                     if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
+                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.72)
+                     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
             CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
             end
@@ -872,8 +876,8 @@ if IWalkConfig.LastHit then
         local targetPos = GetOrigin(Q)
         local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
         local hp = GetCurrentHP(Q)
-        local dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
-        if dmg > hp then
+        local Dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
+        if Dmg > hp then
         if GetCastName(myHero, _Q) == "GangplankQWrapper" then
 if CanUseSpell(myHero, _Q) == READY then
     CastTargetSpell(Q,_Q)
@@ -929,7 +933,8 @@ if CanUseSpell(myHero, _W) == READY  and IsInDistance(unit, 325) then
        if Config.R then
         if GetCastName(myHero, _R) == "IreliaTranscendentBlades" then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1000,55,false,true)
-if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1000) then
+        local ult = (GetCastLevel(myHero,_R)*160)+(GetBonusDmg(myHero)*2)
+if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1000) then
      CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
     end
@@ -1095,7 +1100,8 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "AzirR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,250,55,false,true)
-    if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 or (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.27 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
+  local ult = (GetCastLevel(myHero,_R)*75)+(GetBonusAP(myHero)*.6)
+    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) or (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.27 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
@@ -1154,10 +1160,13 @@ end
              if Config.R then
 if GetCastName(myHero, _R) == "ViktorChaosStorm" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
-    if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+    local ult = (GetCastLevel(myHero,_R)*200+25)+(GetBonusDmg(myHero)*1.25)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+   if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
+        end
 end
 end
 end
@@ -1212,11 +1221,14 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "VelkozR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
-    if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+    local ult = (GetCastLevel(myHero,_R)*200)+(GetBonusDmg(myHero)*.6)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+      if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+          end
                 end
             end
-end
+    end
 end
 end
 end)
@@ -1279,13 +1291,15 @@ if ValidTarget(unit, 1200) then
 if GetCastName(myHero, _R) == "SyndraR" then
             if Config.R then
         if unit ~= nil then
-            if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
-    CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
+         local ult = (GetCastLevel(myHero,_R)*135)+(GetBonusAP(myHero)*.6)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
+    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
     CastTargetSpell(unit, _R)
                 end
             end
         end
     end
+end
 local unit = GetCurrentTarget() --Maxxxel logic
 local myHeroPos = GetOrigin(myHero)
 DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,1200,2,0,0xffff0000)
@@ -1390,14 +1404,16 @@ if ValidTarget(unit, 1200) then
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
+              local ult = (GetCastLevel(myHero,_R)*150+50)+(GetBonusAP(myHero)*1.30)
                       local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,false,true)
-            if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
-             CanUseSpell(myHero, _R) and IsInDistance(unit, 325) and GotBuff(unit, "EkkoStacks") == 1 or GotBuff(myHero, "ekkopassivespeed") == 1 then 
+                         if CanUseSpell(myHero, _R) and IsInDistance(unit, 325) then 
+            if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
             CastSkillShot(_R,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z) 
-        end
+              end
             end
-        end
+            end
     end
+end
 end
 end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Ekko Loaded</font>"))
@@ -1540,10 +1556,17 @@ if ValidTarget(unit, 1200) then
         end
 -- R Cast 
     if GetCastName(myHero, _R) == "GravesChargedShot" then
+      if Config.R then
+        local ult = (GetCastLevel(myHero,_R)*150+150)+(GetBonusDmg(myHero)*1.50)
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
-                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and Config.R and (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 then
+                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) then
+                                  if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+                          CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+        end
         end
     end
+end
+
 end
 end
 end)
