@@ -1,4 +1,4 @@
---Version 3.4 Irelia Q Farm Smooth and GangPlank Smooth Q farm. THANKS BaeSuzy FOR TESTING AND BASICALLY CALLING IT OUT! Vi release!
+--Version 3.5 Fiora W Parry release.
 
 -- Vi
 if GetObjectName(GetMyHero()) == "Vi" then
@@ -279,7 +279,7 @@ if ValidTarget(unit, 1700) then
         local myorigin = GetOrigin(unit)
 local mymouse = GetCastRange(myHero,_R) 
 if Config.R then
-	local ult = (GetCastLevel(myHero,_R)*55)+(GetBonusAP(myHero)*.30)
+  local ult = (GetCastLevel(myHero,_R)*55)+(GetBonusAP(myHero)*.30)
  local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1700,55,false,true)
 if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
     CastSkillShot3(_R,myorigin,EPred)
@@ -720,6 +720,32 @@ if ValidTarget(unit, 1550) then
 end
 end
 end)
+OnProcessSpell(function(unit, spell) -- Modified Yasuo Wall Code 
+  myHero = GetMyHero()
+  if Config.W and unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GetDistance(unit) < 1500 then
+    if myHero == spell.target and spell.name:lower():find("attack") and GetRange(unit) >= 450 and CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 then
+      local wPos = GenerateWPos(GetOrigin(unit))
+      CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
+    elseif spell.endPos then
+      local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GetDistance(unit, myHero))
+      if GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
+        local wPos = GenerateWPos(GetOrigin(unit))
+        CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
+      end
+    end
+  end
+end)
+function GenerateWPos(unitPos)
+    local tV = {x = (unitPos.x-GetMyHeroPos().x), z = (unitPos.z-GetMyHeroPos().z)}
+    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
+    return {x = GetMyHeroPos().x + 400 * tV.x / len, y = 0, z = GetMyHeroPos().z + 400 * tV.z / len}
+end
+
+function GenerateSpellPos(unitPos, spellPos, range)
+    local tV = {x = (spellPos.x-unitPos.x), z = (spellPos.z-unitPos.z)}
+    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
+    return {x = unitPos.x + range * tV.x / len, y = 0, z = unitPos.z + range * tV.z / len}
+end --  END of AUTOPARRY
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Fiora Loaded</font>"))
 end
 
@@ -785,6 +811,16 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+end
+end
+end)
+
+OnProcessSpell(function(unit, spell)
+local unit = GetCurrentTarget()
+if unit and unit == myHero and spell and spell.name and spell.name:lower():find("attack") then
+if Config.Combo and ValidTarget(unit) then
+local targetPos = GetOrigin(unit)
+DelayAction(function() CastSkillShot(_Q, targetPos.x, targetPos.y, targetPos.z) end, spell.windUpTime * 800)
 end
 end
 end)
@@ -1165,7 +1201,7 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "AzirR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,250,55,false,true)
-	local ult = (GetCastLevel(myHero,_R)*75)+(GetBonusAP(myHero)*.6)
+  local ult = (GetCastLevel(myHero,_R)*75)+(GetBonusAP(myHero)*.6)
     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) or (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.27 and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
@@ -1288,12 +1324,12 @@ if GetCastName(myHero, _R) == "VelkozR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
     local ult = (GetCastLevel(myHero,_R)*200)+(GetBonusDmg(myHero)*.6)
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
-    	if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+      if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
-					end
+          end
                 end
             end
-		end
+    end
 end
 end
 end)
@@ -1469,15 +1505,15 @@ if ValidTarget(unit, 1200) then
 -- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
-            	local ult = (GetCastLevel(myHero,_R)*150+50)+(GetBonusAP(myHero)*1.30)
+              local ult = (GetCastLevel(myHero,_R)*150+50)+(GetBonusAP(myHero)*1.30)
                       local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,false,true)
                          if CanUseSpell(myHero, _R) and IsInDistance(unit, 325) then 
             if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
             CastSkillShot(_R,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z) 
-       				end
-        		end
+              end
             end
-		end
+            end
+    end
 end
 end
 end)
@@ -1621,12 +1657,12 @@ if ValidTarget(unit, 1200) then
         end
 -- R Cast 
     if GetCastName(myHero, _R) == "GravesChargedShot" then
-    	if Config.R then
-    		local ult = (GetCastLevel(myHero,_R)*150+150)+(GetBonusDmg(myHero)*1.50)
+      if Config.R then
+        local ult = (GetCastLevel(myHero,_R)*150+150)+(GetBonusDmg(myHero)*1.50)
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
                         if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) then
                                   if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
-                        	CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                          CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
         end
         end
     end
