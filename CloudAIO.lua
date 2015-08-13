@@ -1,4 +1,4 @@
---Version 3.2 Calculations for 12/24 champs SUpports have no calculation.
+--Version 3.3 Rumble ult reverted.
 
 -- Yasuo
 if GetObjectName(GetMyHero()) == "Yasuo" then
@@ -227,14 +227,13 @@ if ValidTarget(unit, 1700) then
         end
     end
 -- Rumble R
-    local pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,1700,850,50,false,true)
-local posA = Vector(myHero) - 1700 * (Vector(myHero) - Vector(target)):normalized() -- Figured out from Deftsu Laiha code.
-local ult = (GetCastLevel(myHero,_R)*55)+(GetBonusAP(myHero)*.30)
+        local myorigin = GetOrigin(unit)
+local mymouse = GetCastRange(myHero,_R) 
 if Config.R then
-        if GetCastName(myHero, _R) == "RumbleCarpetBomb" then
+  local ult = (GetCastLevel(myHero,_R)*55)+(GetBonusAP(myHero)*.30)
+ local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1700,55,false,true)
 if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
-    CastSkillShot3(_R,posA,pred.PredPos)
-    end
+    CastSkillShot3(_R,myorigin,EPred)
 end
 end
 end
