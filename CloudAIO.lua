@@ -1,4 +1,4 @@
---Version 3.7 Kalista fixes.
+--Version 3.8 Irelia fixes
 
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -10,18 +10,44 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Rs", "Use R Save", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "E Clear", SCRIPT_PARAM_ONOFF, true)
---Config.addParam("Z", "Jungle Clear", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Z", "Spam E", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("I", "KS Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("G", "Send Ghost", SCRIPT_PARAM_KEYDOWN, string.byte("T"))
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+DrawingsConfig = scriptConfig("Drawings", "Drawings")
+DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawDMG", "Draw Damage", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
 Killsteal()
 AutoIgnite()
+Drawings()
 if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
-                 
+
+if DrawingsConfig.DrawDMG then
+local hp  = GetCurrentHP(unit)
+local dmg = 0
+local targetPos = GetOrigin(unit)
+local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
+    if CanUseSpell(myHero, _Q) == READY then
+      local Dmgz = GetBonusDmg(myHero)+GetBaseDamage(myHero)
+          dmg = dmg + CalcDamage(myHero, unit, GotBuff(unit,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(unit,"kalistaexpungemarker")-1) * (GetCastLevel(myHero,_E) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+    end
+    if CanUseSpell(myHero, _E) == READY then
+      dmg = dmg + CalcDamage(myHero, unit, 0, 10 + 10*GetCastLevel(myHero,_E) + 0.6*GetBonusDmg(myHero))
+    end
+    if dmg > hp then
+      DrawText("Killable",20,drawPos.x,drawPos.y,0xffffffff)
+      DrawDmgOverHpBar(unit,hp,0,hp,0xffffffff)
+    else
+      DrawText(math.floor(100 * dmg / hp).."%",20,drawPos.x,drawPos.y,0xffffffff)
+      DrawDmgOverHpBar(unit
+      ,hp,0,dmg,0xffffffff)
+    end
+end
                  if Config.Q then
                                              local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1150,50,true,true)
             if CanUseSpell(myHero, _Q) == READY then
@@ -39,6 +65,13 @@ if ValidTarget(unit, 1550) then
                   end
                 end
               end
+                if Config.Z then
+              if GotBuff(unit,"kalistaexpungemarker") > 3 then
+                if CanUseSpell(myHero,_E) == READY and IsInDistance(unit, 1200) then
+                  CastSpell(_E)
+                end
+              end
+            end
     -- Cast R
             if Config.R then
                   if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
@@ -88,6 +121,12 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
             end
         end
 end
+end
+
+function Drawings()
+myHeroPos = GetOrigin(myHero)
+if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_Q),3,100,0xffff00ff) end
+if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
 end
@@ -372,9 +411,16 @@ if ValidTarget(unit, 1700) then
         local myorigin = GetOrigin(unit)
 local mymouse = GetCastRange(myHero,_R) 
 if Config.R then
-	local ult = (GetCastLevel(myHero,_R)*55)+(GetBonusAP(myHero)*.30)
  local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1700,55,false,true)
-if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
+if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
+    CastSkillShot3(_R,myorigin,EPred)
+end
+end
+        local myorigin = GetOrigin(unit)
+local mymouse = GetCastRange(myHero,_R) 
+if Config.R then
+ local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1700,55,false,true)
+if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
     CastSkillShot3(_R,myorigin,EPred)
 end
 end
@@ -1148,14 +1194,16 @@ if CanUseSpell(myHero, _Q) == READY then
       end
     end)
 function Killsteal()
+local unit = GetCurrentTarget()
+ if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
-                  local Dmg = CalcDamage(myHero, Q, z)
-                          local z = (GetCastLevel(myHero,_Q)*30)+(GetBonusDmg(myHero)*1.9)
-if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q)) and Config.G 
+                          local z = ((GetCastLevel(myHero,_Q)*30)+(GetBonusDmg(myHero)*1.9))
+if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q)) and Config.I 
   and (GetCastLevel(myHero,_Q)*30)+(GetBonusDmg(myHero)*1.9) and CalcDamage(myHero, enemy, z) > GetCurrentHP(unit) then
     CastTargetSpell(enemy, _Q)
             end
         end
+end
 end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Irelia Loaded</font>"))
 end
