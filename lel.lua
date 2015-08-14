@@ -1,11 +1,12 @@
 require 'MapPositionGOS'
  Config = scriptConfig("Gnar2", "Gnar2")
  Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+ Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 OnLoop(function(myHero)
         AutoR()
 end)
 function AutoR()
-	if IWalkConfig.Combo then
+	if Config.Combo then
 	 for _,target in pairs(GetEnemyHeroes()) do
 		if ValidTarget(target,1000) then
 			local enemyposx,enemyposy,enemypoz,selfx,selfy,selfz
