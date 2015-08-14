@@ -1,4 +1,4 @@
---Version 3.6 Kalista QWER Laneclear E KS Sentinal
+--Version 3.7 Kalista fixes.
 
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -10,19 +10,12 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Rs", "Use R Save", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "E Clear", SCRIPT_PARAM_ONOFF, true)
+--Config.addParam("Z", "Jungle Clear", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("I", "KS Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("G", "Send Ghost", SCRIPT_PARAM_KEYDOWN, string.byte("T"))
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
-                for _, ally in pairs(GetAllyHeroes()) do
-            if Config.Rs then
-            if (GetCurrentHP(ally)/GetMaxHP(ally))<0.2 and
-                    CanUseSpell(myHero, _R) == READY and IsInDistance(ally, 1400) and IsObjectAlive(ally) and GotBuff(ally, "kalistacoopstrikeally") == 1 then
-            CastSpell(_R)
-        end
-    end
-end
 Killsteal()
 AutoIgnite()
 if Config.Combo then
@@ -85,14 +78,16 @@ end
 end
 end)
 function Killsteal()
+local unit = GetCurrentTarget()
+ if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
-                  local Dmg = CalcDamage(myHero, Q, z)
-                          local z = (GetCastLevel(myHero,_Q)*30)+(GetBonusDmg(myHero)*1.9)
+                          local z = ((GetCastLevel(myHero,_Q)*30)+(GetBonusDmg(myHero)*1.9))
 if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q)) and Config.I 
   and (GetCastLevel(myHero,_Q)*60)+(GetBonusDmg(myHero)*1) and CalcDamage(myHero, enemy, z) > GetCurrentHP(unit) then
     CastTargetSpell(enemy, _Q)
             end
         end
+end
 end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
 end
