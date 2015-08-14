@@ -8,7 +8,7 @@ end)
  
 -- modify from IAC vayne
 function AutoRiAC()
-  if Config.Combo then
+  if IWalkConfig.Combo then
   if Config.R then 
         local target = GetCurrentTarget()
         if ValidTarget(target,GetCastRange(myHero,_R)) and IsInDistance(target, GetCastRange(myHero,_R)) and CanUseSpell(myHero,_R) == READY then
