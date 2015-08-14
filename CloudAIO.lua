@@ -1,4 +1,4 @@
---Version 3.8 Irelia fixes
+--Version 3.9 Kalista Walljump.
 
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -10,14 +10,17 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Rs", "Use R Save", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "E Clear", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("Z", "Spam E", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("Z", "Spam E", SCRIPT_PARAM_KEYDOWN, string.byte("C"))
 Config.addParam("I", "KS Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("G", "Send Ghost", SCRIPT_PARAM_KEYDOWN, string.byte("T"))
+Config.addParam("X", "Wall Jump 1", SCRIPT_PARAM_KEYDOWN, string.byte("L"))
+Config.addParam("Y", "Wall Jump 2", SCRIPT_PARAM_KEYDOWN, string.byte("K"))
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 DrawingsConfig = scriptConfig("Drawings", "Drawings")
 DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawDMG", "Draw Damage", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawQW", "Draw Wall Jump", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
 Killsteal()
@@ -65,13 +68,15 @@ end
                   end
                 end
               end
+                if IWalkConfig.Harass then
                 if Config.Z then
-              if GotBuff(unit,"kalistaexpungemarker") > 3 then
+              if GotBuff(unit,"kalistaexpungemarker") > 4 then
                 if CanUseSpell(myHero,_E) == READY and IsInDistance(unit, 1200) then
                   CastSpell(_E)
                 end
               end
             end
+        end
     -- Cast R
             if Config.R then
                   if (GetCurrentHP(unit)/GetMaxHP(unit))<0.6 and
@@ -110,6 +115,23 @@ CastSkillShot(_W,10092.000000, -71.240601, 4452.000000)
 end
 end
 end)
+          OnLoop(function(myHero)
+           local HeroPos = GetOrigin(myHero)
+        if Config.X and HeroPos.x == 11972 and HeroPos.z == 4708 then                
+            	            CastSkillShot(_Q,11572, -71.240601, 4102)  
+            	            MoveToXYZ(11572, -71.240601, 4102) 
+            	            elseif Config.X then 
+            	            	 MoveToXYZ(11972, 59.729401, 4708)  
+
+    end
+        if Config.Y and HeroPos.x == 9022 and HeroPos.z == 4360 then                
+            	            CastSkillShot(_Q,9744, -71.240601, 4654)  
+            	            MoveToXYZ(9634, -71.240601, 4544) 
+            	            elseif Config.Y then 
+            	            	 MoveToXYZ(9022, 52.840878, 4360)  
+            	            	   
+    end
+    end)
 function Killsteal()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
@@ -125,6 +147,8 @@ end
 
 function Drawings()
 myHeroPos = GetOrigin(myHero)
+DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
+DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
 if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_Q),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 end
