@@ -1,4 +1,4 @@
---Version 4.3 No longer loads IAC kalista. (Still disable everything)
+--Version 4.4 No longer loads IAC kalista. No loner supports Yoummus and Bilgewater and BOTRK
 myIAC = IAC()
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -64,21 +64,11 @@ local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
       ,hp,0,dmg,0xffffffff)
     end
 end
-if GetItemSlot(myHero,3153) > 0 and ItemsConfig.I3 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
-CastTargetSpell(unit, GetItemSlot(myHero,3153))
-end
 if GetItemSlot(myHero,3140) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") == 1 then
 CastTargetSpell(unit, GetItemSlot(myHero,3140))
 end
 if GetItemSlot(myHero,3139) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") == 1 then
 CastTargetSpell(unit, GetItemSlot(myHero,3139))
-end
-if GetItemSlot(myHero,3144) > 0 and ItemsConfig.I2 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
-CastTargetSpell(unit, GetItemSlot(myHero,3144))
-end
-
-if GetItemSlot(myHero,3142) > 0 and ItemsConfig.I1 and IsInDistance(unit, 1000) then
-CastTargetSpell(myHero, GetItemSlot(myHero,3142))
 end
                  if Config.Q then
                                              local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1150,50,true,true)
