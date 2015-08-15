@@ -1,4 +1,4 @@
---Version 4.4 No longer loads IAC kalista. No loner supports Yoummus and Bilgewater and BOTRK
+--Version 4.5 No longer loads IAC kalista. Menu + Epred fix
 myIAC = IAC()
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -19,9 +19,6 @@ Config.addParam("X", "Wall Jump 1", SCRIPT_PARAM_KEYDOWN, string.byte("L"))
 Config.addParam("Y", "Wall Jump 2", SCRIPT_PARAM_KEYDOWN, string.byte("K"))
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 ItemsConfig = scriptConfig("Items", "Items")
-ItemsConfig.addParam("I1","Use BilgeWater",SCRIPT_PARAM_ONOFF,true)
-ItemsConfig.addParam("I2","Use BoTRK",SCRIPT_PARAM_ONOFF,true)
-ItemsConfig.addParam("I3","Use GhostBlade",SCRIPT_PARAM_ONOFF,true)
 ItemsConfig.addParam("I4","Use QSS",SCRIPT_PARAM_ONOFF,true)
 LevelConfig = scriptConfig("Level", "Auto Level")
 LevelConfig.addParam("L1","Max EQ",SCRIPT_PARAM_ONOFF,false)
