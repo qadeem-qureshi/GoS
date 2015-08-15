@@ -1,4 +1,4 @@
---Version 4.1 Kalista AutoLevel QSS/Items
+--Version 4.2 QSS Fix and Auto E if killable.
 
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -12,6 +12,7 @@ Config.addParam("Rs", "Use R Save", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "E Clear", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Z", "Spam E", SCRIPT_PARAM_KEYDOWN, string.byte("C"))
 Config.addParam("M", "Execute Jungle", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("N", "Auto E Kill", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("I", "KS Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("G", "Send Ghost", SCRIPT_PARAM_KEYDOWN, string.byte("T"))
 Config.addParam("X", "Wall Jump 1", SCRIPT_PARAM_KEYDOWN, string.byte("L"))
@@ -63,13 +64,14 @@ local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
       ,hp,0,dmg,0xffffffff)
     end
 end
+-- fORGOT TO MENTION THIS IS MODIFIED FROM DEFTSU
 if GetItemSlot(myHero,3153) > 0 and ItemsConfig.I3 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
 CastTargetSpell(unit, GetItemSlot(myHero,3153))
 end
-if GetItemSlot(myHero,3140) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") then
+if GetItemSlot(myHero,3140) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") == 1 then
 CastTargetSpell(unit, GetItemSlot(myHero,3140))
 end
-if GetItemSlot(myHero,3139) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") then
+if GetItemSlot(myHero,3139) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") == 1 then
 CastTargetSpell(unit, GetItemSlot(myHero,3139))
 end
 if GetItemSlot(myHero,3144) > 0 and ItemsConfig.I2 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
@@ -79,6 +81,7 @@ end
 if GetItemSlot(myHero,3142) > 0 and ItemsConfig.I1 and IsInDistance(unit, 1000) then
 CastTargetSpell(myHero, GetItemSlot(myHero,3142))
 end
+--END
                  if Config.Q then
                                              local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1150,50,true,true)
             if CanUseSpell(myHero, _Q) == READY then
@@ -187,6 +190,15 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
     CastTargetSpell(enemy, _Q)
             end
         end
+        if Config.N then
+   local Dmgz= GetBonusDmg(myHero)+GetBaseDamage(myHero)
+ local dmg = (GotBuff(unit,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(unit,"kalistaexpungemarker")-1) * (GetCastLevel(myHero,_E) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+   if CalcDamage(myHero, unit, dmg) > GetCurrentHP(unit)  then
+                  if CanUseSpell(myHero,_E) == READY then
+                    CastSpell(_E)
+                  end
+                end
+              end
 end
 end
 function LevelUpMeleeSupport()     
