@@ -1,4 +1,4 @@
---Version 4.0 kalista jungle execute
+--Version 4.1 Kalista AutoLevel QSS/Items
 
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -17,6 +17,14 @@ Config.addParam("G", "Send Ghost", SCRIPT_PARAM_KEYDOWN, string.byte("T"))
 Config.addParam("X", "Wall Jump 1", SCRIPT_PARAM_KEYDOWN, string.byte("L"))
 Config.addParam("Y", "Wall Jump 2", SCRIPT_PARAM_KEYDOWN, string.byte("K"))
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+ItemsConfig = scriptConfig("Items", "Items")
+ItemsConfig.addParam("I1","Use BilgeWater",SCRIPT_PARAM_ONOFF,true)
+ItemsConfig.addParam("I2","Use BoTRK",SCRIPT_PARAM_ONOFF,true)
+ItemsConfig.addParam("I3","Use GhostBlade",SCRIPT_PARAM_ONOFF,true)
+ItemsConfig.addParam("I4","Use QSS",SCRIPT_PARAM_ONOFF,true)
+LevelConfig = scriptConfig("Level", "Auto Level")
+LevelConfig.addParam("L1","Max EQ",SCRIPT_PARAM_ONOFF,false)
+LevelConfig.addParam("L2","Max EW",SCRIPT_PARAM_ONOFF,false)
 DrawingsConfig = scriptConfig("Drawings", "Drawings")
 DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
@@ -27,6 +35,8 @@ OnLoop(function(myHero)
 Killsteal()
 AutoIgnite()
 Drawings()
+LevelUpMeleeSupport()
+LevelUp() 
 JungleClear()
 if Config.Combo then
 local unit = GetCurrentTarget()
@@ -52,6 +62,22 @@ local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
       DrawDmgOverHpBar(unit
       ,hp,0,dmg,0xffffffff)
     end
+end
+if GetItemSlot(myHero,3153) > 0 and ItemsConfig.I3 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
+CastTargetSpell(unit, GetItemSlot(myHero,3153))
+end
+if GetItemSlot(myHero,3140) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") then
+CastTargetSpell(unit, GetItemSlot(myHero,3140))
+end
+if GetItemSlot(myHero,3139) > 0 and ItemsConfig.I4 and GotBuff(myHero, "Stun") then
+CastTargetSpell(unit, GetItemSlot(myHero,3139))
+end
+if GetItemSlot(myHero,3144) > 0 and ItemsConfig.I2 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
+CastTargetSpell(unit, GetItemSlot(myHero,3144))
+end
+
+if GetItemSlot(myHero,3142) > 0 and ItemsConfig.I1 and IsInDistance(unit, 1000) then
+CastTargetSpell(myHero, GetItemSlot(myHero,3142))
 end
                  if Config.Q then
                                              local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1150,50,true,true)
@@ -163,7 +189,88 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
         end
 end
 end
-
+function LevelUpMeleeSupport()     
+if LevelConfig.L2 then
+if GetLevel(myHero) == 1 then
+  LevelSpell(_E)
+elseif GetLevel(myHero) == 2 then
+  LevelSpell(_W)
+elseif GetLevel(myHero) == 3 then
+  LevelSpell(_Q)
+elseif GetLevel(myHero) == 4 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 5 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 6 then
+  LevelSpell(_R)
+elseif GetLevel(myHero) == 7 then
+  LevelSpell(_E)
+elseif GetLevel(myHero) == 8 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 9 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 10 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 11 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 12 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 13 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 14 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 15 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 16 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 17 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 18 then
+        LevelSpell(_Q)
+end
+end
+end
+function LevelUp()     
+if LevelConfig.L1 then
+if GetLevel(myHero) == 1 then
+  LevelSpell(_E)
+elseif GetLevel(myHero) == 2 then
+  LevelSpell(_Q)
+elseif GetLevel(myHero) == 3 then
+  LevelSpell(_W)
+elseif GetLevel(myHero) == 4 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 5 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 6 then
+  LevelSpell(_R)
+elseif GetLevel(myHero) == 7 then
+  LevelSpell(_E)
+elseif GetLevel(myHero) == 8 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 9 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 10 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 11 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 12 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 13 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 14 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 15 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 16 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 17 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 18 then
+        LevelSpell(_W)
+end
+end
+end
 function Drawings()
 myHeroPos = GetOrigin(myHero)
 DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
