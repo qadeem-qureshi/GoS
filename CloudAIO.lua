@@ -50,7 +50,7 @@ local targetPos = GetOrigin(unit)
 local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
     if CanUseSpell(myHero, _Q) == READY then
       local Dmgz = GetBonusDmg(myHero)+GetBaseDamage(myHero)
-          dmg = dmg + CalcDamage(myHero, unit, GotBuff(unit,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(unit,"kalistaexpungemarker")-1) * (GetCastLevel(myHero,_E) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+          dmg = dmg + CalcDamage(myHero, unit, GotBuff(unit,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(unit,"kalistaexpungemarker")-1) * (kalE(GetCastLevel(myHero,_E)) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
     end
     if CanUseSpell(myHero, _E) == READY then
       dmg = dmg + CalcDamage(myHero, unit, 0, 10 + 10*GetCastLevel(myHero,_E) + 0.6*GetBonusDmg(myHero))
@@ -114,7 +114,7 @@ if IWalkConfig.LaneClear then
        for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
             local Dmgz = GetBonusDmg(myHero)+GetBaseDamage(myHero)
-            local dmg = (GotBuff(Q,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(Q,"kalistaexpungemarker")-1) * (GetCastLevel(myHero,_E) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+            local dmg = (GotBuff(Q,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(Q,"kalistaexpungemarker")-1) * (kalE(GetCastLevel(myHero,_E)) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
             local hp = GetCurrentHP(Q)
             local Dmg = CalcDamage(myHero, Q, dmg)
             if Dmg > hp then
@@ -156,7 +156,7 @@ end)
        for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
           if IsInDistance(Q, 650) then
             local Dmgz = GetBonusDmg(myHero)+GetBaseDamage(myHero)
-            local dmg = (GotBuff(Q,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(Q,"kalistaexpungemarker")-1) * (GetCastLevel(myHero,_E) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+            local dmg = (GotBuff(Q,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(Q,"kalistaexpungemarker")-1) * (kalE(GetCastLevel(myHero,_E)) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
             local hp = GetCurrentHP(Q)
             local Dmg = CalcDamage(myHero, Q, dmg)
             if Dmg > hp then
@@ -180,7 +180,7 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
         end
         if Config.N then
    local Dmgz= GetBonusDmg(myHero)+GetBaseDamage(myHero)
- local dmg = (GotBuff(unit,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(unit,"kalistaexpungemarker")-1) * (GetCastLevel(myHero,_E) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+ local dmg = (GotBuff(unit,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(unit,"kalistaexpungemarker")-1) * (kalE(GetCastLevel(myHero,_E)) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
    if CalcDamage(myHero, unit, dmg) > GetCurrentHP(unit)  then
                   if CanUseSpell(myHero,_E) == READY then
                     CastSpell(_E)
@@ -271,6 +271,7 @@ elseif GetLevel(myHero) == 18 then
 end
 end
 end
+function kalE(x) if x <= 1 then return 10 else return kalE(x-1) + 2 + x end end -- Insipireds code.
 function Drawings()
 myHeroPos = GetOrigin(myHero)
 DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
