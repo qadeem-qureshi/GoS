@@ -1,5 +1,5 @@
 --Version 4.2 QSS Fix and Auto E if killable.
-
+myIAC = IAC()
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
 --Menu
@@ -64,7 +64,6 @@ local drawPos = WorldToScreen(1,targetPos.x,targetPos.y,targetPos.z)
       ,hp,0,dmg,0xffffffff)
     end
 end
--- fORGOT TO MENTION THIS IS MODIFIED FROM DEFTSU
 if GetItemSlot(myHero,3153) > 0 and ItemsConfig.I3 and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.5 and GetCurrentHP(unit)/GetMaxHP(unit) > 0.2 then
 CastTargetSpell(unit, GetItemSlot(myHero,3153))
 end
@@ -81,7 +80,6 @@ end
 if GetItemSlot(myHero,3142) > 0 and ItemsConfig.I1 and IsInDistance(unit, 1000) then
 CastTargetSpell(myHero, GetItemSlot(myHero,3142))
 end
---END
                  if Config.Q then
                                              local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1150,50,true,true)
             if CanUseSpell(myHero, _Q) == READY then
