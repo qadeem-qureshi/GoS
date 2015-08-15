@@ -1,4 +1,4 @@
---Version 4.2 QSS Fix and Auto E if killable.
+--Version 4.3 No longer loads IAC kalista. (Still disable everything)
 myIAC = IAC()
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
