@@ -1,5 +1,541 @@
---Version 4.5 No longer loads IAC kalista. Menu + Epred fix
+--Version 4.6 Ziggs + Syndra Rework!
 myIAC = IAC()
+
+
+if GetObjectName(GetMyHero()) == "Ziggs" then
+--Menu
+Config = scriptConfig("Ziggs", "Ziggs")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("KsQ", "Use Q in KS", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("KsW", "Use W in KS", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("KsR", "Use R in KS", SCRIPT_PARAM_ONOFF, false)
+--Config.addParam("F", "LaneClear", SCRIPT_PARAM_ONOFF, true)
+--Config.addParam("J", "JungleClear", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("H", "Use Q Harass", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("Z", "Use E Harass", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+LevelConfig = scriptConfig("Level", "Auto Level")
+LevelConfig.addParam("L1","Max QE",SCRIPT_PARAM_ONOFF,false)
+DrawingsConfig = scriptConfig("Drawings", "Drawings")
+DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawW","Draw W", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+LevelUp()
+Harass()
+Killsteal()
+--LaneClear()
+--JungleClear()
+ -- Ziggs Q
+ if Config.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+                 -- Ziggs Q
+
+                         if Config.Q then
+        if GetCastName(myHero, _Q) == "ZiggsQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,true,true)
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1  then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+        -- Ziggs E
+                 if GetCastName(myHero, _E) == "ZiggsE" then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,true,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+    -- Ziggs W
+   if GetCastName(myHero, _W) == "ZiggsW" then
+            if Config.W then
+                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
+                          if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+-- Ziggs R
+   if GetCastName(myHero, _R) == "ZiggsR" then
+            if Config.R then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
+                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.72)
+                     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+end)
+function JungleClear()
+    for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
+          if IsInDistance(Q, 650) then
+            if Config.J then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,800,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY then
+            CastTargetSpell(Obj_AI_Minion, _W)
+            end
+        end
+-- Ziggs cast W at Enemy
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,925,50,false,true)
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+end
+end
+end
+end
+function LevelUp()     
+if LevelConfig.L1 then
+if GetLevel(myHero) == 1 then
+  LevelSpell(_Q)
+elseif GetLevel(myHero) == 2 then
+  LevelSpell(_E)
+elseif GetLevel(myHero) == 3 then
+  LevelSpell(_W)
+elseif GetLevel(myHero) == 4 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 5 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 6 then
+  LevelSpell(_R)
+elseif GetLevel(myHero) == 7 then
+  LevelSpell(_Q)
+elseif GetLevel(myHero) == 8 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 9 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 10 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 11 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 12 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 13 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 14 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 15 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 16 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 17 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 18 then
+        LevelSpell(_W)
+end
+end
+end
+end
+function Killsteal()
+local unit = GetCurrentTarget()
+ if ValidTarget(unit, 1550) then
+        for i,enemy in pairs(GetEnemyHeroes()) do
+                          local z = ((GetCastLevel(myHero,_Q)*45)+(GetBonusAP(myHero)*1))
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,true,true)
+if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q)) and Config.KsQ 
+  and CalcDamage(myHero, enemy, z) > GetCurrentHP(unit) then
+ CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+   if GetCastName(myHero, _R) == "ZiggsR" then
+            if Config.KsR then
+                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
+                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.72)
+                     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
+            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+            end
+        end
+    end
+-- Ziggs cast W at Enemy
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
+            if Config.KsW then
+                 local ult = (GetCastLevel(myHero,_R)*35)+(GetBonusAP(myHero)*.5)
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+end
+end
+function LaneClear()
+   if IWalkConfig.LaneClear then
+    for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+          if IsInDistance(Q, 650) then
+            if Config.F then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,800,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+-- Ziggs cast W at Enemy
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,925,50,false,true)
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+end
+
+function Harass()
+                if IWalkConfig.Harass then
+                if Config.H then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,true,true)
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+        end
+    end
+    if Config.Z then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
+            if CanUseSpell(myHero, _E) == READY and QPred.HitChance == 1 and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_E,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+        end
+    end
+end
+    myHeroPos = GetOrigin(myHero)
+DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
+DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
+if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_Q),3,100,0xffff00ff) end
+if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
+if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
+end
+if GetObjectName(GetMyHero()) == "Syndra" then
+--Menu
+Config = scriptConfig("Syndra", "Syndra")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("KsQ", "Use Q in KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("KsW", "Use W in KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("KsR", "Use R in KS", SCRIPT_PARAM_ONOFF, true)
+--Config.addParam("F", "LaneClear", SCRIPT_PARAM_ONOFF, true)
+--Config.addParam("J", "JungleClear", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("H", "Use Q Harass", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Y", "Use W Harass", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Stun", "Press to Stun", SCRIPT_PARAM_KEYDOWN, string.byte("T")) --Maxxel logic
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+LevelConfig = scriptConfig("Level", "Auto Level")
+LevelConfig.addParam("L1","Max EQ",SCRIPT_PARAM_ONOFF,false)
+DrawingsConfig = scriptConfig("Drawings", "Drawings")
+DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawW","Draw W", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
+DrawingsConfig.addParam("DrawR","Draw R", SCRIPT_PARAM_ONOFF, true)
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+Stun()
+LevelUp()
+Harass()
+Killsteal()
+--LaneClear()
+--JungleClear()
+if Config.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1200) then
+ 
+-- Syndra Q cast
+    if GetCastName(myHero, _Q) == "SyndraQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,true,true)
+            if Config.Q then
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+ 
+-- Syndra cast W on Minion
+    if GetCastName(myHero, _W) == "SyndraW" then
+            if Config.W then
+            if CanUseSpell(myHero, _W) == READY then
+            CastTargetSpell(Obj_AI_Minion, _W)
+            end
+        end
+    end
+-- Syndra cast W at Enemy
+        if GetCastName(myHero, _W) == "SyndraW" then
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
+            if Config.W then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+-- Syndra PUSH
+        if GetCastName(myHero, _E) == "SyndraE" then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,700,50,true,true)
+            if Config.E then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
+            end
+        end
+    end
+-- Syndra Ultimate
+if GetCastName(myHero, _R) == "SyndraR" then
+            if Config.R then
+        if unit ~= nil then
+         local ult = (GetCastLevel(myHero,_R)*135)+(GetBonusAP(myHero)*.6)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
+    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+    CastTargetSpell(unit, _R)
+                end
+            end
+        end
+    end
+end
+
+end
+end
+end)
+function JungleClear()
+    for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
+          if IsInDistance(Q, 650) then
+            if Config.J then
+    if GetCastName(myHero, _Q) == "SyndraQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,800,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+        if GetCastName(myHero, _W) == "SyndraW" then
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY then
+            CastTargetSpell(Obj_AI_Minion, _W)
+            end
+        end
+    end
+-- Syndra cast W at Enemy
+        if GetCastName(myHero, _W) == "SyndraW" then
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,925,50,false,true)
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+end
+end
+end
+end
+function LevelUp()     
+if LevelConfig.L1 then
+if GetLevel(myHero) == 1 then
+  LevelSpell(_Q)
+elseif GetLevel(myHero) == 2 then
+  LevelSpell(_W)
+elseif GetLevel(myHero) == 3 then
+  LevelSpell(_E)
+elseif GetLevel(myHero) == 4 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 5 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 6 then
+  LevelSpell(_R)
+elseif GetLevel(myHero) == 7 then
+  LevelSpell(_Q)
+elseif GetLevel(myHero) == 8 then
+        LevelSpell(_Q)
+elseif GetLevel(myHero) == 9 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 10 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 11 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 12 then
+        LevelSpell(_W)
+elseif GetLevel(myHero) == 13 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 14 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 15 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 16 then
+        LevelSpell(_R)
+elseif GetLevel(myHero) == 17 then
+        LevelSpell(_E)
+elseif GetLevel(myHero) == 18 then
+        LevelSpell(_E)
+end
+end
+end
+end
+function Killsteal()
+local unit = GetCurrentTarget()
+ if ValidTarget(unit, 1550) then
+        for i,enemy in pairs(GetEnemyHeroes()) do
+                          local z = ((GetCastLevel(myHero,_Q)*45)+(GetBonusAP(myHero)*1.6))
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,true,true)
+if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q)) and Config.KsQ 
+  and CalcDamage(myHero, enemy, z) > GetCurrentHP(unit) then
+ CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+        if GetCastName(myHero, _R) == "SyndraR" then
+            if Config.KsR then
+        if unit ~= nil then
+         local ult = (GetCastLevel(myHero,_R)*135)+(GetBonusAP(myHero)*1.5)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
+    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+    CastTargetSpell(unit, _R)
+                end
+            end
+        end
+    end
+end
+            if GetCastName(myHero, _W) == "SyndraW" then
+            if Config.KsW then
+            if CanUseSpell(myHero, _W) == READY then
+            CastTargetSpell(Obj_AI_Minion, _W)
+            end
+        end
+    end
+-- Syndra cast W at Enemy
+        if GetCastName(myHero, _W) == "SyndraW" then
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
+            if Config.KsW then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+function Stun()
+local unit = GetCurrentTarget() --Maxxxel logic
+local myHeroPos = GetOrigin(myHero)
+    if Config.Stun then
+        if ValidTarget(unit,1200) then
+            local timea
+            local distanceStun=0
+            if timea~=nil and CanUseSpell(myHero, _Q) ~= READY and CanUseSpell(myHero, _E) ~= READY then
+                timea=nil
+            end
+        ---Values---
+            local enemyposition = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1200,50,true,true)
+            enemyposx=enemyposition.PredPos.x
+            enemyposy=enemyposition.PredPos.y
+            enemyposz=enemyposition.PredPos.z
+            local TargetPos = Vector(enemyposx,enemyposy,enemyposz)
+            if GetDistance(unit)>=700 then
+                distanceStun=GetDistance(unit)-700
+            end
+            if GetDistance(unit)<700 then
+                distanceStun=0
+            end
+            local firePos = TargetPos-(TargetPos-myHeroPos)*(distanceStun/GetDistance(unit)) 
+            local dPredict = GetDistance(myHero,firePosPoint)
+        ---Values end---
+            if CanUseSpell(myHero, _Q) == READY and CanUseSpell(myHero, _E) == READY and timea==nil then
+                if dPredict < 1200 then
+                    CastSkillShot(_Q,firePos.x,0,firePos.z)
+                    timea = GetTickCount()
+                end
+            end
+            if CanUseSpell(myHero, _E) == READY and timea~=GetTickCount() then
+                    CastSkillShot(_E,firePos.x,0,firePos.z)
+            end
+        end
+        Move()
+    end
+    
+    function Move()
+    local movePos = GenerateMovePos()
+    if GetDistance(GetMousePos()) > GetHitBox(myHero) then
+        MoveToXYZ(movePos.x, 0, movePos.z)
+    end
+    end
+function LaneClear()
+   if IWalkConfig.LaneClear then
+    for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+          if IsInDistance(Q, 650) then
+            if Config.F then
+    if GetCastName(myHero, _Q) == "SyndraQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,800,50,false,true)
+            if CanUseSpell(myHero, _Q) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+        if GetCastName(myHero, _W) == "SyndraW" then
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastTargetSpell(Obj_AI_Minion, _W)
+            end
+        end
+    end
+-- Syndra cast W at Enemy
+        if GetCastName(myHero, _W) == "SyndraW" then
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,925,50,false,true)
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+end
+end
+end
+end
+
+function Harass()
+                if IWalkConfig.Harass then
+                if Config.H then
+    if GetCastName(myHero, _Q) == "SyndraQ" then
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,true,true)
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+            end
+        end
+    end
+        if GetCastName(myHero, _W) == "SyndraW" then
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastTargetSpell(Obj_AI_Minion, _W)
+            end
+        end
+    end
+-- Syndra cast W at Enemy
+        if GetCastName(myHero, _W) == "SyndraW" then
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
+            if Config.Y then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+            end
+        end
+    end
+end
+    myHeroPos = GetOrigin(myHero)
+DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
+DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
+if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_Q),3,100,0xffff00ff) end
+if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
+if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
+if CanUseSpell(myHero, _R) == READY and DrawingsConfig.DrawR then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_R) ,3,100,0xffff00ff) end
+end
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
+end
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
 --Menu
@@ -110,18 +646,13 @@ if IWalkConfig.LaneClear then
       if Config.F then
        for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
-            local Dmgz = GetBonusDmg(myHero)+GetBaseDamage(myHero)
-            local dmg = (GotBuff(Q,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(Q,"kalistaexpungemarker")-1) * (kalE(GetCastLevel(myHero,_E)) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
-            local hp = GetCurrentHP(Q)
-            local Dmg = CalcDamage(myHero, Q, dmg)
-            if Dmg > hp then
+
             if CanUseSpell(myHero,_E) == READY then
             CastSpell(_E) 
            end
         end
      end
   end
-end
 end
 end)
 OnLoop(function(myHero)
@@ -1114,66 +1645,6 @@ end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Riven Loaded</font>"))
 end
 
--- Ziggs
-if GetObjectName(GetMyHero()) == "Ziggs" then
---Menu
-Config = scriptConfig("Ziggs", "Ziggs")
-Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
---Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
-                 -- Ziggs Q
-
-                         if Config.Q then
-        if GetCastName(myHero, _Q) == "ZiggsQ" then
-        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1400,50,true,true)
-            if CanUseSpell(myHero, _Q) == READY then
-            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-            end
-        end
-    end
-        -- Ziggs E
-                 if GetCastName(myHero, _E) == "ZiggsE" then
-        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,true,true)
-            if Config.E then
-            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
-            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
-            end
-        end
-    end
-    -- Ziggs W
-   if GetCastName(myHero, _W) == "ZiggsW" then
-            if Config.W then
-                local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
-                          if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
-                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
-            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
-            end
-        end
-    end
--- Ziggs R
-   if GetCastName(myHero, _R) == "ZiggsR" then
-            if Config.R then
-                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
-                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.72)
-                     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
-            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
-            end
-        end
-    end
-end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Ziggs Loaded</font>"))
-end
 -- Gangplank
 if GetObjectName(GetMyHero()) == "Gangplank" then
 --Menu
@@ -1646,120 +2117,6 @@ end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Velkoz Loaded</font>"))
 end
 
-if GetObjectName(GetMyHero()) == "Syndra" then
---Menu
-Config = scriptConfig("Syndra", "Syndra")
-Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("Stun", "Press to Stun", SCRIPT_PARAM_KEYDOWN, string.byte("T")) --Maxxel logic
-Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
---Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1200) then
- 
--- Syndra Q cast
-    if GetCastName(myHero, _Q) == "SyndraQ" then
-        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,true,true)
-            if Config.Q then
-            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
-            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-            end
-        end
-    end
- 
--- Syndra cast W on Minion
-    if GetCastName(myHero, _W) == "SyndraW" then
-            if Config.W then
-            if CanUseSpell(myHero, _W) == READY then
-            CastTargetSpell(Obj_AI_Minion, _W)
-            end
-        end
-    end
--- Syndra cast W at Enemy
-        if GetCastName(myHero, _W) == "SyndraW" then
-        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
-            if Config.W then
-            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
-            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
-            end
-        end
-    end
--- Syndra PUSH
-        if GetCastName(myHero, _E) == "SyndraE" then
-        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,700,50,true,true)
-            if Config.E then
-            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
-            CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
-            end
-        end
-    end
--- Syndra Ultimate
-if GetCastName(myHero, _R) == "SyndraR" then
-            if Config.R then
-        if unit ~= nil then
-         local ult = (GetCastLevel(myHero,_R)*135)+(GetBonusAP(myHero)*.6)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
-    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
-    CastTargetSpell(unit, _R)
-                end
-            end
-        end
-    end
-end
-local unit = GetCurrentTarget() --Maxxxel logic
-local myHeroPos = GetOrigin(myHero)
-DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,1200,2,0,0xffff0000)
-    if Config.Stun then
-        if ValidTarget(unit,1200) then
-            local timea
-            local distanceStun=0
-            if timea~=nil and CanUseSpell(myHero, _Q) ~= READY and CanUseSpell(myHero, _E) ~= READY then
-                timea=nil
-            end
-        ---Values---
-            local enemyposition = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1200,50,true,true)
-            enemyposx=enemyposition.PredPos.x
-            enemyposy=enemyposition.PredPos.y
-            enemyposz=enemyposition.PredPos.z
-            local TargetPos = Vector(enemyposx,enemyposy,enemyposz)
-            if GetDistance(unit)>=700 then
-                distanceStun=GetDistance(unit)-700
-            end
-            if GetDistance(unit)<700 then
-                distanceStun=0
-            end
-            local firePos = TargetPos-(TargetPos-myHeroPos)*(distanceStun/GetDistance(unit)) 
-            local dPredict = GetDistance(myHero,firePosPoint)
-        ---Values end---
-            if CanUseSpell(myHero, _Q) == READY and CanUseSpell(myHero, _E) == READY and timea==nil then
-                if dPredict < 1200 then
-                    CastSkillShot(_Q,firePos.x,0,firePos.z)
-                    timea = GetTickCount()
-                end
-            end
-            if CanUseSpell(myHero, _E) == READY and timea~=GetTickCount() then
-                    CastSkillShot(_E,firePos.x,0,firePos.z)
-            end
-        end
-        Move()
-    end
-    
-    function Move()
-    local movePos = GenerateMovePos()
-    if GetDistance(GetMousePos()) > GetHitBox(myHero) then
-        MoveToXYZ(movePos.x, 0, movePos.z)
-    end
-    end
-end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
-end
 -- Ekko
 if GetObjectName(GetMyHero()) == "Ekko" then
 --Menu
