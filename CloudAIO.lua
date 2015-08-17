@@ -221,6 +221,7 @@ if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myH
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
 end
 if GetObjectName(GetMyHero()) == "Syndra" then
+    PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
 --Menu
 Config = scriptConfig("Syndra", "Syndra")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -249,6 +250,7 @@ AutoIgnite()
 Stun()
 LevelUp()
 Harass()
+
 Killsteal()
 --LaneClear()
 --JungleClear()
@@ -533,7 +535,6 @@ if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myH
 if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _R) == READY and DrawingsConfig.DrawR then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_R) ,3,100,0xffff00ff) end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
 end
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
@@ -2344,4 +2345,3 @@ end
 end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Graves Loaded</font>"))
 end
-
