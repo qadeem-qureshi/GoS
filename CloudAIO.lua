@@ -1,4 +1,4 @@
---Version 4.8 Ziggs ult Viktor Ult fixed Syndra Fixed Velkoz ult fixed.
+--Version 4.9 Varus added and Syndra QWW Wave clear.
 myIAC = IAC()
 
 
