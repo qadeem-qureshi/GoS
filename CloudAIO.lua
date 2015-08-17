@@ -2,6 +2,7 @@
 myIAC = IAC()
 
 
+
 if GetObjectName(GetMyHero()) == "Ziggs" then
 --Menu
 Config = scriptConfig("Ziggs", "Ziggs")
@@ -218,7 +219,6 @@ DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
 if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_Q),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
 end
 if GetObjectName(GetMyHero()) == "Syndra" then
 --Menu
@@ -534,8 +534,8 @@ if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myH
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _R) == READY and DrawingsConfig.DrawR then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_R) ,3,100,0xffff00ff) end
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
 end
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
 --Menu
@@ -2103,7 +2103,7 @@ if ValidTarget(unit, 1550) then
              if Config.R then
 if GetCastName(myHero, _R) == "VelkozR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
-    local ult = (GetCastLevel(myHero,_R)*200)+(GetBonusDmg(myHero)*.6)
+    local ult = (GetCastLevel(myHero,_R)*200)+(GetBonusAP(myHero)*.6)
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
       if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
