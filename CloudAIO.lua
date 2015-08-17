@@ -1,4 +1,4 @@
---Version 4.6 Ziggs + Syndra Rework!
+--Version 4.8 Ziggs ult Viktor Ult fixed Syndra Fixed Velkoz ult fixed.
 myIAC = IAC()
 
 
@@ -61,20 +61,21 @@ if ValidTarget(unit, 1550) then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
                           if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
                     CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
-            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,RPred.PredPos.z)
+            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
             end
         end
     end
 -- Ziggs R
    if GetCastName(myHero, _R) == "ZiggsR" then
-            if Config.R then
-                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
-                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.72)
-                     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
-            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                 if Config.R then
+        local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,5300,55,false,true)
+        local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.5)
+        if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+       if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+        CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                    end
+                end
             end
-        end
     end
 end
 end
@@ -157,14 +158,15 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
             end
         end
    if GetCastName(myHero, _R) == "ZiggsR" then
-            if Config.KsR then
-                local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
-                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.72)
-                     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 5300) then
-            CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                 if Config.KsR then
+        local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,5300,55,false,true)
+        local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.5)
+        if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
+       if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+        CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                    end
+                end
             end
-        end
     end
 -- Ziggs cast W at Enemy
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
@@ -260,7 +262,7 @@ if ValidTarget(unit, 1200) then
  
 -- Syndra Q cast
     if GetCastName(myHero, _Q) == "SyndraQ" then
-        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,true,true)
+        local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,false,true)
             if Config.Q then
             if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
@@ -408,18 +410,24 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
 end
             if GetCastName(myHero, _W) == "SyndraW" then
             if Config.KsW then
-            if CanUseSpell(myHero, _W) == READY then
+                 local ult = (GetCastLevel(myHero,_R)*40)+(GetBonusAP(myHero)*1)
+            if CanUseSpell(myHero, _W) == READY then if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
             CastTargetSpell(Obj_AI_Minion, _W)
             end
+        end
         end
     end
 -- Syndra cast W at Enemy
         if GetCastName(myHero, _W) == "SyndraW" then
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
             if Config.KsW then
+                 local ult = (GetCastLevel(myHero,_R)*40)+(GetBonusAP(myHero)*1)
+
             if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+                if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
             end
+        end
         end
     end
 end
@@ -651,7 +659,7 @@ if IWalkConfig.LaneClear then
             local hp = GetCurrentHP(Q)
             local Dmg = CalcDamage(myHero, Q, dmg)
             if Dmg > hp then
-            if CanUseSpell(myHero,_E) == READY then
+            if CanUseSpell(myHero,_E) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .35 then
             CastSpell(_E) 
            end
         end
@@ -693,7 +701,7 @@ end)
             local hp = GetCurrentHP(Q)
             local Dmg = CalcDamage(myHero, Q, dmg)
             if Dmg > hp then
-            if CanUseSpell(myHero,_E) == READY then
+            if CanUseSpell(myHero,_E) == READY and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .35 then
             CastSpell(_E) 
            end
         end
@@ -2047,7 +2055,7 @@ end
              if Config.R then
 if GetCastName(myHero, _R) == "ViktorChaosStorm" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
-    local ult = (GetCastLevel(myHero,_R)*200+25)+(GetBonusDmg(myHero)*1.25)
+    local ult = (GetCastLevel(myHero,_R)*200+25)+(GetBonusDmg(myHero)*1.6)
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
