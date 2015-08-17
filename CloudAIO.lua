@@ -459,7 +459,7 @@ local myHeroPos = GetOrigin(myHero)
         end
         Move()
     end
-    
+    end
     function Move()
     local movePos = GenerateMovePos()
     if GetDistance(GetMousePos()) > GetHitBox(myHero) then
@@ -533,9 +533,8 @@ if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myH
 if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _R) == READY and DrawingsConfig.DrawR then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_R) ,3,100,0xffff00ff) end
-end
-end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
+end
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
 --Menu
@@ -646,13 +645,18 @@ if IWalkConfig.LaneClear then
       if Config.F then
        for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
-
+            local Dmgz = GetBonusDmg(myHero)+GetBaseDamage(myHero)
+            local dmg = (GotBuff(Q,"kalistaexpungemarker") > 0 and (10 + (10 * GetCastLevel(myHero,_E)) + (Dmgz * 0.6)) + (GotBuff(Q,"kalistaexpungemarker")-1) * (kalE(GetCastLevel(myHero,_E)) + (0.175 + 0.025 * GetCastLevel(myHero,_E))*Dmgz) or 0)
+            local hp = GetCurrentHP(Q)
+            local Dmg = CalcDamage(myHero, Q, dmg)
+            if Dmg > hp then
             if CanUseSpell(myHero,_E) == READY then
             CastSpell(_E) 
            end
         end
      end
   end
+end
 end
 end)
 OnLoop(function(myHero)
