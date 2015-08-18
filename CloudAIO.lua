@@ -1,5 +1,5 @@
 --Version 4.9 Varus added and Syndra QWW Wave clear.
-myIAC = IAC()
+
 
 
 -- Varus
