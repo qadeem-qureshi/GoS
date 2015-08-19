@@ -1,4 +1,4 @@
---Version 5.1 Function fixes
+--Version 5.0 *NEW* Vladimir [QWER][Lasthit/Laneclear] [SaveW] [KS] *Fixes* FPS Leona!
 
 
 -- Varus
@@ -160,20 +160,14 @@ if ValidTarget(unit, 1550) then
         end
 
 -- Varus W
-    if Config.W then
-    local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
-    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 1500) then
-    CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
-                end
-            end
 -- Varus Q
-    if CanUseSpell(myHero, _Q) == READY and ValidTarget(unit, 1625) and Config.Q then
+    if CanUseSpell(myHero, _Q) == READY and ValidTarget(target, 1625) and Config.Q then
       local myHeroPos = GetMyHeroPos()
       CastSkillShot(_Q, myHeroPos.x, myHeroPos.y, myHeroPos.z)
-      for i=0, 0, 0 do
+      for i=250, 1625, 250 do
         DelayAction(function()
             local _Qrange = 225 + math.min(225, i/2)
-              local Pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),math.huge,600,_Qrange,100,false,true)
+              local Pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1625,50,false,true)
               if Pred.HitChance >= 1 then
                 CastSkillShot2(_Q, Pred.PredPos.x, Pred.PredPos.y, Pred.PredPos.z)
               end
