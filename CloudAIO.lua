@@ -1,4 +1,4 @@
---Version 5.0 *NEW* Vladimir [QWER][Lasthit/Laneclear] [SaveW] [KS] *Fixes* FPS Leona!
+--Version 5.1 Function fixes
 
 
 -- Varus
@@ -23,8 +23,8 @@ Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-LaneClear()
-LastHit()
+LaneCleared()
+LastHitd()
 KS()
 SaveMeW()
 if Config.Combo then
@@ -64,7 +64,7 @@ if ValidTarget(unit, 1550) then
 
 end
 end)
-function LaneClear()
+function LaneCleared()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
@@ -84,7 +84,7 @@ end
 end
 end
 end
-function LastHit()
+function LastHitd()
    if IWalkConfig.LastHit then
           if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -146,7 +146,7 @@ Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-LaneClear()
+LaneClearE()
 if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
@@ -192,7 +192,7 @@ if ValidTarget(unit, 1550) then
 
 end
 end)
-function LaneClear()
+function LaneClearE()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
@@ -233,10 +233,10 @@ DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
 --Start
 OnLoop(function(myHero)
 AutoIgnite()
-LevelUp()
-Harass()
-Killsteal()
---LaneClear()
+LevelUp2()
+Harass2()
+Killsteal2()
+--LaneClear2()
 --JungleClear()
  -- Ziggs Q
  if Config.Combo then
@@ -286,7 +286,7 @@ if ValidTarget(unit, 1550) then
 end
 end
 end)
-function JungleClear()
+function JungleClear2()
     for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
           if IsInDistance(Q, 650) then
             if Config.J then
@@ -310,7 +310,7 @@ end
 end
 end
 end
-function LevelUp()     
+function LevelUp2()     
 if LevelConfig.L1 then
 if GetLevel(myHero) == 1 then
   LevelSpell(_Q)
@@ -352,7 +352,7 @@ end
 end
 end
 end
-function Killsteal()
+function Killsteal2()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
@@ -384,7 +384,7 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
         end
 end
 end
-function LaneClear()
+function LaneClear2()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
          local EnemyPos = GetOrigin(Q)
@@ -405,7 +405,7 @@ end
 end
 end
 
-function Harass()
+function Harass2()
                 if IWalkConfig.Harass then
                 if Config.H then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,true,true)
@@ -455,11 +455,11 @@ DrawingsConfig.addParam("DrawR","Draw R", SCRIPT_PARAM_ONOFF, true)
 OnLoop(function(myHero)
 AutoIgnite()
 Stun()
-LevelUp()
-Harass()
+LevelUp3()
+Harass3()
 
-Killsteal()
-LaneClear()
+Killsteal3()
+LaneClear3()
 --JungleClear()
 if Config.Combo then
 local unit = GetCurrentTarget()
@@ -518,7 +518,7 @@ end
 end
 end
 end)
-function JungleClear()
+function JungleClear3()
     for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
           if IsInDistance(Q, 650) then
             if Config.J then
@@ -548,7 +548,7 @@ end
 end
 end
 end
-function LevelUp()     
+function LevelUp3()     
 if LevelConfig.L1 then
 if GetLevel(myHero) == 1 then
   LevelSpell(_Q)
@@ -590,7 +590,7 @@ end
 end
 end
 end
-function Killsteal()
+function Killsteal3()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
@@ -681,7 +681,7 @@ local myHeroPos = GetOrigin(myHero)
         MoveToXYZ(movePos.x, 0, movePos.z)
     end
     end
-function LaneClear()
+function LaneClear3()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
 
@@ -716,7 +716,7 @@ end
 end
 end
 
-function Harass()
+function Harass3()
                 if IWalkConfig.Harass then
                 if Config.H then
     if GetCastName(myHero, _Q) == "SyndraQ" then
@@ -1976,7 +1976,7 @@ Config.addParam("G", "KS Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
-Killsteal()
+Killsteal4()
 AutoIgnite()
 QFamr()
 if Config.Combo then
@@ -2043,7 +2043,7 @@ if CanUseSpell(myHero, _Q) == READY then
         end
       end
     end
-function Killsteal()
+function Killsteal4()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
