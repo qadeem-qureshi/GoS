@@ -1,9 +1,139 @@
---Version 4.9 Varus added and Syndra QWW Wave clear.
-
+--Version 5.0 *NEW* Vladimir [QWER][Lasthit/Laneclear] [SaveW] [KS] *Fixes* FPS Leona!
 
 
 -- Varus
 myIAC = IAC()
+
+if GetObjectName(GetMyHero()) == "Vladimir" then
+--Menu
+Config = scriptConfig("Vladimir", "Vladimir")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Z", "LaneClear E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("U", "LaneClear W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("I", "LaneClear Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("F", "LastHit E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Y", "LastHit Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("S", "Use HP W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("D", "Use Q KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("O", "Use E KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+LaneClear()
+LastHit()
+KS()
+SaveMeW()
+if Config.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+ 
+-- Vladimir E
+    if Config.E then
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,false,true)
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 610) then
+            CastSpell(_E)
+            end
+        end
+
+-- Vladimir W
+    if Config.W then
+    local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
+    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 150) then
+    CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+                end
+            end
+-- Vladimir Q
+            if Config.Q then
+                 if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 600) then
+            CastTargetSpell(unit,_Q)
+            end
+        end
+-- Vladimir R
+             if Config.R then
+    local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
+    local ult = (GetCastLevel(myHero,_R)*112)+(GetBonusAP(myHero)*0.78)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and CalcDamage(myHero, unit, ult) then
+    CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                end
+            end
+    end
+
+end
+end)
+function LaneClear()
+   if IWalkConfig.LaneClear then
+    for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+          if IsInDistance(Q, 650) then
+            if Config.Z then
+        local EnemyPos = GetOrigin(Q)
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 610) then
+            CastSpell(_E)
+    end
+                if CanUseSpell(myHero, _W) == READY and IsInDistance(Q, 150) and Config.U then
+            CastSpell(_W)
+    end
+                    if CanUseSpell(myHero, _Q) == READY and IsInDistance(Q, 600) and Config.I then
+            CastTargetSpell(Q, _Q)
+    end
+    end
+end
+end
+end
+end
+function LastHit()
+   if IWalkConfig.LastHit then
+          if Config.F then
+      for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+        if IsInDistance(Q, 610) then
+        local z = (GetCastLevel(myHero,_Q)*25)+(GetBonusAP(myHero)*.45)
+         local H = (GetCastLevel(myHero,_Q)*35)+(GetBonusAP(myHero)*.60)
+
+        local hp = GetCurrentHP(Q)
+        local Dmg = CalcDamage(myHero, Q, z)
+        local Fmg = CalcDamage(myHero, Q, H)
+        if Dmg > hp then
+if CanUseSpell(myHero, _E) == READY then
+    CastSpell(_E)
+            end
+            if Fmg > hp then
+            if Config.Y then
+                 if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(Q) and IsInDistance(Q, 600) then
+            CastTargetSpell(Q,_Q)
+            end
+          end
+        end
+          end
+        end
+      end
+        end
+
+   end
+end
+function SaveMeW()
+if Config.S then
+if CanUseSpell(myHero, _W) and (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.15 and GotBuff(myHero, "recall") == 0 then
+  CastSpell(_W)
+end
+end
+end
+function KS()
+for i,enemy in pairs(GetEnemyHeroes()) do
+local z = (GetCastLevel(myHero,_Q)*25)+(GetBonusAP(myHero)*.45)
+         local H = (GetCastLevel(myHero,_Q)*35)+(GetBonusAP(myHero)*.60)
+          if CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and IsInDistance(enemy, 600) and Config.D then
+    CastTargetSpell(enemy, _Q)
+end
+if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 610) and Config.O then
+    CastSpell(_E)
+end
+end
+end
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Vladimir Loaded</font>"))
+end
 if GetObjectName(GetMyHero()) == "Varus" then
 --Menu
 Config = scriptConfig("Varus", "Varus")
@@ -40,10 +170,10 @@ if ValidTarget(unit, 1550) then
     if CanUseSpell(myHero, _Q) == READY and ValidTarget(unit, 1625) and Config.Q then
       local myHeroPos = GetMyHeroPos()
       CastSkillShot(_Q, myHeroPos.x, myHeroPos.y, myHeroPos.z)
-      for i=250, 1625, 250 do
+      for i=0, 0, 0 do
         DelayAction(function()
-            local _Qrange = 925 + math.min(925, i/2)
-              local Pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),math.huge,600,_Qrange,100,true,true)
+            local _Qrange = 225 + math.min(225, i/2)
+              local Pred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),math.huge,600,_Qrange,100,false,true)
               if Pred.HitChance >= 1 then
                 CastSkillShot2(_Q, Pred.PredPos.x, Pred.PredPos.y, Pred.PredPos.z)
               end
@@ -656,7 +786,10 @@ AutoIgnite()
 Drawings()
 LevelUpMeleeSupport()
 LevelUp() 
+LaneClear()
 JungleClear()
+Ghost()
+WallJump()
 if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
@@ -726,7 +859,7 @@ end
 end
 end)
 -- LanClear
-OnLoop(function(myHero)
+function LaneClear()
 if IWalkConfig.LaneClear then
       if Config.F then
        for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -744,15 +877,15 @@ if IWalkConfig.LaneClear then
   end
 end
 end
-end)
-OnLoop(function(myHero)
+end
+function Ghost() 
 if Config.G then
 if CanUseSpell(myHero, _W) == READY then
 CastSkillShot(_W,10092.000000, -71.240601, 4452.000000)
 end
 end
-end)
-          OnLoop(function(myHero)
+end
+          function WallJump()
            local HeroPos = GetOrigin(myHero)
         if Config.X and HeroPos.x == 11972 and HeroPos.z == 4708 then                
                           CastSkillShot(_Q,11572, -71.240601, 4102)  
@@ -768,8 +901,9 @@ end)
                              MoveToXYZ(9022, 52.840878, 4360)  
                                
     end
-    end)
+    end
           function JungleClear()
+                  if IWalkConfig.JungleClear then
                   if Config.M then
        for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
           if IsInDistance(Q, 650) then
@@ -782,6 +916,7 @@ end)
             CastSpell(_E) 
            end
         end
+    end
      end
   end
 end
@@ -1287,16 +1422,9 @@ Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
-    local unit = GetCurrentTarget()
-    if GetCastName(myHero, _W) == "LeonaSolarBarrier" then
-            if Config.W then
-                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.75 and
-                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
-            CastTargetSpell(myHero,_W)
-            end
-        end
-    end
 AutoIgnite()
+LeonaW()
+local unit = GetCurrentTarget()
 if Config.Combo then
 if ValidTarget(unit, 1550) then
                  
@@ -1330,6 +1458,17 @@ if ValidTarget(unit, 1550) then
 end
 end
 end)
+function LeonaW()
+        if GetCastName(myHero, _W) == "LeonaSolarBarrier" then
+            if Config.W then
+                local unit = GetCurrentTarget()
+                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.75 and
+                    CanUseSpell(myHero, _W) == READY and GotBuff(myHero, "recall") == 0 then
+            CastTargetSpell(myHero, _W)
+            end
+        end
+    end
+end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Leona Loaded</font>"))
 end
 -- Swain
@@ -1768,6 +1907,7 @@ OnLoop(function(myHero)
         end
     end
 AutoIgnite()
+QFarm()
 if Config.Combo then
 if ValidTarget(unit, 1550) then
                  -- Gang Q
@@ -1775,7 +1915,7 @@ if ValidTarget(unit, 1550) then
                          if Config.Q then
         if GetCastName(myHero, _Q) == "GangplankQWrapper" then
 if CanUseSpell(myHero, _Q) == READY then
-    CastTargetSpell("GangplankBarrel",_Q)
+    CastTargetSpell(unit ,_Q)
                 end
             end
         end
@@ -1801,7 +1941,7 @@ if CanUseSpell(myHero, _Q) == READY then
 end
 end
 end)
-OnLoop(function(myHero)
+function QFarm()
 if IWalkConfig.LastHit then
       if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -1818,7 +1958,7 @@ if CanUseSpell(myHero, _Q) == READY then
         end
         end
       end
-    end)
+    end
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Gangplank Loaded</font>"))
 end
 
@@ -1838,6 +1978,7 @@ Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 OnLoop(function(myHero)
 Killsteal()
 AutoIgnite()
+QFamr()
 if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
@@ -1884,7 +2025,7 @@ if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and IsObjectAlive(unit) and CanUseSpe
 end
 end
 end)
-OnLoop(function(myHero)
+function QFamr()
 if IWalkConfig.LastHit then
       if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -1901,7 +2042,7 @@ if CanUseSpell(myHero, _Q) == READY then
         end
         end
       end
-    end)
+    end
 function Killsteal()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
