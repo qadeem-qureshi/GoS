@@ -101,7 +101,7 @@ local z = (GetCastLevel(myHero,_E)*25)+(GetBonusAP(myHero)*.55)
          local H = (GetCastLevel(myHero,_Q)*40)+(GetBonusAP(myHero)*.45)
          local G = (GetCastLevel(myHero,_W)*45)+(GetBonusAP(myHero)*.90)
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1600,250,850,55,false,true)
-    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and Confid.D and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) then
+    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.D and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) then
     CastSkillShot(_Q,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
 if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 700) and Config.O then
