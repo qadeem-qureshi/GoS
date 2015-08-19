@@ -1,12 +1,7 @@
---Version 5.2 *NEW* Cassiopiea QWE Smart E LastHit Laneclear.
-
--- Varus
+--Version 5.2 *NEW* Cassiopiea QWE Smart E LastHit Laneclear. Leona fixes.
 myIAC = IAC()
-
-
 
 -- Cassiopeia
-myIAC = IAC()
 if GetObjectName(GetMyHero()) == "Cassiopeia" then
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Cassiopeia Loaded</font>"))
 --Menu
@@ -1571,7 +1566,7 @@ function LeonaW()
             if Config.W then
                 local unit = GetCurrentTarget()
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.75 and
-                    CanUseSpell(myHero, _W) == READY and GotBuff(myHero, "recall") == 0 then
+                    CanUseSpell(myHero, _W) == READY and GotBuff(myHero, "recall") == 0 and GetDistance(myHero, unit) < 1000 then
             CastTargetSpell(myHero, _W)
             end
         end
