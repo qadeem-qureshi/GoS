@@ -1,9 +1,124 @@
---Version 5.0 *NEW* Vladimir [QWER][Lasthit/Laneclear] [SaveW] [KS] *Fixes* FPS Leona!
-
+--Version 5.2 *NEW* Cassiopiea QWE Smart E LastHit Laneclear.
+require('lel')
 
 -- Varus
 myIAC = IAC()
 
+
+
+-- Cassiopeia
+myIAC = IAC()
+if GetObjectName(GetMyHero()) == "Cassiopeia" then
+PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Cassiopeia Loaded</font>"))
+--Menu
+Config = scriptConfig("Cassiopeia", "Cassiopeia")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use Smart E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Es", "Use E", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("Z", "LaneClear E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("U", "LaneClear W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("I", "LaneClear Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("F", "LastHit E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("S", "Use HP W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("D", "Use Q KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("O", "Use E KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("V", "Use W KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+--Start
+OnLoop(function(myHero)
+AutoIgnite()
+LC()
+LH()
+KSC()
+if Config.Combo then
+local unit = GetCurrentTarget()
+if ValidTarget(unit, 1550) then
+ 
+-- Cassiopeia E
+if IsInDistance(unit, 700) and Config.E and GotBuff(unit, "cassiopeianoxiousblastpoison") == 1 or GotBuff(unit, "cassiopeiamiasmapoison") == 1 or GotBuff(unit, "cassiopeiatwinfangdebuff") == 1 then
+    CastTargetSpell(unit, _E)
+end
+if IsInDistance(unit, 700) and Config.Es then
+    CastTargetSpell(unit, _E)
+end
+-- Cassiopeia W
+    if Config.W then
+    local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,850,55,false,true)
+    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 850) then
+    CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+                end
+            end
+-- Cassiopeia Q
+    local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,850,55,false,true)
+    if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and IsInDistance(unit, 850) and Config.Q then
+    CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+                end
+-- Cassiopeia R
+end
+end
+end)
+function LC()
+   if IWalkConfig.LaneClear then
+    for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+          if IsInDistance(Q, 700) then
+            if Config.Z then
+        local EnemyPos = GetOrigin(Q)
+                    if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 700) and Config.Z and GotBuff(Q, "cassiopeianoxiousblastpoison") == 1 or GotBuff(Q, "cassiopeiamiasmapoison") == 1 or GotBuff(Q, "cassiopeiatwinfangdebuff") == 1 then
+            CastTargetSpell(Q, _E)
+    end
+            local EnemyPos = GetOrigin(Q)
+            if CanUseSpell(myHero, _Q) == READY and Config.I and IsInDistance(Q, 850) then
+            CastSkillShot(_Q,EnemyPos.x,EnemyPos.y,EnemyPos.z)
+    end
+            local EnemyPos = GetOrigin(Q)
+            if CanUseSpell(myHero, _W) == READY  and Config.U and IsInDistance(Q, 850) then
+            CastSkillShot(_W,EnemyPos.x,EnemyPos.y,EnemyPos.z)
+    end
+    end
+end
+end
+end
+end
+function LH()
+   if IWalkConfig.LastHit then
+          if Config.F then
+      for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
+        if IsInDistance(Q, 700) then
+        local z = (GetCastLevel(myHero,_E)*25)+(GetBonusAP(myHero)*.55)
+        local hp = GetCurrentHP(Q)
+        local Dmg = CalcDamage(myHero, Q, z)
+        local Fmg = CalcDamage(myHero, Q, H)
+        if Dmg > hp then
+if CanUseSpell(myHero, _E) == READY then
+    CastTargetSpell(Q, _E)
+            end
+        end
+          end
+        end
+      end
+        end
+
+   end
+end
+function KSC()
+for i,enemy in pairs(GetEnemyHeroes()) do
+local z = (GetCastLevel(myHero,_E)*25)+(GetBonusAP(myHero)*.55)
+         local H = (GetCastLevel(myHero,_Q)*40)+(GetBonusAP(myHero)*.45)
+         local G = (GetCastLevel(myHero,_W)*45)+(GetBonusAP(myHero)*.90)
+    local WPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1600,250,850,55,false,true)
+    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and Confid.D and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) then
+    CastSkillShot(_Q,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
+                end
+if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 700) and Config.O then
+    CastTargetSpell(enemy, _E)
+end
+ local QPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1600,250,850,55,false,true)
+    if CanUseSpell(myHero, _W) == READY and QPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.V and CalcDamage(myHero, enemy, G) > GetCurrentHP(enemy)  then
+    CastSkillShot(_W,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+                end
+            end
+end
 if GetObjectName(GetMyHero()) == "Vladimir" then
 --Menu
 Config = scriptConfig("Vladimir", "Vladimir")
