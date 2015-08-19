@@ -1,5 +1,4 @@
 --Version 5.2 *NEW* Cassiopiea QWE Smart E LastHit Laneclear.
-require('lel')
 
 -- Varus
 myIAC = IAC()
