@@ -789,7 +789,7 @@ function Syndra:CastW2()
 end
 -- Syndra PUSH
 function Syndra:CastE()
-        if GetCastName(myHero, _E) == "SyndraE" then
+        if GetCastName(myHero, _E) == "syndrae" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,700,50,false,true)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 and ValidTarget(unit, 1000) then
