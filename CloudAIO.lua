@@ -1175,7 +1175,7 @@ end
     end
     end
           function JungleClear()
-                  if IWalkConfig.JungleClear then
+                  if IWalkConfig.LaneClear then
                   if Config.M then
        for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
           if IsInDistance(Q, 650) then
