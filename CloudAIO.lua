@@ -14,6 +14,7 @@ OnLoop(function(myHero) self:Loop(myHero) end)
 Config = scriptConfig("Cassiopeia", "Cassiopeia")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use Smart E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Es", "Use E", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("Z", "LaneClear E", SCRIPT_PARAM_ONOFF, true)
@@ -102,7 +103,7 @@ function Cassiopeia:CastQ()
 function Cassiopeia:CastR()
              if Config.R then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,825,55,false,true)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and EnemiesAround(GetMyHeroPos(), 825) >= 3 then
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and EnemiesAround(GetMyHeroPos(), 825) >= 3 and Config.Combo and ValidTarget(unit, 825) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
