@@ -59,6 +59,7 @@ function Cassiopeia:Combo()
 	self.CastQ()
 	self.CastW()
 	self.CastE()
+	self.CastR()
 end
   function Cassiopeia:Checks()
   self.QREADY = CanUseSpell(myHero,_Q) == READY
@@ -98,6 +99,15 @@ function Cassiopeia:CastQ()
                 end
               end
 -- Cassiopeia R
+function Cassiopeia:CastR()
+             if Config.R then
+    local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,825,55,false,true)
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and EnemiesAround(GetMyHeroPos(), 825) >= 3 then
+    CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
+                end
+            end
+        end
+            -- END
 
 function Cassiopeia:LaneClear()
    if _G.IWalkConfig.LaneClear then
