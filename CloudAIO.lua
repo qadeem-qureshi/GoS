@@ -1,15 +1,15 @@
---Version 5.2 *NEW* Cassiopiea QWE Smart E LastHit Laneclear.
-
+--Version 5.3 *NEW* All info in thread!
 
 -- Varus
 myIAC = IAC()
-
-
+unit = GetCurrentTarget()
+mymouse = GetMousePos() 
+supportedHero = {["Akali"] = true ,["Alistar"] = true ,["Gnar"] = true ,["Azir"] = true ,["Brand"] = true ,["Cassiopeia"] = true,["Ekko"] = true ,["Evelynn"] = true ,["Fiora"] = true ,["Gangplank"] = true  ,["Graves"] = true ,["Irelia"] = true ,["Khazix"] = true ,["Leona"] = true ,["Riven"] = true ,["Rumble"] = true ,["Sona"] = true ,["Swain"] = true ,["Syndra"] = true ,["Udyr"] = true ,["Varus"] = true ,["Velkoz"] = true ,["Vi"] = true ,["Viktor"] = true ,["Vladimir"] = true ,["Yasuo"] = true,["Ziggs"] = true}
 
 -- Cassiopeia
-myIAC = IAC()
-if GetObjectName(GetMyHero()) == "Cassiopeia" then
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Cassiopeia Loaded</font>"))
+class "Cassiopeia"
+function Cassiopeia:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Cassiopeia", "Cassiopeia")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -25,41 +25,82 @@ Config.addParam("D", "Use Q KS", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("O", "Use E KS", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("V", "Use W KS", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
+
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-LC()
-LH()
-KSC()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
- 
+function Cassiopeia:Loop(myHero)
+    self:Checks() 
+      if Config.D or Config.O or Config.V then
+    self.KS() 
+end
+ if Config.Z or Config.I or Config.U then
+    self.LaneClear()
+end
+ if Config.F then
+    self.LastHit()
+end
+if Config.Es then
+    self.CastEs()
+end
+if Config.Q and ValidTarget(unit,850) then
+    self.CastQ()
+end
+if Config.W and ValidTarget(unit,850) then
+    self.CastW()
+end
+if Config.E and ValidTarget(unit,850) then
+    self.CastE()
+end
+  if _G.IWalkConfig.Combo and ValidTarget(unit, 1000) then
+    self:Combo()
+  end
+end
+function Cassiopeia:Combo()
+	self.CastQ()
+	self.CastW()
+	self.CastE()
+end
+  function Cassiopeia:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+
 -- Cassiopeia E
-if IsInDistance(unit, 700) and Config.E and GotBuff(unit, "cassiopeianoxiousblastpoison") == 1 or GotBuff(unit, "cassiopeiamiasmapoison") == 1 or GotBuff(unit, "cassiopeiatwinfangdebuff") == 1 then
+function Cassiopeia:CastE()
+if IsInDistance(unit, 700) and Config.E and Config.Combo and GotBuff(unit, "cassiopeianoxiousblastpoison") == 1 or GotBuff(unit, "cassiopeiamiasmapoison") == 1 or GotBuff(unit, "cassiopeiatwinfangdebuff") == 1 or GotBuff(unit, "poison") == 1 then
     CastTargetSpell(unit, _E)
 end
-if IsInDistance(unit, 700) and Config.Es then
+end
+function Cassiopeia:CastEs()
+if IsInDistance(unit, 700) and Config.Combo and Config.Es then
     CastTargetSpell(unit, _E)
+end
 end
 -- Cassiopeia W
+function Cassiopeia:CastW()
     if Config.W then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,850,55,false,true)
-    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 850) then
+    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 850) and Config.Combo then
     CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
             end
+          end
 -- Cassiopeia Q
-    local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,850,55,false,true)
-    if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and IsInDistance(unit, 850) and Config.Q then
+function Cassiopeia:CastQ()
+	local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1000,250,850,60,false,true)
+    if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and IsInDistance(unit, 850) and Config.Q and Config.Combo then
     CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
                 end
+              end
 -- Cassiopeia R
-end
-end
-end)
-function LC()
-   if IWalkConfig.LaneClear then
+
+function Cassiopeia:LaneClear()
+   if _G.IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 700) then
             if Config.Z then
@@ -75,13 +116,13 @@ function LC()
             if CanUseSpell(myHero, _W) == READY  and Config.U and IsInDistance(Q, 850) then
             CastSkillShot(_W,EnemyPos.x,EnemyPos.y,EnemyPos.z)
     end
-    end
 end
 end
 end
 end
-function LH()
-   if IWalkConfig.LastHit then
+end
+function Cassiopeia:LastHit()
+   if _G.IWalkConfig.LastHit then
           if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
         if IsInDistance(Q, 700) then
@@ -100,26 +141,28 @@ if CanUseSpell(myHero, _E) == READY then
         end
 
    end
-end
-function KSC()
+function Cassiopeia:KS()
 for i,enemy in pairs(GetEnemyHeroes()) do
 local z = (GetCastLevel(myHero,_E)*25)+(GetBonusAP(myHero)*.55)
          local H = (GetCastLevel(myHero,_Q)*40)+(GetBonusAP(myHero)*.45)
          local G = (GetCastLevel(myHero,_W)*45)+(GetBonusAP(myHero)*.90)
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1600,250,850,55,false,true)
-    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.D and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and ValidTarget(enemy, 1000) then
+    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.D and ValidTarget(enemy,850)and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) then
     CastSkillShot(_Q,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
-if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 700) and Config.O and ValidTarget(enemy, 1000) then
+if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 700) and ValidTarget(enemy,850) and Config.O then
     CastTargetSpell(enemy, _E)
 end
  local QPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1600,250,850,55,false,true)
-    if CanUseSpell(myHero, _W) == READY and QPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.V and CalcDamage(myHero, enemy, G) > GetCurrentHP(enemy) and ValidTarget(enemy, 1000) then
+    if CanUseSpell(myHero, _W) == READY and QPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.V and ValidTarget(enemy,850) and CalcDamage(myHero, enemy, G) > GetCurrentHP(enemy)  then
     CastSkillShot(_W,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
                 end
             end
 end
-if GetObjectName(GetMyHero()) == "Vladimir" then
+
+class "Vladimir"
+function Vladimir:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Vladimir", "Vladimir")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -135,51 +178,81 @@ Config.addParam("S", "Use HP W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("D", "Use Q KS", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("O", "Use E KS", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-LaneCleared()
-LastHitd()
-KS()
-SaveMeW()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Vladimir:Loop(myHero)
+    self:Checks() 
+      if Config.D or Config.O then
+    self.KS() 
+end
+      if Config.S then
+    self.SaveMeW() 
+end
+ if Config.Z or Config.I or Config.U then
+    self.LaneClear()
+end
+ if Config.F or Config.Y then
+    self.LastHit()
+end
+  if _G.IWalkConfig.Combo and ValidTarget(unit, 1000) then
+    self:Combo()
+  end
+end
+  function Vladimir:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Vladimir:Combo()
+	self.CastQ()
+	self.CastW()
+	self.CastE()
+	self.CastR()
+end
  
 -- Vladimir E
+function Vladimir:CastE()
     if Config.E then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,false,true)
-            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 610) then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 610) and Config.Combo then
             CastSpell(_E)
             end
         end
+      end
 
 -- Vladimir W
+function Vladimir:CastW()
     if Config.W then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
-    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 150) then
+    if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 150) and Config.Combo then
     CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
             end
+          end
 -- Vladimir Q
+function Vladimir:CastQ()
             if Config.Q then
-                 if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 600) then
+                 if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 600) and Config.Combo then
             CastTargetSpell(unit,_Q)
             end
         end
+      end
 -- Vladimir R
+function Vladimir:CastR()
              if Config.R then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
     local ult = (GetCastLevel(myHero,_R)*112)+(GetBonusAP(myHero)*0.78)
-    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and CalcDamage(myHero, unit, ult) then
+    if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and CalcDamage(myHero, unit, ult) and Config.Combo then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
-    end
+          end
 
-end
-end)
-function LaneCleared()
+function Vladimir:LaneClear()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
@@ -199,7 +272,7 @@ end
 end
 end
 end
-function LastHitd()
+function Vladimir:LastHit()
    if IWalkConfig.LastHit then
           if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -228,28 +301,29 @@ if CanUseSpell(myHero, _E) == READY then
 
    end
 end
-function SaveMeW()
+function Vladimir:SaveMeW()
 if Config.S then
-if CanUseSpell(myHero, _W) and (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.15 and GotBuff(myHero, "recall") == 0 then
+if CanUseSpell(myHero, _W) and (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.15 and GotBuff(myHero, "recall") == 0 and ValidTarget(unit, 800) then
   CastSpell(_W)
 end
 end
 end
-function KS()
+function Vladimir:KS()
 for i,enemy in pairs(GetEnemyHeroes()) do
 local z = (GetCastLevel(myHero,_Q)*25)+(GetBonusAP(myHero)*.45)
          local H = (GetCastLevel(myHero,_Q)*35)+(GetBonusAP(myHero)*.60)
-          if CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and IsInDistance(enemy, 600) and Config.D then
+          if CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and IsInDistance(enemy, 600) and ValidTarget(enemy, 800) and Config.D then
     CastTargetSpell(enemy, _Q)
 end
-if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 610) and Config.O then
+if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 610) and Config.O and ValidTarget(enemy, 800) then
     CastSpell(_E)
 end
 end
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Vladimir Loaded</font>"))
-end
-if GetObjectName(GetMyHero()) == "Varus" then
+
+class "Varus"
+function Varus:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Varus", "Varus")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -258,24 +332,39 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "LaneClear", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-LaneClearE()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Varus:Loop(myHero)
+    self:Checks()  
+    if Config.F then
+    self.LaneClear()
+end
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Varus:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
  
 -- Varus E
+function Varus:CastE(unit)
     if Config.E then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,false,true)
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
             end
         end
-
+    end
 -- Varus W
 -- Varus Q
+function Varus:CastQ(unit)
     if CanUseSpell(myHero, _Q) == READY and ValidTarget(target, 1625) and Config.Q then
       local myHeroPos = GetMyHeroPos()
       CastSkillShot(_Q, myHeroPos.x, myHeroPos.y, myHeroPos.z)
@@ -289,7 +378,9 @@ if ValidTarget(unit, 1550) then
           end, i)
       end
     end
+  end
 -- Varus R
+function Varus:CastR(unit)
              if Config.R then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
     local ult = (GetCastLevel(myHero,_R)*200)+(GetBonusAP(myHero)*.6)
@@ -297,11 +388,18 @@ if ValidTarget(unit, 1550) then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
-    end
-
+      end
+                              function Varus:Combo()
+  if ValidTarget(self.target, 1700)  then       
+    elseif self.QREADY then
+      self:CastQ(self.target) 
+               elseif self.EREADY then
+      self:CastE(self.target) 
+                elseif self.RREADY then
+      self:CastR(self.target)          
 end
-end)
-function LaneClearE()
+end
+function Varus:LaneClear()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
@@ -316,9 +414,10 @@ end
 end
 end
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Varus Loaded</font>"))
-end
-if GetObjectName(GetMyHero()) == "Ziggs" then
+
+class "Ziggs"
+function Ziggs:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Ziggs", "Ziggs")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -327,7 +426,6 @@ Config.addParam("KsQ", "Use Q in KS", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("KsW", "Use W in KS", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("KsR", "Use R in KS", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("F", "LaneClear", SCRIPT_PARAM_ONOFF, true)
---Config.addParam("J", "JungleClear", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("H", "Use Q Harass", SCRIPT_PARAM_ONOFF, false)
@@ -340,62 +438,94 @@ DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawW","Draw W", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-LevelUp2()
-Harass2()
-Killsteal2()
---LaneClear2()
---JungleClear()
- -- Ziggs Q
- if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
-                 -- Ziggs Q
+function Ziggs:Loop(myHero)
+    self:Checks() 
 
+        if Config.KsQ or Config.KsW or Config.KsE then
+    self.Killsteal() 
+end
+        if DrawingsConfig.DrawQ or DrawingsConfig.DrawW or DrawingsConfig.DrawE then
+    self:Drawings()
+  end
+             if _G.IWalkConfig.LaneClear then
+    self:LaneClear()
+  end
+        if LevelConfig.L1 then
+    self:LevelUp()
+  end
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+    if _G.IWalkConfig.Harass then
+    self:Harass()
+  end
+end
+  function Ziggs:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Ziggs:Combo()
+	self.CastQ()
+	self.CastW()
+	self.CastE()
+	self.CastR()
+end
+
+                 -- Ziggs Q
+function Ziggs:CastQ()
                          if Config.Q then
         if GetCastName(myHero, _Q) == "ZiggsQ" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,true,true)
-            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1  then
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and Config.Combo and ValidTarget(unit, 1000) then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
         end
     end
+  end
         -- Ziggs E
+        function Ziggs:CastE()
                  if GetCastName(myHero, _E) == "ZiggsE" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,true,true)
             if Config.E then
-            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 and Config.Combo and ValidTarget(unit, 1000) then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
             end
         end
     end
+  end
     -- Ziggs W
+    function Ziggs:CastW()
    if GetCastName(myHero, _W) == "ZiggsW" then
             if Config.W then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,5300,50,false,true)
-                          if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
-                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+                          if ValidTarget(unit, 1000) and (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
+                    CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsObjectAlive(myHero) and IsInDistance(unit, 1000) and Config.Combo then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
             end
         end
     end
+  end
 -- Ziggs R
+function Ziggs:CastR()
    if GetCastName(myHero, _R) == "ZiggsR" then
                  if Config.R then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,5300,55,false,true)
         local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.5)
         if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1550) then
-       if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+       if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and Config.Combo and ValidTarget(unit, 1000) then
         CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                     end
                 end
             end
-    end
-end
-end
-end)
-function JungleClear2()
+        end
+      end
+
+function JungleClear()
     for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
           if IsInDistance(Q, 650) then
             if Config.J then
@@ -419,7 +549,7 @@ end
 end
 end
 end
-function LevelUp2()     
+function Ziggs:LevelUp()     
 if LevelConfig.L1 then
 if GetLevel(myHero) == 1 then
   LevelSpell(_Q)
@@ -461,7 +591,7 @@ end
 end
 end
 end
-function Killsteal2()
+function Ziggs:Killsteal()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
@@ -493,7 +623,7 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
         end
 end
 end
-function LaneClear2()
+function Ziggs:LaneClear()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
          local EnemyPos = GetOrigin(Q)
@@ -514,7 +644,7 @@ end
 end
 end
 
-function Harass2()
+function Ziggs:Harass()
                 if IWalkConfig.Harass then
                 if Config.H then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,true,true)
@@ -522,6 +652,7 @@ function Harass2()
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
         end
     end
+  end
     if Config.Z then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
             if CanUseSpell(myHero, _E) == READY and QPred.HitChance == 1 and (GetCurrentMana(myHero)/GetMaxMana(myHero)) > .45 then
@@ -529,6 +660,7 @@ function Harass2()
         end
     end
 end
+function Ziggs:Drawings()
     myHeroPos = GetOrigin(myHero)
 DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
 DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
@@ -536,8 +668,11 @@ if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myH
 if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
 end
-if GetObjectName(GetMyHero()) == "Syndra" then
-    PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Syndra Loaded</font>"))
+
+--Syndra
+class "Syndra"
+function Syndra:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Syndra", "Syndra")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -551,113 +686,124 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("H", "Use Q Harass", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Y", "Use W Harass", SCRIPT_PARAM_ONOFF, true)
-Config.addParam("Stun", "Press to Stun", SCRIPT_PARAM_KEYDOWN, string.byte("T")) --Maxxel logic
+Config.addParam("Stun", "QE Snipe", SCRIPT_PARAM_KEYDOWN, string.byte("T")) --Maxxel logic
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 LevelConfig = scriptConfig("Level", "Auto Level")
-LevelConfig.addParam("L1","Max EQ",SCRIPT_PARAM_ONOFF,false)
+LevelConfig.addParam("L1","Max QW",SCRIPT_PARAM_ONOFF,false)
 DrawingsConfig = scriptConfig("Drawings", "Drawings")
 DrawingsConfig.addParam("DrawQ","Draw Q", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawW","Draw W", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawE","Draw E", SCRIPT_PARAM_ONOFF, true)
 DrawingsConfig.addParam("DrawR","Draw R", SCRIPT_PARAM_ONOFF, true)
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-Stun()
-LevelUp3()
-Harass3()
+  function Syndra:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Syndra:Loop(myHero)
+    self:Checks() 
 
-Killsteal3()
-LaneClear3()
---JungleClear()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1200) then
- 
+        if Config.Stun then
+    self.Stun() 
+end
+        if Config.KsQ or Config.KsW or Config.KsR then
+    self.Killsteal() 
+end
+             if _G.IWalkConfig.LaneClear then
+    self:LaneClear()
+  end
+        if LevelConfig.L1 then
+    self:LevelUp()
+  end
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+    if _G.IWalkConfig.Harass and Config.H or Config.Y then
+    self:Harass()
+  end
+end
+  function Syndra:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Syndra:Combo()
+	self.CastQ()
+	self.CastE()
+	self.CastW()
+	self.CastW2()
+	self.CastR()
+end
 -- Syndra Q cast
+function Syndra:CastQ()
     if GetCastName(myHero, _Q) == "SyndraQ" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,false,true)
             if Config.Q then
-            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(unit, 1000) then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
         end
     end
- 
+ end
 -- Syndra cast W on Minion
+function Syndra:CastW()
     if GetCastName(myHero, _W) == "SyndraW" then
             if Config.W then
-            if CanUseSpell(myHero, _W) == READY then
+            if CanUseSpell(myHero, _W) == READY and ValidTarget(unit, 1000) then
             CastTargetSpell(Obj_AI_Minion, _W)
             end
         end
     end
+end
 -- Syndra cast W at Enemy
+function Syndra:CastW2()
         if GetCastName(myHero, _W) == "SyndraW" then
-        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,true,true)
+        local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,false,true)
             if Config.W then
-            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and ValidTarget(unit, 1000) then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
             end
         end
     end
+end
 -- Syndra PUSH
+function Syndra:CastE()
         if GetCastName(myHero, _E) == "SyndraE" then
-        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,700,50,true,true)
+        local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,700,50,false,true)
             if Config.E then
-            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
+            if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 and ValidTarget(unit, 1000) then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
             end
         end
     end
+end
 -- Syndra Ultimate
+function Syndra:CastR()
 if GetCastName(myHero, _R) == "SyndraR" then
             if Config.R then
         if unit ~= nil then
          local ult = (GetCastLevel(myHero,_R)*135)+(GetBonusAP(myHero)*.6)
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 675) then
-    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
+    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and ValidTarget(unit, 1000) then
     CastTargetSpell(unit, _R)
                 end
             end
         end
     end
 end
+end
 
-end
-end
-end)
-function JungleClear3()
-    for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
-          if IsInDistance(Q, 650) then
-            if Config.J then
-    if GetCastName(myHero, _Q) == "SyndraQ" then
-        local QPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,800,50,false,true)
-            if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
-            CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-            end
-        end
-    end
-        if GetCastName(myHero, _W) == "SyndraW" then
-            if Config.Y then
-            if CanUseSpell(myHero, _W) == READY then
-            CastTargetSpell(Obj_AI_Minion, _W)
-            end
-        end
-    end
--- Syndra cast W at Enemy
-        if GetCastName(myHero, _W) == "SyndraW" then
-        local WPred = GetPredictionForPlayer(GetMyHeroPos(),Q,GetMoveSpeed(Q),1700,250,925,50,false,true)
-            if Config.Y then
-            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
-            CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
-            end
-        end
-end
-end
-end
-end
-function LevelUp3()     
+function Syndra:LevelUp()     
 if LevelConfig.L1 then
 if GetLevel(myHero) == 1 then
   LevelSpell(_Q)
@@ -698,8 +844,8 @@ elseif GetLevel(myHero) == 18 then
 end
 end
 end
-end
-function Killsteal3()
+
+function Syndra:Killsteal()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
@@ -746,7 +892,7 @@ end
     end
 end
 end
-function Stun()
+function Syndra:Stun()
 local unit = GetCurrentTarget() --Maxxxel logic
 local myHeroPos = GetOrigin(myHero)
     if Config.Stun then
@@ -790,7 +936,7 @@ local myHeroPos = GetOrigin(myHero)
         MoveToXYZ(movePos.x, 0, movePos.z)
     end
     end
-function LaneClear3()
+function Syndra:LaneClear()
    if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
 
@@ -825,7 +971,7 @@ end
 end
 end
 
-function Harass3()
+function Syndra:Harass()
                 if IWalkConfig.Harass then
                 if Config.H then
     if GetCastName(myHero, _Q) == "SyndraQ" then
@@ -852,6 +998,7 @@ function Harass3()
         end
     end
 end
+function Syndra:Drawing()
     myHeroPos = GetOrigin(myHero)
 DrawCircle(9022, 52.840878, 4360,80,1,1,0xffffffff)
 DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
@@ -860,6 +1007,11 @@ if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myH
 if CanUseSpell(myHero, _W) == READY and DrawingsConfig.DrawW then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_W),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _R) == READY and DrawingsConfig.DrawR then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_R) ,3,100,0xffff00ff) end
 end
+end
+
+ 
+
+
 -- kalista
 if GetObjectName(GetMyHero()) == "Kalista" then
 --Menu
@@ -1141,10 +1293,11 @@ DrawCircle(12060, 51, 4806,80,1,1,0xffffffff)
 if CanUseSpell(myHero, _Q) == READY and DrawingsConfig.DrawQ then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z,GetCastRange(myHero,_Q),3,100,0xffff00ff) end
 if CanUseSpell(myHero, _E) == READY and DrawingsConfig.DrawE then DrawCircle(myHeroPos.x,myHeroPos.y,myHeroPos.z, GetCastRange(myHero,_E) ,3,100,0xffff00ff) end
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Kalista Loaded</font>"))
 end
 -- Vi
-if GetObjectName(GetMyHero()) == "Vi" then
+class "Vi"
+function Vi:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Vi", "Vi")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1152,14 +1305,25 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo and waitTickCount < GetTickCount() then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Vi:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Vi:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
                  
-                 
+                 function Vi:CastQ(unit)
     local target = GetTarget(725, DAMAGE_PHYSICAL) -- Q from Deftsu
     if CanUseSpell(myHero, _Q) == READY and ValidTarget(target, 725) and Config.Q then
       local myHeroPos = GetMyHeroPos()
@@ -1174,26 +1338,38 @@ if ValidTarget(unit, 1550) then
           end, i)
       end
     end
+  end
                                   --Vi E
-                 
+                 function Vi:CastE(unit)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 175) then
             CastSpell(_E)
             end
         end
+      end
     -- Cast R
+    function Vi:CastR(unit)
             if Config.R then
                   if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 800) then
             CastTargetSpell(unit, _R)
             end
         end
 end
+                        function Vi:Combo()
+  if ValidTarget(self.target, 1700)  then       
+    elseif self.QREADY then
+      self:CastQ(self.target) 
+         elseif self.EREADY then
+      self:CastE(self.target) 
+                elseif self.RREADY then
+      self:CastR(self.target)          
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Vi Loaded</font>"))
 end
+
 -- Yasuo
-if GetObjectName(GetMyHero()) == "Yasuo" then
+class "Yasuo"
+function Yasuo:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Yasuo", "Yasuo")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1202,21 +1378,35 @@ Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "E to Minion (Combo)", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-  local unit = GetCurrentTarget()
-AutoIgnite()
-if Config.Combo then
-if ValidTarget(unit, 1550) then
-                 -- Gang Q
+function Yasuo:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Yasuo:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 
+                 -- Yasuo Q
+function Yasuo:CastQ(unit)
                          if Config.Q then
                           local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero, _Q),50,false,true)
 if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1200) and QPred.HitChance == 1 then
     CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
                 end
             end
+          end
         -- Yasuo E
+        function Yasuo:CastE(unit)
                  if GetCastName(myHero, _E) == "YasuoDashWrapper" then
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 475) then
@@ -1224,18 +1414,19 @@ if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1200) and QPred.HitCh
             end
         end
     end
+  end
 -- Yasuo R
+function Yasuo:CastR(unit)
             if Config.R then
                     local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.50)
                    if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1200) then
             CastSpell(_R)
             end
         end
-    end
-end
-end)
+      end
 
-OnLoop(function(myHero)
+
+function Yasuo:CastEQ(unit)
 if Config.Combo then
       if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -1247,49 +1438,34 @@ if Config.Combo then
         local hp = GetCurrentHP(Q)
         local Dmg = CalcDamage(myHero, Q, GetBonusDmg(myHero)+GetBaseDamage(myHero))
         local unit = GetCurrentTarget()
-            if Dmg < hp or Dmg > hp then
               elseif GotBuff(unit, "YasuoDashWrapper") > 1 then return end
         if GetCastName(myHero, _E) == "YasuoDashWrapper" then
 if CanUseSpell(myHero, _E) == READY then
     CastTargetSpell(Q,_E)
-                end
 end
             end
         end
           end
 
       end
-    end)
-OnProcessSpell(function(unit, spell) -- All of this is from ispired
-  myHero = GetMyHero()
-  if Config.W and unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GetDistance(unit) < 1500 then
-    if myHero == spell.target and spell.name:lower():find("attack") and GetRange(unit) >= 450 and CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 then
-      local wPos = GenerateWallPos(GetOrigin(unit))
-      CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
-    elseif spell.endPos then
-      local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GetDistance(unit, myHero))
-      if GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
-        local wPos = GenerateWallPos(GetOrigin(unit))
-        CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
-      end
     end
-  end
-end)
-function GenerateWallPos(unitPos)
-    local tV = {x = (unitPos.x-GetMyHeroPos().x), z = (unitPos.z-GetMyHeroPos().z)}
-    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
-    return {x = GetMyHeroPos().x + 400 * tV.x / len, y = 0, z = GetMyHeroPos().z + 400 * tV.z / len}
+                        function Yasuo:Combo()
+  if ValidTarget(self.target, 1700)  then       
+    elseif self.QREADY then
+      self:CastQ(self.target) 
+         elseif self.EREADY then
+      self:CastE(self.target) 
+         elseif self.EREADY then
+      self:CastEQ(self.target) 
+                elseif self.RREADY then
+      self:CastR(self.target)          
+end
 end
 
-function GenerateSpellPos(unitPos, spellPos, range)
-    local tV = {x = (spellPos.x-unitPos.x), z = (spellPos.z-unitPos.z)}
-    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
-    return {x = unitPos.x + range * tV.x / len, y = 0, z = unitPos.z + range * tV.z / len}
-end -- Inspireds END
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Yasuo Loaded</font>"))
-end
 -- Sona
-if GetObjectName(GetMyHero()) == "Sona" then
+class "Sona"
+function Sona:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Sona", "Sona")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1297,19 +1473,35 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-       local unit = GetCurrentTarget()
+function Sona:Loop(myHero)
+    self:Checks() 
+    self:CastWA()
+    self:CastWM()
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+end
+  function Sona:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Sona:CastWA(unit)
                 if Config.W then
                 for _, ally in pairs(GetAllyHeroes()) do
-            if Config.W then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.6 and
                     CanUseSpell(myHero, _W) == READY and IsInDistance(ally, 1000) and IsObjectAlive(ally) then
             CastSpell(_W)
-        end
+          end
     end
 end
 end
+function Sona:CastWM(unit)
     if GetCastName(myHero, _W) == "SonaW" then
             if Config.W then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.5 and
@@ -1318,10 +1510,10 @@ end
             end
         end
     end
-AutoIgnite()
-if Config.Combo then
-if ValidTarget(unit, 1550) then
+  end
+
                  -- Sona Q
+                 function Sona:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "SonaQ" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
@@ -1330,7 +1522,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                      -- Sona R
+                     function Sona:CastR(unit)
                          if Config.R then
         if GetCastName(myHero, _R) == "SonaR" then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,false,true)
@@ -1339,55 +1533,87 @@ if ValidTarget(unit, 1550) then
             CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z) 
             end
         end
+      end
     end
+                      function Sona:Combo()
+  if ValidTarget(self.target, 1700)  then       
+    elseif self.QREADY then
+      self:CastQ(self.target) 
+                elseif self.RREADY then
+      self:CastR(self.target)          
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Sona Loaded</font>"))
 end
 --Khazix
-if GetObjectName(GetMyHero()) == "Khazix" then
+class "Khazix"
+function Khazix:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Khazix", "Khazix")
-Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+self.onfig.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1700) then
+function Khazix:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Khazix:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1700, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 
     -- Khazix E
+    function Khazix:CastE(unit)
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_E),50,false,true)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
             end
         end
+      end
                          -- Khazix Q
+                         function Khazix:CastQ(unit)
             if Config.Q then
                  if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 325) then
             CastTargetSpell(unit,_Q)
             end
         end
+      end
 -- Khazix Q
+function Khazix:CastW(unit)
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,600,50,true,true)
-            if Config.Q then
+            if Config.W then
             if CanUseSpell(myHero, _W) == READY and IsInDistance(unit, 1000) and WPred.HitChance == 1 then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
             end
         end
+      end
+                  function Khazix:Combo()
+  if ValidTarget(self.target, 1700)  then
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target) 
+                elseif self.QREADY then
+      self:CastQ(self.target)          
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Khazix Loaded</font>"))
-end
+
 --Rumble
-if GetObjectName(GetMyHero()) == "Rumble" then
+class "Rumble"
+function Rumble:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Rumble", "Rumble")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1395,14 +1621,26 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1700) then
+function Rumble:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Rumble:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1700, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 
 -- Rumble Q
+function Rumble:CastQ(unit)
         if GetCastName(myHero, _Q) == "RumbleFlameThrower" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,600,50,false,true)
             if Config.Q then
@@ -1411,7 +1649,9 @@ if ValidTarget(unit, 1700) then
             end
         end
     end
+  end
     -- Rumble E
+    function Rumble:CastE(unit)
         if GetCastName(myHero, _E) == "RumbleGrenade" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,true,true)
             if Config.E then
@@ -1420,7 +1660,9 @@ if ValidTarget(unit, 1700) then
             end
         end
     end
+  end
 -- Rumble R
+function Rumble:CastR(unit)
         local myorigin = GetOrigin(unit)
 local mymouse = GetCastRange(myHero,_R) 
 if Config.R then
@@ -1429,21 +1671,23 @@ if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then
     CastSkillShot3(_R,myorigin,EPred)
 end
 end
-        local myorigin = GetOrigin(unit)
-local mymouse = GetCastRange(myHero,_R) 
-if Config.R then
- local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1700,55,false,true)
-if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 1700) then 
-    CastSkillShot3(_R,myorigin,EPred)
 end
+                  function Rumble:Combo()
+  if ValidTarget(self.target, 1700)  then
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.QREADY then
+      self:CastQ(self.target) 
+                elseif self.WREADY then
+      self:CastW(self.target)   
+                 elseif self.RREADY then
+              self:CastR(self.target)         
 end
-end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Rumble Loaded</font>"))
 end
 -- Alistar
-if GetObjectName(GetMyHero()) == "Alistar" then
+class "Alistar"
+function Alistar:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Alistar", "Alistar")
 Config.addParam("QW", "Use QW Combo", SCRIPT_PARAM_ONOFF, false)
@@ -1451,9 +1695,30 @@ Config.addParam("WQ", "Use WQ Combo", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-       local unit = GetCurrentTarget()
+function Alistar:Loop(myHero)
+    self:Checks() 
+    self:CastR()
+    self:CastEA()
+    self:CastEM()
+  if _G.IWalkConfig.Combo and Config.QW then
+    self:ComboQW()
+  end
+    if _G.IWalkConfig.Combo and Config.WQ then
+    self:ComboWQ()
+  end
+end
+  function Alistar:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Alistar:CastR(unit)
     if GetCastName(myHero, _R) == "FerociousHowl" then
             if Config.R then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.4 and
@@ -1462,6 +1727,8 @@ OnLoop(function(myHero)
             end
         end
     end
+  end
+  function Alistar:CastEA(unit)
                 for _, ally in pairs(GetAllyHeroes()) do
             if Config.E then
             if (GetCurrentHP(ally)/GetMaxHP(ally))<0.7 and
@@ -1470,6 +1737,8 @@ OnLoop(function(myHero)
         end
     end
 end
+end
+function Alistar:CastEM(unit)
     if GetCastName(myHero, _E) == "TriumphantRoar" then
             if Config.E then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.7 and
@@ -1478,10 +1747,9 @@ end
             end
         end
     end
-AutoIgnite()
-if Config.Combo then
-if ValidTarget(unit, 1550) then
+end
                     -- Alistar W
+                    function Alistar:CastWQ(unit)
    if GetCastName(myHero, _W) == "Headbutt" then
             if Config.WQ then
                  if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 650) then
@@ -1489,7 +1757,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                  -- Alistar Q
+                 function Alistar:CastWQ2(unit)
                          if Config.WQ then
         if GetCastName(myHero, _Q) == "Pulverize" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
@@ -1498,7 +1768,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                      -- Alistar Q
+                     function Alistar:CastQW(unit)
                          if Config.QW then
         if GetCastName(myHero, _Q) == "Pulverize" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
@@ -1507,7 +1779,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                         -- Alistar W
+                        function Alistar:CastQW2(unit)
    if GetCastName(myHero, _W) == "Headbutt" then
             if Config.QW then
                  if CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 300) then
@@ -1515,13 +1789,27 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+                  function Alistar:ComboQW()
+  if ValidTarget(self.target, 1700)  then
+    elseif self.QREADY then
+      self:CastQW(self.target) 
+                       elseif self.WREADY then      
+      self:CastQW2(self.target)           
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Alistar Loaded</font>"))
+                  function Alistar:ComboWQ()
+  if ValidTarget(self.target, 1700)  then
+    elseif self.WREADY then
+      self:CastWQ(self.target)
+                       elseif self.QREADY then       
+      self:CastWQ2(self.target)         
+end
+end
 end
 -- Leona
-if GetObjectName(GetMyHero()) == "Leona" then
+class "Leona"
+function Leona:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Leona", "Leona")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1529,15 +1817,27 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-LeonaW()
-local unit = GetCurrentTarget()
-if Config.Combo then
-if ValidTarget(unit, 1550) then
+function Leona:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Leona:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+
                  
                                                   -- Leona Q
+                                                  function Leona:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "LeonaShieldOfDaybreak" then
             if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 625) then
@@ -1545,7 +1845,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                                   --Leona E 
+                                  function Leona:CastE(unit)
                  if Config.E then
                  if GetCastName(myHero, _E) == "LeonaZenithBlade" then
                 local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_E),50,false,true)
@@ -1554,7 +1856,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                      -- Leona R
+                     function Leona:CastR(unit)
                      if Config.R then
                  if GetCastName(myHero, _R) == "LeonaSolarFlare" then
                 local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_R),50,false,true)
@@ -1564,24 +1868,36 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
-end
-end
-end)
-function LeonaW()
+  end
+
+function Leona:CastW(unit)
         if GetCastName(myHero, _W) == "LeonaSolarBarrier" then
             if Config.W then
                 local unit = GetCurrentTarget()
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.75 and
-                    CanUseSpell(myHero, _W) == READY and GotBuff(myHero, "recall") == 0 and GetDistance(myHero, unit) < 1000 then
+                    CanUseSpell(myHero, _W) == READY and GotBuff(myHero, "recall") == 0 then
             CastTargetSpell(myHero, _W)
             end
         end
     end
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Leona Loaded</font>"))
+                  function Leona:Combo()
+  if ValidTarget(self.target, 1700)  then
+    elseif self.QREADY then
+      self:CastQ(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.target) 
+                elseif self.WREADY then
+      self:CastW(self.target)   
+                 elseif self.RREADY then
+              self:CastR(self.target)         
 end
+end
+
 -- Swain
-if GetObjectName(GetMyHero()) == "Swain" then
+class "Swain"
+function Swain:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Swain", "Swain")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1589,9 +1905,25 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-       local unit = GetCurrentTarget()
+function Swain:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Swain:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+
+function Swain:CastRS(unit)
     if GetCastName(myHero, _R) == "SwainMetamorphism" then
             if Config.R then
                      if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.3 and
@@ -1600,11 +1932,11 @@ OnLoop(function(myHero)
             end
         end
     end
-AutoIgnite()
-if Config.Combo then
-if ValidTarget(unit, 1550) then
+  end
+
                  
                                                   -- Swain Q
+                                                  function Swain:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "SwainDecrepify" then
             if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 625) then
@@ -1612,7 +1944,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                                   --Swain E 
+                                  function Swain:CastE(unti)
                  if Config.E then
                  if GetCastName(myHero, _E) == "SwainTorment" then
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 625) then
@@ -1620,7 +1954,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                      -- Swain W
+                     function Swain:CastW(unit)
    if Config.W then
    if GetCastName(myHero, _W) == "SwainShadowGrasp" then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_W),50,false,true)
@@ -1629,6 +1965,8 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
+  function Swain:CastR(unit)
                      if Config.R then
                  if GetCastName(myHero, _R) == "SwainMetamorphism" then
                 local ult = (GetCastLevel(myHero,_R)*50+130)+(GetBonusAP(myHero)*.2)
@@ -1638,13 +1976,26 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
+                  function Swain:Combo()
+  if ValidTarget(self.target, 1700)  then
+    elseif self.QREADY then
+      self:CastQ(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.mymouse) 
+                elseif self.WREADY then
+      self:CastW(self.mymouse)  
+                 elseif self.RREADY then
+              self:CastR(self.target) 
+                               elseif self.RREADY then
+              self:CastRS(self.target)        
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Swain Loaded</font>"))
-end
+
 -- Gnar
-if GetObjectName(GetMyHero()) == "Gnar" then
+class "Gnar"
+function Gnar:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Gnar", "Gnar")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1655,32 +2006,54 @@ Config.addParam("Q2", "Use Q2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W2", "Use W2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E2", "Use E2", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local mymouse = GetMousePos()
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
-                 
+function Gnar:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Gnar:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Gnar:Combo()
+	self.CastQ()
+	self.CastWG()
+	self.CastE()
+	self.CastQG()
+	self.CastEG()
+end
+
                                                   -- Gnar Q
+                                                  function Gnar:CastQ()
                          if Config.Q then
         if GetCastName(myHero, _Q) == "GnarQ" then
-            local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1100,50,true,true)
-            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1100) then
+            local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),250,250,1100,40,true,true)
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1100) and ValidTarget(unit, 1150) then
                         CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
         end
     end
+  end
                                   --Gnar E gnarbigqwe
+                                  function Gnar:CastE()
                  if Config.E then
                  if GetCastName(myHero, _E) == "GnarE" then
-            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1100) then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1100) and ValidTarget(unit, 850) then
             CastSkillShot(_E, GetMousePos().x, GetMousePos().y, GetMousePos().z)
             end
         end
     end
+  end
                      -- Gnar W
+                     function Gnar:CastWG()
    if Config.W2 then
    if GetCastName(myHero, _W) == "gnarbigw" then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_W),50,false,true)
@@ -1689,30 +2062,31 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
+    function Gnar:CastQG()
                              if Config.Q2 then
         if GetCastName(myHero, _Q) == "gnarbigq" then
             local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1100,50,true,true)
-            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1100) then
+            if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 1100) and ValidTarget(unit, 1150) then
                         CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
         end
     end
+  end
+    function Gnar:CastEG()
                      if Config.E2 then
                  if GetCastName(myHero, _E) == "gnarbige" then
                     local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,475,50,false,true)
-            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1100) then
+            if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 475) and ValidTarget(unit, 475) then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
             end
         end
     end
-    
-end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Gnar Loaded</font>"))
-end
+  end
 -- Udyr
-if GetObjectName(GetMyHero()) == "Udyr" then
+class "Udyr"
+function Udyr:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Udyr", "Udyr")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1720,30 +2094,46 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Udyr:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Udyr:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
                  
                                   --Udyr E
+                                  function Udyr:CastE(unit)
                  if GetCastName(myHero, _E) == "UdyrBearStance" then
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 125) then
             CastTargetSpell(myHero,_E)
             end
         end
+      end
     end
                  -- Udyr Q
+                 function Udyr:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "UdyrTigerStance" then
             if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 125) then
                         CastTargetSpell(myHero,_Q)
             end
         end
+      end
     end
                      -- Udyr W
+                     function Udyr:CastW(unit)
    if GetCastName(myHero, _W) == "UdyrTurtleStance" then
             if Config.W then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,false,true)
@@ -1751,22 +2141,35 @@ if ValidTarget(unit, 1550) then
             CastTargetSpell(myHero,_W)
             end
         end
+      end
     end
     -- Cast R
+    function Udyr:CastR(unit)
    if GetCastName(myHero, _R) == "UdyrPhoenixStance" then
             if Config.R then
                   if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 250) then
             CastTargetSpell(myHero, _R)
             end
         end
+      end
     end
+              function Udyr:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.WREADY then
+      self:CastW(self.target) 
+    elseif self.QREADY then
+      self:CastQ(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Udyr Loaded</font>"))
 end
 -- Brand
-if GetObjectName(GetMyHero()) == "Brand" then
+class "Brand"
+function Brand:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Brand", "Brand")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1774,14 +2177,26 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Brand:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Brand:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
                  
                                   --Brand E
+                                  function Brand:CastE(unit)
                  if GetCastName(myHero, _E) == "BrandConflagration" then
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 625) then
@@ -1789,7 +2204,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                  -- Brand Q
+                 function Brand:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "BrandBlaze" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1050,50,true,true)
@@ -1798,7 +2215,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                      -- Brand W
+                     function Brand:CastW(unit)
    if GetCastName(myHero, _W) == "BrandFissure" then
             if Config.W then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,false,true)
@@ -1807,7 +2226,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
     -- Cast R
+    function Brand:CastR(unit)
    if GetCastName(myHero, _R) == "BrandWildfire" then
             if Config.R then
                 local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusAP(myHero)*.50)
@@ -1817,13 +2238,24 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
+          function Brand:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.EREADY then
+      self:CastE(self.target) 
+    elseif self.QREADY then
+      self:CastQ(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Brand Loaded</font>"))
 end
 -- Fiora
-if GetObjectName(GetMyHero()) == "Fiora" then
+class "Fiora"
+function Fiora:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Fiora", "Fiora")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1831,14 +2263,26 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
+
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
-                 
-                 -- Fiora Q
+function Fiora:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Fiora:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+                            -- Fiora Q
+                            function Fiora:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "FioraQ" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,400,50,false,true)
@@ -1847,7 +2291,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                      -- Fiora W
+                     function Fiora:CastW(unit)
    if GetCastName(myHero, _W) == "FioraW" then
             if Config.W then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,750,50,false,true)
@@ -1856,7 +2302,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                  --Fiora E
+                 function Fiora:CastE(unit)
                  if GetCastName(myHero, _E) == "FioraE" then
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 260) then
@@ -1864,7 +2312,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
     -- Cast R
+    function Fiora:CastR(unit)
    if GetCastName(myHero, _R) == "FioraR" then
             if Config.R then
                 if (GetCurrentHP(unit)/GetMaxHP(unit))<0.4 and
@@ -1873,40 +2323,25 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
-end
-end
-end)
-OnProcessSpell(function(unit, spell) -- Modified Yasuo Wall Code 
-  myHero = GetMyHero()
-  if Config.W and unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GetDistance(unit) < 1500 then
-    if myHero == spell.target and spell.name:lower():find("attack") and GetRange(unit) >= 450 and CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 then
-      local wPos = GenerateWPos(GetOrigin(unit))
-      CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
-    elseif spell.endPos then
-      local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GetDistance(unit, myHero))
-      if GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
-        local wPos = GenerateWPos(GetOrigin(unit))
-        CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
-      end
-    end
   end
-end)
-function GenerateWPos(unitPos)
-    local tV = {x = (unitPos.x-GetMyHeroPos().x), z = (unitPos.z-GetMyHeroPos().z)}
-    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
-    return {x = GetMyHeroPos().x + 400 * tV.x / len, y = 0, z = GetMyHeroPos().z + 400 * tV.z / len}
+          function Fiora:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.WREADY then
+      self:CastW(self.target) 
+    elseif self.QREADY then
+      self:CastQ(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
-
-function GenerateSpellPos(unitPos, spellPos, range)
-    local tV = {x = (spellPos.x-unitPos.x), z = (spellPos.z-unitPos.z)}
-    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
-    return {x = unitPos.x + range * tV.x / len, y = 0, z = unitPos.z + range * tV.z / len}
-end --  END of AUTOPARRY
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Fiora Loaded</font>"))
+end
 end
 
 -- Riven
-if GetObjectName(GetMyHero()) == "Riven" then
+class "Riven"
+function Riven:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Riven", "Riven")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -1914,12 +2349,24 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Riven:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Riven:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+function Riven:CastE(unit)
                  --Riven E
                  if GetCastName(myHero, _E) == "RivenFeint" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,325,50,true,true)
@@ -1929,7 +2376,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
                  -- Riven Q
+                 function Riven:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "RivenTriCleave" then
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,260,50,false,true)
@@ -1939,7 +2388,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
     -- Riven W
+    function Riven:CastW(unit)
    if GetCastName(myHero, _W) == "RivenMartyr" then
             if Config.W then
                 local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,125,50,false,true)
@@ -1948,7 +2399,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
     -- Cast R
+    function Riven:CastR(unit)
    if GetCastName(myHero, _R) == "RivenFengShuiEngine" then
             if Config.R then
                 if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and
@@ -1968,46 +2421,71 @@ if ValidTarget(unit, 1550) then
         end
     end
 end
+          function Riven:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
-end)
-
-OnProcessSpell(function(unit, spell)
-local unit = GetCurrentTarget()
-if unit and unit == myHero and spell and spell.name and spell.name:lower():find("attack") then
-if Config.Combo and ValidTarget(unit) then
-local targetPos = GetOrigin(unit)
-DelayAction(function() CastSkillShot(_Q, targetPos.x, targetPos.y, targetPos.z) end, spell.windUpTime * 800)
 end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Riven Loaded</font>"))
 end
 
 -- Gangplank
-if GetObjectName(GetMyHero()) == "Gangplank" then
+class "Gangplank"
+function Gangplank:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Gangplank", "Gangplank")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Es", "Use R ks", SCRIPT_PARAM_ONOFF, false)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "LastHit", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-  local unit = GetCurrentTarget()
+function Gangplank:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+      if Config.F then
+    self:QFarm() 
+  end
+    if Config.Es then
+    self:KS()
+  end 
+end
+  function Gangplank:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
   --Auto heal if under or 30% HP AND ENEMY IS IN 1000 RANGE.
+function Gangplank:CastW(unit)
    if GetCastName(myHero, _W) == "GangplankW" then
-            if Config.R then
+            if Config.W then
                           if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.3 and
                     CanUseSpell(myHero, _W) == READY and IsObjectAlive(unit) and IsInDistance(unit, 1000) then
             CastTargetSpell(myHero, _W)
             end
         end
     end
+  end
        -- Auto R (ks)
+       function Gangplank:KS(unit)
        if GetCastName(myHero, _R) == "GangplankR" then
-            if Config.R then
+            if Config.Es then
                                 local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,10000,50,false,true)
                           if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.2 and
                     CanUseSpell(myHero, _R) == READY and IsObjectAlive(unit) and IsInDistance(unit, 10000) then
@@ -2015,12 +2493,9 @@ OnLoop(function(myHero)
             end
         end
     end
-AutoIgnite()
-QFarm()
-if Config.Combo then
-if ValidTarget(unit, 1550) then
+  end
                  -- Gang Q
-
+function Gangplank:CastQ(unit)
                          if Config.Q then
         if GetCastName(myHero, _Q) == "GangplankQWrapper" then
 if CanUseSpell(myHero, _Q) == READY then
@@ -2028,7 +2503,9 @@ if CanUseSpell(myHero, _Q) == READY then
                 end
             end
         end
+      end
         -- Gangplank E
+        function Gangplank:CastE(unit)
                  if GetCastName(myHero, _E) == "GangplankE" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,false,true)
             if Config.E then
@@ -2037,7 +2514,9 @@ if CanUseSpell(myHero, _Q) == READY then
             end
         end
     end
+  end
 -- Gangplank R
+function Gangplank:CastR(unit)
    if GetCastName(myHero, _R) == "GangplankR" then
             if Config.R then
                 local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,10000,50,false,true)
@@ -2047,10 +2526,9 @@ if CanUseSpell(myHero, _Q) == READY then
             end
         end
     end
-end
-end
-end)
-function QFarm()
+  end
+
+function Gangplank:QFarm()
 if IWalkConfig.LastHit then
       if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -2068,11 +2546,24 @@ if CanUseSpell(myHero, _Q) == READY then
         end
       end
     end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Gangplank Loaded</font>"))
+                function Gangplank:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
+end
+end
 end
 
 -- Irelia
-if GetObjectName(GetMyHero()) == "Irelia" then
+class "Irelia"
+function Irelia:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Irelia", "Irelia")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2083,15 +2574,35 @@ Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("F", "LastHit", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("G", "KS Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-Killsteal4()
-AutoIgnite()
-QFamr()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Irelia:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+      if Config.F then
+    self:QFarm() 
+  end
+  if Config.G then
+    self:KS()
+  end 
+    if Config.Es then
+    self:Es()
+  end 
+end
+  function Irelia:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
+
                  -- Irelia Q
+                 function Irelia:CastQ(unit)
                  if Config.Q then
         if GetCastName(myHero, _Q) == "IreliaGatotsu" then
 if CanUseSpell(myHero, _Q) == READY then
@@ -2099,7 +2610,9 @@ if CanUseSpell(myHero, _Q) == READY then
                 end
             end
         end
+      end
         -- Irelia E
+        function Irelia:CastE(unit)
              if Config.E then
 if GetCastName(myHero, _E) == "IreliaEquilibriumStrike" then
     if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 325) then
@@ -2107,7 +2620,9 @@ if GetCastName(myHero, _E) == "IreliaEquilibriumStrike" then
                 end
             end
 end
+end
         -- Irelia E
+        function Irelia:ES(unit)
              if Config.Es then
 if GetCastName(myHero, _E) == "IreliaEquilibriumStrike" then
     if (GetCurrentHP(myHero) < GetCurrentHP(unit)) and CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 325) then
@@ -2115,6 +2630,8 @@ if GetCastName(myHero, _E) == "IreliaEquilibriumStrike" then
                 end
             end
 end
+end
+function Irelia:CastW(unit)
     if Config.W then
         if GetCastName(myHero, _W) == "IreliaHitenStyle" then
 if CanUseSpell(myHero, _W) == READY  and IsInDistance(unit, 325) then
@@ -2122,7 +2639,9 @@ if CanUseSpell(myHero, _W) == READY  and IsInDistance(unit, 325) then
                 end
             end
         end
+      end
 -- Irelia R
+function Irelia:CastR(unit)
        if Config.R then
         if GetCastName(myHero, _R) == "IreliaTranscendentBlades" then
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1000,55,false,true)
@@ -2131,10 +2650,9 @@ if (GetCurrentHP(unit)/GetMaxHP(unit))<0.3 and IsObjectAlive(unit) and CanUseSpe
                 end
     end
     end
-end
-end
-end)
-function QFamr()
+  end
+
+function Irelia:QFarm()
 if IWalkConfig.LastHit then
       if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
@@ -2152,7 +2670,7 @@ if CanUseSpell(myHero, _Q) == READY then
         end
       end
     end
-function Killsteal4()
+function Irelia:KS()
 local unit = GetCurrentTarget()
  if ValidTarget(unit, 1550) then
         for i,enemy in pairs(GetEnemyHeroes()) do
@@ -2164,11 +2682,24 @@ if CanUseSpell(myHero, _Q) == READY and ValidTarget(enemy,GetCastRange(myHero,_Q
         end
 end
 end
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Irelia Loaded</font>"))
+            function Irelia:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
+end
+end
 end
 
 --Evelynn
-if GetObjectName(GetMyHero()) == "Evelynn" then
+class "Evelynn"
+function Evelynn:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Evelynn", "Evelynn")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2176,14 +2707,26 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Evelynn:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Evelynn:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 
 -- Evelynn W
+function Evelynn:CastW(unit)
     if Config.W then
         if GetCastName(myHero, _W) == "EvelynnW" then
 if CanUseSpell(myHero, _W) == READY then
@@ -2191,7 +2734,9 @@ if CanUseSpell(myHero, _W) == READY then
                 end
             end
         end
+      end
 -- Evelynn Q
+function Evelynn:CastQ(unit)
     if Config.Q then
         if GetCastName(myHero, _Q) == "EvelynnQ" then
 if CanUseSpell(myHero, _Q) == READY then
@@ -2199,7 +2744,9 @@ if CanUseSpell(myHero, _Q) == READY then
                 end
             end
         end
+      end
     -- Evelynn E
+    function Evelynn:CastE(unit)
    if Config.E then
         if GetCastName(myHero, _E) == "EvelynnE" then
 if CanUseSpell(myHero, _E) == READY then
@@ -2207,7 +2754,9 @@ if CanUseSpell(myHero, _E) == READY then
                 end
     end
 end
+end
 -- Evelynn R
+function Evelynn:CastR(unit)
              if Config.R then
 if GetCastName(myHero, _R) == "EvelynnR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,650,55,false,true)
@@ -2215,15 +2764,26 @@ if GetCastName(myHero, _R) == "EvelynnR" then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
+       end
+     end
+            function Evelynn:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Evelynn Loaded</font>"))
 end
 
 --Akali
-if GetObjectName(GetMyHero()) == "Akali" then
+class "Akali"
+function Akali:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Akali", "Akali")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2231,12 +2791,24 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
+function Akali:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Akali:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1700, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Akali:CastQ(unit)
                  if Config.Q then
         if GetCastName(myHero, _Q) == "AkaliMota" then
 if CanUseSpell(myHero, _Q) == READY then
@@ -2244,6 +2816,8 @@ if CanUseSpell(myHero, _Q) == READY then
                 end
             end
         end
+      end
+      function Akali:CastE(unit)
              -- Akali E
              if Config.E then
 if GetCastName(myHero, _E) == "AkaliShadowSwipe" then
@@ -2252,7 +2826,10 @@ if GetCastName(myHero, _E) == "AkaliShadowSwipe" then
     CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
                 end
             end
+          end
+        end
 -- Akali W
+function Akali:CastW(unit)
     if Config.W then
         if GetCastName(myHero, _W) == "AkaliSmokeBomb" then
 if CanUseSpell(myHero, _W) == READY then
@@ -2260,7 +2837,9 @@ if CanUseSpell(myHero, _W) == READY then
                 end
             end
         end
+      end
     -- Akali R
+    function Akali:CastR(unit)
    if Config.R then
         if GetCastName(myHero, _R) == "AkaliShadowDance" then
 if CanUseSpell(myHero, _R) == READY then
@@ -2269,14 +2848,24 @@ if CanUseSpell(myHero, _R) == READY then
     end
 end
 end
+            function Akali:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.EREADY then
+      self:CastE(self.target)       
+    elseif self.WREADY then
+      self:CastW(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Akali Loaded</font>"))
 end
 
 --Menu
-if GetObjectName(GetMyHero()) == "Azir" then
+class "Azir"
+function Azir:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Azir
 Config = scriptConfig("Azir", "Azir")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2284,14 +2873,26 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Azir:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Azir:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1700, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 
 -- Azir W
+function Azir:CastW(unit)
     if Config.W then
         if GetCastName(myHero, _W) == "AzirW" then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,850,55,false,true)
@@ -2300,7 +2901,9 @@ if ValidTarget(unit, 1550) then
                 end
             end
     end
+  end
 -- Azir Q
+function Azir:CastQ(unit)
     if Config.Q then
         if GetCastName(myHero, _Q) == "AzirQ" then
     local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
@@ -2309,7 +2912,9 @@ if ValidTarget(unit, 1550) then
                 end
             end
     end
+  end
     -- Azir E
+    function Azir:CastE(unit)
     if Config.E then
         if GetCastName(myHero, _E) == "AzirE" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,false,true)
@@ -2318,7 +2923,9 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
 -- Azir R
+function Azir:CastR(unit)
              if Config.R then
 if GetCastName(myHero, _R) == "AzirR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,250,55,false,true)
@@ -2327,15 +2934,26 @@ if GetCastName(myHero, _R) == "AzirR" then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
                 end
             end
+      end
+    end
+            function Azir:Combo()
+  if ValidTarget(self.target, 1700)  then
+    if self.WREADY then
+      self:CastW(self.target) 
+    elseif self.QREADY then
+      self:CastQ(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Azir Loaded</font>"))
 end
 
 --Viktor
-if GetObjectName(GetMyHero()) == "Viktor" then
+class "Viktor"
+function Viktor:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Viktor", "Viktor")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2343,14 +2961,26 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
+function Viktor:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Viktor:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1700, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 
 -- Viktor W
+function Viktor:CastW(unit)
     if Config.W then
         if GetCastName(myHero, _W) == "ViktorGravitonField" then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
@@ -2359,15 +2989,19 @@ if ValidTarget(unit, 1550) then
                 end
             end
     end
+  end
 -- Viktor Q
+function Viktor:CastQ(unit)
     if Config.Q then
         if GetCastName(myHero, _Q) == "ViktorPowerTransfer" then
-if CanUseSpell(myHero, _Q) == READY then
+if CanUseSpell(myHero, _Q) == READY and IsInDistance(unit, 600) then
     CastTargetSpell(unit,_Q)
                 end
             end
         end
+      end
     -- Viktor E
+    function Viktor:CastE(unit)
     local myorigin = GetOrigin(unit)
 local mymouse = GetCastRange(myHero,_E) 
 if Config.E then
@@ -2378,7 +3012,9 @@ if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 1500) then
     end
 end
 end
+end
 -- Viktor R
+function Viktor:CastR(unit)
              if Config.R then
 if GetCastName(myHero, _R) == "ViktorChaosStorm" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
@@ -2389,14 +3025,25 @@ if GetCastName(myHero, _R) == "ViktorChaosStorm" then
                 end
             end
         end
+    end
+end
+            function Viktor:Combo()
+  if ValidTarget(self.target, 1000)  then
+    if self.EREADY then
+      self:CastE(self.target) 
+    elseif self.WREADY then
+      self:CastW(self.target)       
+    elseif self.QREADY then
+      self:CastQ(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Viktor Loaded</font>"))
 end
 -- VelKoz
-if GetObjectName(GetMyHero()) == "Velkoz" then
+class "Velkoz"
+function Velkoz:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("VelKoz", "VelKoz")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2404,14 +3051,25 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1550) then
- 
+function Velkoz:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+  function Velkoz:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 -- Velkoz E
+function Velkoz:CastE(unit)
     if Config.E then
         if GetCastName(myHero, _E) == "VelkozE" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,false,true)
@@ -2420,8 +3078,10 @@ if ValidTarget(unit, 1550) then
             end
         end
     end
+  end
 
 -- Velkoz W
+function Velkoz:CastW(unit)
     if Config.W then
         if GetCastName(myHero, _W) == "VelkozW" then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
@@ -2430,7 +3090,9 @@ if ValidTarget(unit, 1550) then
                 end
             end
     end
+  end
 -- Velkoz Q
+function Velkoz:CastQ(unit)
     if Config.Q then
         if GetCastName(myHero, _Q) == "VelkozQ" then
     local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1050,55,true,true)
@@ -2439,7 +3101,9 @@ if ValidTarget(unit, 1550) then
                 end
             end
     end
+  end
 -- Velkoz R
+function Velkoz:CastR(unit)
              if Config.R then
 if GetCastName(myHero, _R) == "VelkozR" then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
@@ -2450,39 +3114,53 @@ if GetCastName(myHero, _R) == "VelkozR" then
           end
                 end
             end
-    end
+          end
+        end
+            function Velkoz:Combo()
+  if ValidTarget(self.target, 1000)  then
+    if self.EREADY then
+      self:CastE(self.target) 
+    elseif self.WREADY then
+      self:CastW(self.target)       
+    elseif self.QREADY then
+      self:CastQ(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)     
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Velkoz Loaded</font>"))
 end
-
 -- Ekko
-if GetObjectName(GetMyHero()) == "Ekko" then
+class "Ekko"
+function Ekko:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Ekko", "Ekko")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Rs", "Use R Save", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-    local unit = GetCurrentTarget()
-    if GetCastName(myHero, _R) == "EkkoR" then
-            if Config.R then
-                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.2 and
-                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
-            CastTargetSpell(myHero,_R)
-            end
-        end
-    end
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-if ValidTarget(unit, 1200) then
+function Ekko:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+ function Ekko:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1500, DAMAGE_MAGIC)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
  
 -- Q cast
+function Ekko:CastQ(unit)
         if GetCastName(myHero, _Q) == "EkkoQ" then
                 local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1075,50,false,true)
                         if Config.Q then
@@ -2491,7 +3169,9 @@ if ValidTarget(unit, 1200) then
                         end
                 end
         end
+      end
 -- W Cast
+function Ekko:CastW(unit)
     if GetCastName(myHero, _W) == "EkkoW" then
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1600,50,false,true)
             if Config.W then
@@ -2500,6 +3180,8 @@ if ValidTarget(unit, 1200) then
             end
         end
     end
+  end
+    function Ekko:CastE(unit)
 -- E Cast Will cast E and if im correct then GoS will click champ and Ekko will blink Cast = 325 range Blink= 425
     if GetCastName(myHero, _E) == "EkkoE" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,750,50,false,true)
@@ -2509,7 +3191,9 @@ if ValidTarget(unit, 1200) then
             end
         end
     end
--- R Cast Disabled till i manage how to Use R when low --THANKS SNOWBALL
+  end
+-- R cast
+function Ekko:CastR(unit)
     if GetCastName(myHero, _R) == "EkkoR" then
             if Config.R then
               local ult = (GetCastLevel(myHero,_R)*150+50)+(GetBonusAP(myHero)*1.30)
@@ -2521,11 +3205,34 @@ if ValidTarget(unit, 1200) then
             end
             end
     end
+  end
+    function Ekko:CastRs(unit)
+        if GetCastName(myHero, _R) == "EkkoR" then
+            if Config.Rs then
+                     if (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.2 and
+                    CanUseSpell(myHero, _R) == READY and IsObjectAlive(myHero) and IsInDistance(unit, 1000) then
+            CastTargetSpell(myHero,_R)
+            end
+        end
+    end
+  end
+  function Ekko:Combo()
+  if ValidTarget(self.target, 1000)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.WREADY then
+      self:CastW(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.target)
+         elseif self.RREADY then
+      self:CastR(self.target)
+      elseif self.RREADY then
+      self:CastRs(self.target)      
 end
 end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Ekko Loaded</font>"))
 end
+
+
 --Nidalee
 if GetObjectName(GetMyHero()) == "Nidalee" then
 --Menu
@@ -2622,7 +3329,9 @@ if GetCastName(myHero, _R) == "AspectOfTheCougar" then
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Nidalee Loaded</font>"))
  end
 -- Graves
-if GetObjectName(GetMyHero()) == "Graves" then
+class "Graves"
+function Graves:__init()
+OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Graves", "Graves")
 Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -2630,53 +3339,83 @@ Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
+end
 --Start
-OnLoop(function(myHero)
-AutoIgnite()
-if Config.Combo then
-local unit = GetCurrentTarget()
-local mymouse = GetMousePos()
-if ValidTarget(unit, 1200) then
- 
+function Graves:Loop(myHero)
+    self:Checks() 
+  if _G.IWalkConfig.Combo then
+    self:Combo()
+  end
+end
+ function Graves:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  self.target = GetTarget(1200, DAMAGE_PHYSICAL)
+  self.targetPos = GetOrigin(self.target)
+  self.mymouse = GetMousePos() 
+end
 -- Q cast
+function Graves:CastQ(unit)
         if GetCastName(myHero, _Q) == "GravesClusterShot" then
                 local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,900,50,false,true)
                         if Config.Q then
-                        if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+                        if self.QREADY and QPred.HitChance == 1 then
                         CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
                         end
                 end
         end
+      end
 -- W Cast
+function Graves:CastW(unit)
     if GetCastName(myHero, _W) == "GravesSmokeGrenade" then
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1600,50,false,true)
             if Config.W then
-            if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 then
+            if self.WREADY and WPred.HitChance == 1 then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
             end
         end
     end
+  end
 -- E Cast 
+function Graves:CastE(mymouse)
     if GetCastName(myHero, _E) == "GravesMove" then
-            if Config.E then
+            if Config.E and self.EREADY then
         CastSkillShot(_E, GetMousePos().x, GetMousePos().y, GetMousePos().z)
             end
         end
+      end
 -- R Cast 
+function Graves:CastR(unit)
     if GetCastName(myHero, _R) == "GravesChargedShot" then
       if Config.R then
         local ult = (GetCastLevel(myHero,_R)*150+150)+(GetBonusDmg(myHero)*1.50)
         local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,1000,50,true,true)
-                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) then
+                        if CanUseSpell(myHero_R) == READY and RPred.HitChance == 1 and IsInDistance(target, GetCastRange(myHero,_R)) and self.RREADY then
                                   if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) then
                           CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
         end
         end
     end
 end
+end
+function Graves:Combo()
+  if ValidTarget(self.target, 1000)  then
+    if self.QREADY then
+      self:CastQ(self.target) 
+    elseif self.WREADY then
+      self:CastW(self.target)       
+    elseif self.EREADY then
+      self:CastE(self.mymouse)
+         elseif self.RREADY then
+      self:CastR(self.target)      
+    end 
+  end
+end
 
-end
-end
-end)
-PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Graves Loaded</font>"))
+if supportedHero[GetObjectName(myHero)] == true then
+if _G[GetObjectName(myHero)] then
+  _G[GetObjectName(myHero)]()
+end 
 end
