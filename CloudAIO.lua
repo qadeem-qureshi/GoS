@@ -1,3 +1,20 @@
+--[[
+█▀▀█ █░░ █▀▀█ █░░█ █▀▀▄ ░█▀▀█ ▀█▀ ▒█▀▀▀█ 
+█░░░ █░░ █░░█ █░░█ █░░█ ▒█▄▄█ ▒█░ ▒█░░▒█ 
+█▄▄█ ▀▀▀ ▀▀▀▀ ░▀▀▀ ▀▀▀░ ▒█░▒█ ▄█▄ ▒█▄▄▄█
+
+────(♥)(♥)(♥)────(♥)(♥)(♥) __ ɪƒ ƴσυ'ʀє αʟσηє,
+──(♥)██████(♥)(♥)██████(♥) ɪ'ʟʟ ɓє ƴσυʀ ѕɧα∂σѡ.
+─(♥)████████(♥)████████(♥) ɪƒ ƴσυ ѡαηт тσ cʀƴ,
+─(♥)██████████████████(♥) ɪ'ʟʟ ɓє ƴσυʀ ѕɧσυʟ∂єʀ.
+──(♥)████████████████(♥) ɪƒ ƴσυ ѡαηт α ɧυɢ,
+────(♥)████████████(♥) __ ɪ'ʟʟ ɓє ƴσυʀ ρɪʟʟσѡ.
+──────(♥)████████(♥) ɪƒ ƴσυ ηєє∂ тσ ɓє ɧαρρƴ,
+────────(♥)████(♥) __ ɪ'ʟʟ ɓє ƴσυʀ ѕɱɪʟє.
+─────────(♥)██(♥) ɓυт αηƴтɪɱє ƴσυ ηєє∂ α ƒʀɪєη∂,
+───────────(♥) __ ɪ'ʟʟ ʝυѕт ɓє ɱє.
+--]]
+
 --Version 5.3 *NEW* All info in thread!
 
 -- Varus
@@ -748,59 +765,37 @@ end
   self.targetPos = GetOrigin(self.target)
   self.mymouse = GetMousePos() 
 end
-function Syndra:Combo()
-	self.CastQ()
-	self.CastE()
-	self.CastW()
-	self.CastW2()
-	self.CastR()
-end
 -- Syndra Q cast
-function Syndra:CastQ()
-    if GetCastName(myHero, _Q) == "SyndraQ" then
+function Syndra:Combo()
         local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,800,50,false,true)
             if Config.Q then
             if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and ValidTarget(unit, 1000) then
             CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
             end
-        end
     end
- end
 -- Syndra cast W on Minion
-function Syndra:CastW()
-    if GetCastName(myHero, _W) == "SyndraW" then
+
             if Config.W then
             if CanUseSpell(myHero, _W) == READY and ValidTarget(unit, 1000) then
             CastTargetSpell(Obj_AI_Minion, _W)
-            end
         end
     end
-end
 -- Syndra cast W at Enemy
-function Syndra:CastW2()
-        if GetCastName(myHero, _W) == "SyndraW" then
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,925,50,false,true)
             if Config.W then
             if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and ValidTarget(unit, 1000) then
             CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
-            end
         end
     end
-end
 -- Syndra PUSH
-function Syndra:CastE()
-        if GetCastName(myHero, _E) == "syndrae" then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,700,50,false,true)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 and ValidTarget(unit, 1000) then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
             end
-        end
-    end
 end
 -- Syndra Ultimate
-function Syndra:CastR()
-if GetCastName(myHero, _R) == "SyndraR" then
+
             if Config.R then
         if unit ~= nil then
          local ult = (GetCastLevel(myHero,_R)*135)+(GetBonusAP(myHero)*.6)
@@ -808,7 +803,6 @@ if GetCastName(myHero, _R) == "SyndraR" then
     if CalcDamage(myHero, unit, ult) > GetCurrentHP(unit) and ValidTarget(unit, 1000) then
     CastTargetSpell(unit, _R)
                 end
-            end
         end
     end
 end
@@ -1561,7 +1555,7 @@ function Khazix:__init()
 OnLoop(function(myHero) self:Loop(myHero) end)
 --Menu
 Config = scriptConfig("Khazix", "Khazix")
-self.onfig.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
 Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
@@ -1583,9 +1577,16 @@ end
   self.targetPos = GetOrigin(self.target)
   self.mymouse = GetMousePos() 
 end
+                  function Khazix:Combo()
+  if ValidTarget(self.target, 1700)  then
+      self:CastE()       
+      self:CastW() 
+      self:CastQ()          
+end
+end
 
     -- Khazix E
-    function Khazix:CastE(unit)
+    function Khazix:CastE()
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,GetCastRange(myHero,_E),50,false,true)
             if Config.E then
             if CanUseSpell(myHero, _E) == READY and EPred.HitChance == 1 then
@@ -1594,7 +1595,7 @@ end
         end
       end
                          -- Khazix Q
-                         function Khazix:CastQ(unit)
+                         function Khazix:CastQ()
             if Config.Q then
                  if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 325) then
             CastTargetSpell(unit,_Q)
@@ -1602,7 +1603,7 @@ end
         end
       end
 -- Khazix Q
-function Khazix:CastW(unit)
+function Khazix:CastW()
         local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,600,50,true,true)
             if Config.W then
             if CanUseSpell(myHero, _W) == READY and IsInDistance(unit, 1000) and WPred.HitChance == 1 then
@@ -1610,16 +1611,6 @@ function Khazix:CastW(unit)
             end
         end
       end
-                  function Khazix:Combo()
-  if ValidTarget(self.target, 1700)  then
-    elseif self.EREADY then
-      self:CastE(self.target)       
-    elseif self.WREADY then
-      self:CastW(self.target) 
-                elseif self.QREADY then
-      self:CastQ(self.target)          
-end
-end
 
 --Rumble
 class "Rumble"
