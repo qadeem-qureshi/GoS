@@ -1,7 +1,7 @@
 require('DLib')
 -- Varus
 local version = 2
-local UP=Updater.new("https://github.com/Cloudhax23/GoS/master/CloudAIO2, "CloudAIO", version)
+local UP=Updater.new("Cloudhax23/GoS/blob/master/CloudAIO2.lua, "CloudAIO", version)
 if UP.newVersion() then UP.update() end
 
 -- Cassiopeia
