@@ -1,7 +1,8 @@
 require('DLib')
+require('IAC')
 -- Varus
-local version = 2
-local UP=Updater.new("Cloudhax23/GoS/blob/master/CloudAIO2.lua, "CloudAIO", version)
+local version = 3
+local UP=Updater.new("Cloudhax23/GoS/blob/master/CloudAIO2.lua", "CloudAIO", version)
 if UP.newVersion() then UP.update() end
 
 -- Cassiopeia
@@ -88,16 +89,14 @@ end
 end
 function LH()
    if LastHit.getValue() then
-          if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
         if IsInDistance(Q, 700) then
-        local z = (GetCastLevel(myHero,_E)*55)+(GetBonusAP(myHero)*1)
+        local z = (GetCastLevel(myHero,_E)*35)+(GetBonusAP(myHero)*1)
         local hp = GetCurrentHP(Q)
         local Dmg = CalcDamage(myHero, Q, z)
         if Dmg > hp then
 if CanUseSpell(myHero, _E) == READY then
     CastTargetSpell(Q, _E)
-            end
         end
           end
         end
