@@ -1,50 +1,43 @@
-require('DLib')
-require('IAC')
--- Varus
-local version = 3
-local UP=Updater.new("Cloudhax23/GoS/blob/master/CloudAIO2.lua", "CloudAIO", version)
-if UP.newVersion() then UP.update() end
+--Version 5.4 *FINAL* I Will no longer...
 
+-- Varus
 -- Cassiopeia
 if GetObjectName(GetMyHero()) == "Cassiopeia" then 
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Cassiopeia Loaded</font>"))
 --Menu
-local root = menu.addItem(SubMenu.new("Cassiopeia"))
-local Combo = root.addItem(SubMenu.new("Combo"))
-local Q = Combo.addItem(MenuBool.new("Use Q", true))
-local W = Combo.addItem(MenuBool.new("Use W", true))
-local E = Combo.addItem(MenuBool.new("Use E Smart", true))
-local Es = Combo.addItem(MenuBool.new("Use E", false))
-local R = Combo.addItem(MenuBool.new("Use R", true))
-local ComboActive = Combo.addItem(MenuKeyBind.new("Combo", 32))
-local Farm = root.addItem(SubMenu.new("Farm"))
-local FarmE = Farm.addItem(MenuBool.new("Last hit E", true))
-local FarmE2 = Farm.addItem(MenuBool.new("LaneClear E", true))
-local FarmW = Farm.addItem(MenuBool.new("LaneClear W", true))
-local FarmQ = Farm.addItem(MenuBool.new("LaneClear Q", true))
-local LaneClearActive = Farm.addItem(MenuKeyBind.new("LaneClear", 86))
-local LastHit = Farm.addItem(MenuKeyBind.new("LastHit", 88))
-local KSmenu = root.addItem(SubMenu.new("Killsteal"))
-local KSQ = KSmenu.addItem(MenuBool.new("Killsteal with Q", true))
-local KSE = KSmenu.addItem(MenuBool.new("Killsteal with E", true))
-local KSW = KSmenu.addItem(MenuBool.new("Killsteal with W", true))
+Config = scriptConfig("Cassiopeia", "Cassiopeia")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use Smart E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Es", "Use E", SCRIPT_PARAM_ONOFF, false)
+Config.addParam("Z", "LaneClear E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("U", "LaneClear W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("I", "LaneClear Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("F", "LastHit E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("S", "Use HP W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("D", "Use Q KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("O", "Use E KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("V", "Use W KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
+AutoIgnite()
 LC()
 LH()
-if ComboActive.getValue() then
+KSC()
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
  
 -- Cassiopeia E
-if IsInDistance(unit, 700) and E.getValue() and GotBuff(unit, "cassiopeianoxiousblastpoison") == 1 or GotBuff(unit, "cassiopeiamiasmapoison") == 1 or GotBuff(unit, "cassiopeiatwinfangdebuff") == 1 or GotBuff(unit, "poison") == 1 then
+if IsInDistance(unit, 700) and Config.E and GotBuff(unit, "cassiopeianoxiousblastpoison") == 1 or GotBuff(unit, "cassiopeiamiasmapoison") == 1 or GotBuff(unit, "cassiopeiatwinfangdebuff") == 1 or GotBuff(unit, "poison") == 1 then
     CastTargetSpell(unit, _E)
 end
-if IsInDistance(unit, 700) and Es.getValue() then
+if IsInDistance(unit, 700) and Config.Es then
     CastTargetSpell(unit, _E)
 end
 -- Cassiopeia W
-    if W.getValue() then
+    if Config.W then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,850,55,false,true)
     if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 850) then
     CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
@@ -52,11 +45,11 @@ end
             end
 -- Cassiopeia Q
     local QPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1000,250,850,60,false,true)
-    if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and IsInDistance(unit, 850) and Q.getValue() then
+    if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 and IsInDistance(unit, 850) and Config.Q then
     CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
                 end
 -- Cassiopeia R
-             if R.getValue() then
+             if Config.R then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,825,55,false,true)
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and EnemiesAround(GetMyHeroPos(), 825) >= 3 then
     CastSkillShot(_R,RPred.PredPos.x,RPred.PredPos.y,RPred.PredPos.z)
@@ -66,20 +59,20 @@ end
 end
 end)
 function LC()
-   if LaneClearActive.getValue() then
+   if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 700) then
-            if FarmE2.getValue() then
+            if Config.Z then
         local EnemyPos = GetOrigin(Q)
                     if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 700) and Config.Z and GotBuff(Q, "cassiopeianoxiousblastpoison") == 1 or GotBuff(Q, "cassiopeiamiasmapoison") == 1 or GotBuff(Q, "cassiopeiatwinfangdebuff") == 1 then
             CastTargetSpell(Q, _E)
     end
             local EnemyPos = GetOrigin(Q)
-            if CanUseSpell(myHero, _Q) == READY and FarmQ.getValue() and IsInDistance(Q, 850) then
+            if CanUseSpell(myHero, _Q) == READY and Config.I and IsInDistance(Q, 850) then
             CastSkillShot(_Q,EnemyPos.x,EnemyPos.y,EnemyPos.z)
     end
             local EnemyPos = GetOrigin(Q)
-            if CanUseSpell(myHero, _W) == READY  and FarmW.getValue() and IsInDistance(Q, 850) then
+            if CanUseSpell(myHero, _W) == READY  and Config.U and IsInDistance(Q, 850) then
             CastSkillShot(_W,EnemyPos.x,EnemyPos.y,EnemyPos.z)
     end
     end
@@ -88,15 +81,17 @@ end
 end
 end
 function LH()
-   if LastHit.getValue() then
+   if IWalkConfig.LastHit then
+          if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
         if IsInDistance(Q, 700) then
-        local z = (GetCastLevel(myHero,_E)*35)+(GetBonusAP(myHero)*1)
+        local z = (GetCastLevel(myHero,_E)*55)+(GetBonusAP(myHero)*1)
         local hp = GetCurrentHP(Q)
         local Dmg = CalcDamage(myHero, Q, z)
         if Dmg > hp then
 if CanUseSpell(myHero, _E) == READY then
     CastTargetSpell(Q, _E)
+            end
         end
           end
         end
@@ -111,51 +106,47 @@ local z = (GetCastLevel(myHero,_E)*25)+(GetBonusAP(myHero)*.55)
          local H = (GetCastLevel(myHero,_Q)*40)+(GetBonusAP(myHero)*.45)
          local G = (GetCastLevel(myHero,_W)*45)+(GetBonusAP(myHero)*.90)
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1000,250,850,60,false,true)
-    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and KSQ.getValue() and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and ValidTarget(enemy,850) then
+    if CanUseSpell(myHero, _Q) == READY and WPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.D and CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and ValidTarget(enemy,850) then
     CastSkillShot(_Q,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
-if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 700) and KSE.getValue() and ValidTarget(enemy,850) then
+if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 700) and Config.O and ValidTarget(enemy,850) then
     CastTargetSpell(enemy, _E)
 end
  local QPred = GetPredictionForPlayer(GetMyHeroPos(),enemy,GetMoveSpeed(enemy),1600,250,850,55,false,true)
-    if CanUseSpell(myHero, _W) == READY and QPred.HitChance == 1 and IsInDistance(enemy, 850) and KSW.getValue() and CalcDamage(myHero, enemy, G) > GetCurrentHP(enemy) and ValidTarget(enemy,850) then
+    if CanUseSpell(myHero, _W) == READY and QPred.HitChance == 1 and IsInDistance(enemy, 850) and Config.V and CalcDamage(myHero, enemy, G) > GetCurrentHP(enemy) and ValidTarget(enemy,850) then
     CastSkillShot(_W,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
                 end
             end
 end
 if GetObjectName(GetMyHero()) == "Vladimir" then
 --Menu
-local root = menu.addItem(SubMenu.new("Vladimir"))
-local Combo = root.addItem(SubMenu.new("Combo"))
-local Q = Combo.addItem(MenuBool.new("Use Q", true))
-local W = Combo.addItem(MenuBool.new("Use W", true))
-local E = Combo.addItem(MenuBool.new("Use E ", true))
-local R = Combo.addItem(MenuBool.new("Use R", true))
-local ComboActive = Combo.addItem(MenuKeyBind.new("Combo", 32))
-local Farm = root.addItem(SubMenu.new("Farm"))
-local FarmE = Farm.addItem(MenuBool.new("Last hit E", true))
-local FarmQ2 = Farm.addItem(MenuBool.new("LastHit Q", true))
-local FarmE2 = Farm.addItem(MenuBool.new("LaneClear E", true))
-local FarmW = Farm.addItem(MenuBool.new("LaneClear W", true))
-local FarmQ = Farm.addItem(MenuBool.new("LaneClear Q", true))
-local LaneClearActive = Farm.addItem(MenuKeyBind.new("LaneClear", 86))
-local LastHit = Farm.addItem(MenuKeyBind.new("LastHit", 88))
-local KSmenu = root.addItem(SubMenu.new("Killsteal"))
-local KSQ = KSmenu.addItem(MenuBool.new("Killsteal with Q", true))
-local KSE = KSmenu.addItem(MenuBool.new("Killsteal with E", true))
-local SMW = root.addItem(MenuBool.new("Save me W", true))
+Config = scriptConfig("Vladimir", "Vladimir")
+Config.addParam("Q", "Use Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("W", "Use W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("E", "Use E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("R", "Use R", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Z", "LaneClear E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("U", "LaneClear W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("I", "LaneClear Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("F", "LastHit E", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Y", "LastHit Q", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("S", "Use HP W", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("D", "Use Q KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("O", "Use E KS", SCRIPT_PARAM_ONOFF, true)
+Config.addParam("Combo", "Combo", SCRIPT_PARAM_KEYDOWN, string.byte(" "))
 --Start
 OnLoop(function(myHero)
+AutoIgnite()
 LaneCleared()
 LastHitd()
 KS()
 SaveMeW()
-if CobomoActive.getValue() then
+if Config.Combo then
 local unit = GetCurrentTarget()
 if ValidTarget(unit, 1550) then
  
 -- Vladimir E
-    if E.getValue() then
+    if Config.E then
         local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1700,250,850,50,false,true)
             if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 610) then
             CastSpell(_E)
@@ -163,20 +154,20 @@ if ValidTarget(unit, 1550) then
         end
 
 -- Vladimir W
-    if W.getValue then
+    if Config.W then
     local WPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,1500,55,false,true)
     if CanUseSpell(myHero, _W) == READY and WPred.HitChance == 1 and IsInDistance(unit, 150) then
     CastSkillShot(_W,WPred.PredPos.x,WPred.PredPos.y,WPred.PredPos.z)
                 end
             end
 -- Vladimir Q
-            if Q.getValue() then
+            if Config.Q then
                  if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(unit) and IsInDistance(unit, 600) then
             CastTargetSpell(unit,_Q)
             end
         end
 -- Vladimir R
-             if R.getValue() then
+             if Config.R then
     local RPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1600,250,700,55,false,true)
     local ult = (GetCastLevel(myHero,_R)*112)+(GetBonusAP(myHero)*0.78)
     if CanUseSpell(myHero, _R) == READY and IsInDistance(unit, 700) and CalcDamage(myHero, unit, ult) then
@@ -188,18 +179,18 @@ if ValidTarget(unit, 1550) then
 end
 end)
 function LaneCleared()
-   if LaneClearActive.getValue() then
+   if IWalkConfig.LaneClear then
     for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
           if IsInDistance(Q, 650) then
-            if FarmE2.getValue() then
+            if Config.Z then
         local EnemyPos = GetOrigin(Q)
             if CanUseSpell(myHero, _E) == READY and IsInDistance(Q, 610) then
             CastSpell(_E)
     end
-                if CanUseSpell(myHero, _W) == READY and IsInDistance(Q, 150) and FarmW.getValue() then
+                if CanUseSpell(myHero, _W) == READY and IsInDistance(Q, 150) and Config.U then
             CastSpell(_W)
     end
-                    if CanUseSpell(myHero, _Q) == READY and IsInDistance(Q, 600) and FarmQ.getValue() then
+                    if CanUseSpell(myHero, _Q) == READY and IsInDistance(Q, 600) and Config.I then
             CastTargetSpell(Q, _Q)
     end
     end
@@ -208,7 +199,8 @@ end
 end
 end
 function LastHitd()
-   if LastHit.getValue() then
+   if IWalkConfig.LastHit then
+          if Config.F then
       for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
         if IsInDistance(Q, 610) then
         local z = (GetCastLevel(myHero,_Q)*25)+(GetBonusAP(myHero)*.45)
@@ -218,11 +210,11 @@ function LastHitd()
         local Dmg = CalcDamage(myHero, Q, z)
         local Fmg = CalcDamage(myHero, Q, H)
         if Dmg > hp then
-if CanUseSpell(myHero, _E) == READY and FarmE.getValue() then
+if CanUseSpell(myHero, _E) == READY then
     CastSpell(_E)
             end
             if Fmg > hp then
-            if FarmQ2.getValue() then
+            if Config.Y then
                  if CanUseSpell(myHero, _Q) == READY and IsObjectAlive(Q) and IsInDistance(Q, 600) then
             CastTargetSpell(Q,_Q)
             end
@@ -231,10 +223,12 @@ if CanUseSpell(myHero, _E) == READY and FarmE.getValue() then
           end
         end
       end
+        end
+
    end
 end
 function SaveMeW()
-if SMW.getValue() then
+if Config.S then
 if CanUseSpell(myHero, _W) and (GetCurrentHP(myHero)/GetMaxHP(myHero))<0.15 and GotBuff(myHero, "recall") == 0 then
   CastSpell(_W)
 end
@@ -244,10 +238,10 @@ function KS()
 for i,enemy in pairs(GetEnemyHeroes()) do
 local z = (GetCastLevel(myHero,_Q)*25)+(GetBonusAP(myHero)*.45)
          local H = (GetCastLevel(myHero,_Q)*35)+(GetBonusAP(myHero)*.60)
-          if CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and IsInDistance(enemy, 600) and KSQ.getValue() then
+          if CalcDamage(myHero, enemy, H) > GetCurrentHP(enemy) and IsInDistance(enemy, 600) and Config.D then
     CastTargetSpell(enemy, _Q)
 end
-if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 610) and KSE.getValue() then
+if CalcDamage(myHero, enemy, z) > GetCurrentHP(enemy) and IsInDistance(enemy, 610) and Config.O then
     CastSpell(_E)
 end
 end
@@ -2685,3 +2679,82 @@ end
 end)
 PrintChat(string.format("<font color='#1244EA'>[CloudAIO]</font> <font color='#FFFFFF'>Graves Loaded</font>"))
 end
+-- Recall thing by Kristian
+local recalling = {}
+local x = 5
+local y = 500
+local barWidth = 250
+local rowHeight = 18
+local onlyEnemies = true
+local onlyFOW = true
+
+OnLoop(function()
+  
+  local i = 0
+  for hero, recallObj in pairs(recalling) do
+    local percent=math.floor(GetCurrentHP(recallObj.hero)/GetMaxHP(recallObj.hero)*100)
+    local color=percentToRGB(percent)
+    local leftTime = recallObj.starttime - GetTickCount() + recallObj.info.totalTime
+    
+    if leftTime<0 then leftTime = 0 end
+    FillRect(x,y+rowHeight*i-2,168,rowHeight,0x50000000)
+    if i>0 then FillRect(x,y+rowHeight*i-2,168,1,0xC0000000) end
+    
+    DrawText(string.format("%s (%d%%)", hero, percent), 14, x+2, y+rowHeight*i, color)
+    
+    if recallObj.info.isStart then
+      DrawText(string.format("%.1fs", leftTime/1000), 14, x+115, y+rowHeight*i, color)
+      FillRect(x+169,y+rowHeight*i, barWidth*leftTime/recallObj.info.totalTime,14,0x80000000)
+    else
+      if recallObj.killtime == nil then
+        if recallObj.info.isFinish and not recallObj.info.isStart then
+          recallObj.result = "finished"
+          recallObj.killtime =  GetTickCount()+2000
+        elseif not recallObj.info.isFinish then
+          recallObj.result = "cancelled"
+          recallObj.killtime =  GetTickCount()+2000
+        end
+        
+      end
+      DrawText(recallObj.result, 14, x+115, y+rowHeight*i, color)
+    end
+    
+    if recallObj.killtime~=nil and GetTickCount() > recallObj.killtime then
+      recalling[hero] = nil
+    end
+    
+    i=i+1
+  end
+end)
+
+function percentToRGB(percent) 
+  local r, g
+    if percent == 100 then
+        percent = 99 end
+    
+    if percent < 50 then
+        r = math.floor(255 * (percent / 50))
+        g = 255
+    else
+        r = 255
+        g = math.floor(255 * ((50 - percent % 50) / 50))
+    end
+  
+    return 0xFF000000+g*0xFFFF+r*0xFF
+end
+
+
+OnProcessRecall(function(Object,recallProc)
+  if onlyEnemies and GetTeam(GetMyHero())==GetTeam(Object) then return end
+  if onlyFOW and recalling[GetObjectName(Object)] == nil  and IsVisible(Object) then return end
+  
+  rec = {}
+  rec.hero = Object
+  rec.info = recallProc
+  rec.starttime = GetTickCount()
+  rec.killtime = nil
+  rec.result = nil
+  recalling[GetObjectName(Object)] = rec
+
+end)
+PrintChat("Recall tracker by Krystian loaded.")
