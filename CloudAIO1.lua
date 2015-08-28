@@ -1,5 +1,5 @@
---Version 5.2 *NEW* Cassiopiea QWE Smart E LastHit Laneclear KS.
-
+--Version 5.4 *FINAL* I Will no longer...
+require('lel')
 -- Varus
 myIAC = IAC()
 
