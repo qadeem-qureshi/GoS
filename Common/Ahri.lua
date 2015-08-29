@@ -143,7 +143,7 @@ end
 
 function Ahri:Items()
 if GetItemSlot(myHero,3157) > 0 and Config.Item and ValidTarget(unit, 1000) and GetCurrentHP(myHero)/GetMaxHP(myHero) < 0.13 then
-        CastunitSpell(myHero, GetItemSlot(myHero,3157))
+        CastTargetSpell(myHero, GetItemSlot(myHero,3157))
         end
 end
 
