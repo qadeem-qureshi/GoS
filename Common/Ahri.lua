@@ -369,12 +369,12 @@ local trueDMG = trueDMG + CalcDamage(myHero, unit, 0, (120*GetCastLevel(myHero,_
         DrawDmgOverHpBar(unit,GetCurrentHP(unit),trueDMG,0,0xff00ff00)
 end 
             if trueDMG > hp then
-      DrawText("Killable",20,drawPos.x,drawPos.y,0xffffffff)
-      DrawDmgOverHpBar(unit,hp,0,hp,0xffffffff)
+      DrawText("Killable",20,drawPos.x,drawPos.y,0xff00ff00)
+      DrawDmgOverHpBar(unit,hp,0,hp,0xff00ff00)
     else
-      DrawText(math.floor(100 * trueDMG / hp).."%",20,drawPos.x,drawPos.y,0xffffffff)
+      DrawText(math.floor(100 * trueDMG / hp).."%",20,drawPos.x,drawPos.y,0xff00ff00)
       DrawDmgOverHpBar(unit
-      ,hp,0,trueDMG,0xffffffff)
+      ,hp,0,trueDMG,0xff00ff00)
 end
 end
 end
