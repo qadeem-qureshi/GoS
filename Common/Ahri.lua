@@ -1,4 +1,4 @@
-require('Interupter')
+require('Interrupter')
 -- Here we print chat. 
 PrintChat(string.format("<font color='#4682B4'>[Ahri]</font><font color='#FFFFFF'> Loaded</font>"))
 PrintChat(string.format("<font color='#FFFFFF'> Do good and make sure you upload results!</font>"))
