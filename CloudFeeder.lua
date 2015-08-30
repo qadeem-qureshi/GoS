@@ -35,10 +35,4 @@ function GenerateSpellPos(unitPos, spellPos, range)
     local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
     return {x = unitPos.x + range * tV.x / len, y = 0, z = unitPos.z + range * tV.z / len}
 end
-
-function GenerateDashPos(unitPos)
-    local tV = {x = (unitPos.x-GetMyHeroPos().x), z = (unitPos.z-GetMyHeroPos().z)}
-    local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
-    return {x = GetMyHeroPos().x + 475 * tV.x / len, y = 0, z = GetMyHeroPos().z + 475 * tV.z / len}
-end
 -- end of modify
