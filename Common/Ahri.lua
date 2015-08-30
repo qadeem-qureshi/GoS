@@ -403,10 +403,12 @@ end
 end
 end
 addInterrupterCallback(function(unit, spellType)
-  if IsInDistance(unit, 890) and CanUseSpell(myHero,_E) == READY and
+  if IsInDistance(unit, 890) and CanUseSpell(myHero,_E) == READY then
     local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1200,250,GetCastRange(myHero, _E),60,true,true)
- Config.EI and EPred.HitChance == 1 and ValidTarget(unit, 790) then
-    CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)   end
+ if Config.EI and EPred.HitChance == 1 and ValidTarget(unit, 790) then
+    CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)   
+end
+end
 end)
 
 
