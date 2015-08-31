@@ -6,19 +6,20 @@ OnLoop(function(myHero)
 Farm()
 HitFarm()
 AtkE()
-
 JungleFarm()
+turrentattack()
+barrackattack()
 for _, ally1 in pairs (GetAllyHeroes()) do
         local Allyclosest = AllyNearMe(myHeroPos)
         local Ally = GetOrigin(Allyclosest)
         ally2 = GetOrigin(ally1)
-if GetDistance(Allyclosest, myHero) > 300 and IsDead(myHero) == false then
-  MoveToXYZ(Ally.x+100,Ally.y,Ally.z-261)
+if GetDistance(Allyclosest, myHero) > 300 and IsDead(ally1) == false and (GetCurrentHP(myHero)/GetMaxHP(myHero))>.20 and GotBuff(ally1, "recall") == 0 then
+MoveToXYZ(Ally.x+100,Ally.y,Ally.z+190)
+elseif (GetCurrentHP(myHero)/GetMaxHP(myHero))<.20 then
+MoveToXYZ(12,0,30)
 end
 end
 end)
-
-
 
 function AllyNearMe(pos)
     local ally = nil
@@ -44,32 +45,32 @@ end
 end
 function HitFarm()
    for _,k in pairs(GetAllMinions(MINION_ENEMY)) do
-    if ValidTarget(k, 600) and GetDistance(myHero, ally1) > 750 and EnemiesAround(GetOrigin(myHero), 600) == 0 then
+    if ValidTarget(k, 600) and GetDistance(myHero, ally1) < 750 and EnemiesAround(GetOrigin(myHero), 850) == 0 then
         AttackUnit(k)
 end
 end
 end
 function JungleFarm()
    for _,k in pairs(GetAllMinions(MINION_JUNGLE)) do
-    if ValidTarget(k, 500) and GetDistance(myHero, ally1) < 450 then
+    if ValidTarget(k, 500) and GetDistance(myHero, ally1) > 650 then
         AttackUnit(k)
 end
 end
 end
 function AtkE()
 for i,enemy in pairs(GetEnemyHeroes()) do
-if ValidTarget(enemy, 500) and GetDistance(myHero, ally1) < 450 then
+if ValidTarget(enemy, 500) and GetDistance(myHero, ally1) < 650 then
   AttackUnit(enemy)
 end
 end
 end
 function turrentattack()
-if IsInDistance(Obj_AI_Turret, 1000) and ValidTarget(Obje_AI_Turrent, 700) and GetDistance(myHero, ally1) > 600 then
+if  ValidTarget(Obj_AI_Turrent, 700) and GetDistance(myHero, ally1) < 650 then
   AttackUnit(Obj_AI_Turret)
 end
 end
 function barrackattack()
-if IsInDistance(Obj_AI_Barracks, 1000) and ValidTarget(Obj_AI_Barracks, 700) and GetDistance(myHero, ally1) > 600 then
+if ValidTarget(Obj_AI_Barracks, 700) and GetDistance(myHero, ally1) < 600 then
   AttackUnit(Obj_AI_Barracks)
 end
 end
