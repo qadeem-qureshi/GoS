@@ -234,7 +234,7 @@ end
 end
                  if Combo.E then
                 local EPred = GetPredictionForPlayer(GetMyHeroPos(),unit,GetMoveSpeed(unit),1200,250,GetCastRange(myHero,_E),60,true,true)
-                 if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 870) and Config.Co and ValidTarget(unit, 860) then
+                 if CanUseSpell(myHero, _E) == READY and IsInDistance(unit, 870) and Config.Co3 and ValidTarget(unit, 860) then
             CastSkillShot(_E,EPred.PredPos.x,EPred.PredPos.y,EPred.PredPos.z)
 end
 end
