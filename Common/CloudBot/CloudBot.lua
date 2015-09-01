@@ -24,9 +24,9 @@ for _, ally1 in pairs (GetAllyHeroes()) do
 if GetDistance(Allyclosest, myHero) > 300 and IsDead(ally1) == false and (GetCurrentHP(myHero)/GetMaxHP(myHero))>.20 and GotBuff(ally1, "recall") == 0 and Config.U then
 MoveToXYZ(Ally.x+100,Ally.y,Ally.z+190)
 elseif (GetCurrentHP(myHero)/GetMaxHP(myHero))<.20 and GetTeam(myHero) == 100 then
-MoveToXYZ(12,0,30)
-elseif (GetCurrentHP(myHero)/GetMaxHP(myHero))<.20 and GetTeam(myHero) == 200 then
 MoveToXYZ(400, 200, 400)
+elseif (GetCurrentHP(myHero)/GetMaxHP(myHero))<.20 and GetTeam(myHero) == 200 then
+MoveToXYZ(14340, 171, 14390)
 end
 end
 end)
