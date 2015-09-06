@@ -1,12 +1,13 @@
 
 require('Dlib')
+require('Inspired')
+require('IAC')
 
-local version = 1
+local version = 2
 local UP=Updater.new("Cloudhax23/GoS/tree/master/Common", "Common\\Yasuo", version)
 if UP.newVersion() then UP.update() end
 
-myIAC = IAC()
-
+notification("Yasuo CloudWalker Loaded.", 5000)
 
 --------------- Thanks ilovesona for this ------------------------
 DelayAction(function ()
@@ -131,6 +132,7 @@ local Combo = root.addItem(SubMenu.new("Combo"))
 local QC = Combo.addItem(MenuBool.new("Use Q",true))
 local EC = Combo.addItem(MenuBool.new("Use E",true))
 local RC = Combo.addItem(MenuBool.new("Use R",true))
+local ComboA = Combo.addItem(MenuKeyBind.new("", 32))
 
 local Wall = root.addItem(SubMenu.new("Wall"))
 local WallsU = Wall.addItem(MenuBool.new("Use W",true))
@@ -144,15 +146,18 @@ local Misc = root.addItem(SubMenu.new("Misc"))
 local TFR = Misc.addItem(MenuBool.new("Team Fight Ult", true))
 
 local Farm = root.addItem(SubMenu.new("Farm"))
-local M2M = Farm.addItem(MenuKeyBind.new("E to Minion", 71)
-local LaneT = Farm.addItem(MenuSlider.new("How many minions E (V))", 3, 0, 7, 1))
-local LaneClearE = Farm.addItem(MenuKeyBind.new("Use E LaneClear", 86)
-local LaneClearQ = Farm.addItem(MenuKeyBind.new("Use Q LaneClear", 86)
-local JungleClearE = Farm.addItem(MenuKeyBind.new("Use E JungleClear", 86)
-local JungleClearQ = Farm.addItem(MenuKeyBind.new("Use Q JungleClear", 86)
-local LastHitQ = Farm.addItem(MenuKeyBind.new("Use Q LastHit", 88)
-local LastHitE = Farm.addItem(MenuKeyBind.new("Use E LastHit", 88)
-local LastHitET = Farm.addItem(MenuSlider.new("How many minions E (X))", 3, 0, 7, 1))
+local M2M = Farm.addItem(MenuKeyBind.new("E to Minion", 71))
+local LaneT = Farm.addItem(MenuSlider.new("How many minions E (V)", 3, 0, 7, 1))
+local LaneClearE = Farm.addItem(MenuKeyBind.new("Use E LaneClear", 86))
+local LaneClearQ = Farm.addItem(MenuKeyBind.new("Use Q LaneClear", 86))
+local LaneClearA = Farm.addItem(MenuKeyBind.new("LaneClear", 86))
+local JungleClearE = Farm.addItem(MenuKeyBind.new("Use E JungleClear", 86))
+local JungleClearQ = Farm.addItem(MenuKeyBind.new("Use Q JungleClear", 86))
+local JungleClearA = Farm.addItem(MenuKeyBind.new("JungleClear", 86))
+local LastHitQ = Farm.addItem(MenuKeyBind.new("Use Q LastHit", 88))
+local LastHitE = Farm.addItem(MenuKeyBind.new("Use E LastHit", 88))
+local LastHitA = Farm.addItem(MenuKeyBind.new("LaneClear", 88))
+local LastHitET = Farm.addItem(MenuSlider.new("How many minions E (X)", 3, 0, 7, 1))
 
 
 
@@ -178,7 +183,7 @@ JungleClear()
 end)
 
 function Combo()
-if IWalkConfig.Combo then
+if ComboA.getValue() then
 if ValidTarget(unit, 1200) then
 
 if CanUseSpell(myHero, _Q) == READY and ValidTarget(EnemyPos2, 475) and GetCastName(myHero,_Q) == "YasuoQW" or "yasuoq2w" and QC.getValue() then
@@ -235,7 +240,7 @@ end
 end
 
 function LaneClear()
-if IWalkConfig.LaneClear then
+if LaneClearA.getValue() then
 local towerPos = GetOrigin(objectManager.turrents) 
 for _,Q in pairs(GetAllMinions(MINION_ENEMY)) do
 if ValidTarget(Q, 475) then
@@ -254,7 +259,7 @@ end
 end
 
 function JungleClear()
-if IWalkConfig.LaneClear then
+if JungleClearA.getValue() then
 
 for _,Q in pairs(GetAllMinions(MINION_JUNGLE)) do
 if ValidTarget(Q, 475) then
@@ -272,7 +277,7 @@ end
 end
 
 function LastHit()
-if IWalkConfig.LastHit then
+if LastHitA.getValue() then
 	
 for _,M in pairs(GetAllMinions(MINION_ENEMY)) do
 if ValidTarget(M, 475) then
