@@ -1,8 +1,6 @@
 require("Inspired")
 
 
--- If you are not me.... Then you have the source code. Good job make sure you post "HI CLOUD I DID IT!!!" In the Yasuo thread :P Make sure you actually cracked this Pleb 
-
 -- Global stuff
 KnockedUnits = {}
 Ignite = (GetCastName(myHero,SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
