@@ -399,7 +399,7 @@ end
 
 function EnemiesKnocked()
     local Knockeds = {}
-    for i, enemy in ipairs(GoS:GetEnemyHeroes()) do
+    for i, enemy in pairs(GoS:GetEnemyHeroes()) do
         if GoS:ValidTarget(enemy, 1200) and KnockedUnits[GetNetworkID(enemy)] ~= nil then table.insert(Knockeds, enemy) end
     end
     return Knockeds
