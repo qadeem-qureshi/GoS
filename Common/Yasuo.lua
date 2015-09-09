@@ -1,6 +1,5 @@
 require("Inspired")
 
-
 -- Global stuff
 KnockedUnits = {}
 Ignite = (GetCastName(myHero,SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
@@ -409,7 +408,7 @@ end
 function AutoIgnite()
     if Ignite then
         for _, k in pairs(GoS:GetEnemyHeroes()) do
-            if ValidTarget(unit, 600) and CanUseSpell(myHero, Ignite) == READY and (20*GetLevel(myHero)+50) > GetCurrentHP(k)+GetHPRegen(k)*2.5 and GoS:GetDistanceSqr(GetOrigin(k)) < 600*600 and Yasuo.m.ignite:Value() then
+            if GoS:ValidTarget(unit, 600) and CanUseSpell(myHero, Ignite) == READY and (20*GetLevel(myHero)+50) > GetCurrentHP(k)+GetHPRegen(k)*2.5 and GoS:GetDistanceSqr(GetOrigin(k)) < 600*600 and Yasuo.m.ignite:Value() then
                 CastTargetSpell(k, Ignite)
             end
         end
