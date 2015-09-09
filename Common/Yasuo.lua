@@ -11,19 +11,23 @@ OnLoop(function(myHero)
 YasuoDash2minion()
 LaneClear()
 LastHit()
-YasuoE()
 Items()
 YasuoRinCombo()
 KillSteal()
 AutoUlt()
 AutoIgnite()
-YasuoQW()
 JungleClear()
 if Yasuo.c.combo:Value() then
 if GoS:ValidTarget(unit, 1200) then
   local QPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1025,90,false,false)
 if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.Q:Value() then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
+end
+if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() then
+CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
+end
+if CanUseSpell(myHero,_E) == READY and Yasuo.c.combo:Value() and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
+CastTargetSpell(unit,_E)
 end
 end
 end
@@ -187,16 +191,6 @@ Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250
 
 -- End of Q Predictions
 
-function YasuoQW()
-if Yasuo.c.combo:Value() then
-if GoS:ValidTarget(unit, 1200) then
-if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() then
-CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
-
-end
-end
-end
-end
 
 function YasuoRinCombo()
 if GoS:ValidTarget(unit, 1200) then
@@ -208,11 +202,6 @@ end
 end
 end
 
-function YasuoE()
-if CanUseSpell(myHero,_E) == READY and Yasuo.c.combo:Value() and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
-CastTargetSpell(unit,_E)
-end
-end
 
 function KillSteal()
 for i,enemy in pairs(GoS:GetEnemyHeroes()) do
@@ -399,7 +388,7 @@ end
 
 function EnemiesKnocked()
     local Knockeds = {}
-    for i, enemy in pairs(GoS:GetEnemyHeroes()) do
+    for i, enemy in ipairs(GoS:GetEnemyHeroes()) do
         if GoS:ValidTarget(enemy, 1200) and KnockedUnits[GetNetworkID(enemy)] ~= nil then table.insert(Knockeds, enemy) end
     end
     return Knockeds
