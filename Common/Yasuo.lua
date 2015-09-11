@@ -240,7 +240,7 @@ end
 
 function LaneClear()
 if Yasuo.f.l.lca:Value()then
-local towerPos = GetOrigin(objectManager.turrents) 
+local towerPos = GetOrigin(objectManager2.turrents) 
 for _,Q in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
 if GoS:ValidTarget(Q, 475) then
 
@@ -288,7 +288,7 @@ local y = (GetCastLevel(myHero,_Q)*20)+(GetBonusDmg(myHero)*1)+(GetBaseDamage(my
 local hpq = GetCurrentHP(M)
 local Dmgq = GoS:CalcDamage(myHero, M, y)
 
-local towerPos = GetOrigin(objectManager.turrents) 
+local towerPos = GetOrigin(objectManager2.turrents) 
 
 if CanUseSpell(myHero, _E) == READY and Dmg > hp and Yasuo.f.h.E:Value() and UnderTower(myHero) == false then
 CastTargetSpell(M, _E)
@@ -351,7 +351,7 @@ end
 
 function UnderTower(p1)
 p1 = GetOrigin(p1) or p1
-for i,turrent in pairs(objectManager.turrets) do
+for i,turrent in pairs(objectManager2.turrets) do
 if GetTeam(turrent) ~= GetTeam(myHero) and GoS:ValidTarget(turrent, 1450) then
 local turretPos = GetOrigin(turrent)
 if GoS:GetDistance(myHero, turrentPos) <= 1140 then
@@ -444,48 +444,48 @@ end
 
 do
   _G.objectManager = {}
-  objectManager.maxObjects = 0
-  objectManager.objects = {}
-  objectManager.spawnpoints = {}
-  objectManager.camps = {}
-  objectManager.barracks = {}
-  objectManager.heroes = {}
-  objectManager.minions = {}
-  objectManager.turrets = {}
-  objectManager.missiles = {}
-  objectManager.shops = {}
-  objectManager.wards = {}
-  objectManager.unknown = {}
+  objectManager2.maxObjects = 0
+  objectManager2.objects = {}
+  objectManager2.spawnpoints = {}
+  objectManager2.camps = {}
+  objectManager2.barracks = {}
+  objectManager2.heroes = {}
+  objectManager2.minions = {}
+  objectManager2.turrets = {}
+  objectManager2.missiles = {}
+  objectManager2.shops = {}
+  objectManager2.wards = {}
+  objectManager2.unknown = {}
   OnObjectLoop(function(object, myHero)
-    objectManager.objects[GetNetworkID(object)] = object
+    objectManager2.objects[GetNetworkID(object)] = object
   end)
   OnLoop(function(myHero)
-    objectManager.maxObjects = 0
-    for _, obj in pairs(objectManager.objects) do
-      objectManager.maxObjects = objectManager.maxObjects + 1
+    objectManager2.maxObjects = 0
+    for _, obj in pairs(objectManager2.objects) do
+      objectManager2.maxObjects = objectManager2.maxObjects + 1
       local type = GetObjectType(obj)
       if type == Obj_AI_SpawnPoint then
-        objectManager.spawnpoints[_] = obj
+        objectManager2.spawnpoints[_] = obj
       elseif type == Obj_AI_Camp then
-        objectManager.camps[_] = obj
+        objectManage2r.camps[_] = obj
       elseif type == Obj_AI_Barracks then
-        objectManager.barracks[_] = obj
+        objectManager2.barracks[_] = obj
       elseif type == Obj_AI_Hero then
-        objectManager.heroes[_] = obj
+        objectManager2.heroes[_] = obj
       elseif type == Obj_AI_Minion then
-        objectManager.minions[_] = obj
+        objectManager2.minions[_] = obj
       elseif type == Obj_AI_Turret then
-        objectManager.turrets[_] = obj
+        objectManager2.turrets[_] = obj
       elseif type == Obj_AI_LineMissle then
-        objectManager.missiles[_] = obj
+        objectManager2.missiles[_] = obj
       elseif type == Obj_AI_Shop then
-        objectManager.shops[_] = obj
+        objectManager2.shops[_] = obj
       else
         local objName = GetObjectBaseName(obj)
         if objName:lower():find("ward") or objName:lower():find("totem") then
           objectManager.wards[_] = obj
         else
-          objectManager.unknown[_] = obj
+          objectManager2.unknown[_] = obj
         end
       end
     end
@@ -494,19 +494,19 @@ do
 end
 
 function EmptyObjManager()
-  _G.objectManager = {}
-  objectManager.maxObjects = 0
-  objectManager.objects = {}
-  objectManager.spawnpoints = {}
-  objectManager.camps = {}
-  objectManager.barracks = {}
-  objectManager.heroes = {}
-  objectManager.minions = {}
-  objectManager.turrets = {}
-  objectManager.missiles = {}
-  objectManager.shops = {}
-  objectManager.wards = {}
-  objectManager.unknown = {}
+  _G.objectManager2 = {}
+  objectManager2.maxObjects = 0
+  objectManager2.objects = {}
+  objectManager2.spawnpoints = {}
+  objectManager2.camps = {}
+  objectManager2.barracks = {}
+  objectManager2.heroes = {}
+  objectManager2.minions = {}
+  objectManager2.turrets = {}
+  objectManager2.missiles = {}
+  objectManager2.shops = {}
+  objectManager2.wards = {}
+  objectManager2.unknown = {}
   collectgarbage()
   GoS:DelayAction(function() EmptyObjManager() end, 60000)
 end
