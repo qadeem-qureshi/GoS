@@ -443,7 +443,7 @@ end
 end
 
 do
-  _G.objectManager = {}
+  _G.objectManager2 = {}
   objectManager2.maxObjects = 0
   objectManager2.objects = {}
   objectManager2.spawnpoints = {}
@@ -483,7 +483,7 @@ do
       else
         local objName = GetObjectBaseName(obj)
         if objName:lower():find("ward") or objName:lower():find("totem") then
-          objectManager.wards[_] = obj
+          objectManager2.wards[_] = obj
         else
           objectManager2.unknown[_] = obj
         end
