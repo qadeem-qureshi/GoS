@@ -539,4 +539,4 @@ if _G[GetObjectName(myHero)] then
   _G[GetObjectName(myHero)]()
 end
 
-PrintChat(string.format("<font color='#1244EA'>Yasuo:</font> <font color='#FFFFFF'> By Cloud Loaded and thank Platypus </font>"))
+PrintChat(string.format("<font color='#1244EA'>Yasuo:</font> <font color='#FFFFFF'> By Cloud Loaded and thank Scriptler(Platypus) </font>"))
