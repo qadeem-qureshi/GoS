@@ -3,36 +3,6 @@ require("Inspired")
 -- Global stuff
 KnockedUnits = {}
 Ignite = (GetCastName(myHero,SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
-EnemyPos2 = GetOrigin(unit)
-
-OnLoop(function(myHero)
-YasuoDash2minion()
-LaneClear()
-LastHit()
-Items()
-YasuoRinCombo()
-KillSteal()
-AutoUlt()
-AutoIgnite()
-JungleClear()
-target = GetCurrentTarget()
-unit = GetCurrentTarget()
-if IOW:Mode() == "Combo" then
-if GoS:ValidTarget(unit, 1200) then
-  local QPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1025,90,false,false)
-if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.Q:Value() then
-CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-end
-if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() then
-CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
-end
-if CanUseSpell(myHero,_E) == READY and Yasuo.c.combo:Value() and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
-CastTargetSpell(unit,_E)
-end
-end
-end
-end)
-
 
 WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
     ["Fizz"]                      = {_R},
@@ -71,40 +41,40 @@ WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
     ["Irelia"]                      = {_R},
     ["Leesin"]                      = {_Q},
     ["Irelia"]                      = {_R},
-   	["Leona"]                      = {_E},
-   	["Lissandra"]                      = {_E},
-   	["Lucian"]                      = {_R}, 
-   	["Lux"]                      = {_Q,_E},
-   	["Missfortune"]                      = {_R},
-   	["Morgana"]                      = {_Q},
-   	["Nami"]                      = {_R},
-   	["Nocturne"]                      = {_Q},
-   	["Pantheon"]                      = {_Q},
-   	["Quinn"]                      = {_Q},
-   	["Rengar"]                      = {_E},
-   	["Riven"]                      = {_R},
-   	["Ryze"]                      = {_Q,_E},
-   	["Sejuani"]                      = {_R},
-   	["Sivir"]                      = {_Q,_E},
-   	["Skarner"]                      = {_E},
-   	["Sona"]                      = {_R},
-   	["Swain"]                      = {_Q,_R},
-   	["Irelia"]                      = {_R},
-   	["Syndra"]                      = {_E,_R},
-   	["Talon"]                      = {_W,_R},
-   	["Teemo"]                      = {_Q},
-   	["Thresh"]                      = {_Q},
-   	["Tristana"]                      = {_R},
-   	["Varus"]                      = {_Q,_R},
-   	["Vayne"]                      = {_E},
-   	["Veigar"]                      = {_R},
-   	["Twistedfate"]                      = {_Q},
-   	["Velkoz"]                      = {_Q,_W},
-   	["Viktor"]                      = {_E},
-   	["Xerath"]                      = {_Q},
-   	["Zed"]                      = {_Q},
-   	["Ziggs"]                      = {_Q, _R},
-   	["Zyra"]                      = {_E}
+    ["Leona"]                      = {_E},
+    ["Lissandra"]                      = {_E},
+    ["Lucian"]                      = {_R}, 
+    ["Lux"]                      = {_Q,_E},
+    ["Missfortune"]                      = {_R},
+    ["Morgana"]                      = {_Q},
+    ["Nami"]                      = {_R},
+    ["Nocturne"]                      = {_Q},
+    ["Pantheon"]                      = {_Q},
+    ["Quinn"]                      = {_Q},
+    ["Rengar"]                      = {_E},
+    ["Riven"]                      = {_R},
+    ["Ryze"]                      = {_Q,_E},
+    ["Sejuani"]                      = {_R},
+    ["Sivir"]                      = {_Q,_E},
+    ["Skarner"]                      = {_E},
+    ["Sona"]                      = {_R},
+    ["Swain"]                      = {_Q,_R},
+    ["Irelia"]                      = {_R},
+    ["Syndra"]                      = {_E,_R},
+    ["Talon"]                      = {_W,_R},
+    ["Teemo"]                      = {_Q},
+    ["Thresh"]                      = {_Q},
+    ["Tristana"]                      = {_R},
+    ["Varus"]                      = {_Q,_R},
+    ["Vayne"]                      = {_E},
+    ["Veigar"]                      = {_R},
+    ["Twistedfate"]                      = {_Q},
+    ["Velkoz"]                      = {_Q,_W},
+    ["Viktor"]                      = {_E},
+    ["Xerath"]                      = {_Q},
+    ["Zed"]                      = {_Q},
+    ["Ziggs"]                      = {_Q, _R},
+    ["Zyra"]                      = {_E}
 }
 
 OnProcessSpell(function(unit, spell)
@@ -126,86 +96,139 @@ end
 end
 end)
 
-Yasuo = Menu("Yasuo", "Yasuo")
+class "Yasuo"
+function Yasuo:__init()
+  OnLoop(function(myHero) self:Loop(myHero) end)
+  Yasuo = Menu("Yasuo", "Yasuo")
+    Yasuo:SubMenu("c", "Combo")
+      Yasuo.c:Boolean("Q", "Use Q", true)
+      Yasuo.c:Boolean("E", "Use E", true)
+      Yasuo.c:Boolean("R", "Use R", true)
+      Yasuo.c:Slider("RP", " R HP Enemy", 45, 1, 100, 1)
+      Yasuo.c:Key("combo", "Combo", string.byte(" "))
 
-Yasuo:SubMenu("c", "Combo")
-Yasuo.c:Boolean("Q", "Use Q", true)
-Yasuo.c:Boolean("E", "Use E", true)
-Yasuo.c:Boolean("R", "Use R", true)
-Yasuo.c:Slider("RP", " R HP Enemy", 45, 1, 100, 1)
-Yasuo.c:Key("combo", "Combo", string.byte(" "))
+    Yasuo:SubMenu("f", "Farm")
+      Yasuo.f:SubMenu("l", "LaneClear")
+      Yasuo.f.l:Boolean("Q", "Use Q", true)
+      Yasuo.f.l:Boolean("E", "Use E", true)
+      Yasuo.f.l:Key("lca", "LaneClear", string.byte("V"))
 
-Yasuo:SubMenu("f", "Farm")
-Yasuo.f:SubMenu("l", "LaneClear")
-Yasuo.f.l:Boolean("Q", "Use Q", true)
-Yasuo.f.l:Boolean("E", "Use E", true)
-Yasuo.f.l:Key("lca", "LaneClear", string.byte("V"))
+    Yasuo.f:SubMenu("h", "LastHit")
+      Yasuo.f.h:Boolean("Q", "Use Q", true)
+      Yasuo.f.h:Boolean("E", "Use E", true)
+    Yasuo.f.h:Key("lha", "LastHit", string.byte("X"))
 
-Yasuo.f:SubMenu("h", "LastHit")
-Yasuo.f.h:Boolean("Q", "Use Q", true)
-Yasuo.f.h:Boolean("E", "Use E", true)
-Yasuo.f.h:Key("lha", "LastHit", string.byte("X"))
+    Yasuo.f:SubMenu("j", "JungleClear")
+      Yasuo.f.j:Boolean("Q", "Use Q", true)
+      Yasuo.f.j:Boolean("E", "Use E", true)
+      Yasuo.f.j:Key("jca", "LaneClear", string.byte("V"))
 
-Yasuo.f:SubMenu("j", "JungleClear")
-Yasuo.f.j:Boolean("Q", "Use Q", true)
-Yasuo.f.j:Boolean("E", "Use E", true)
-Yasuo.f.j:Key("jca", "LaneClear", string.byte("V"))
-
-Yasuo:SubMenu("j", "JungleSteal")
-Yasuo.j:Boolean("Q", "Use Q", true)
-Yasuo.j:Boolean("E", "Use E", true)
-
-
-Yasuo:SubMenu("m", "Misc")
-Yasuo.m:Key("ma", "Dash Force", string.byte("G"))
-Yasuo.m:Boolean("tfra", "R Team Fight", true)
-Yasuo.m:Boolean("ignite", "Use Ignite", true)
-Yasuo.m:Slider("tfr", " R X Enemies", 3, 0, 5, 1)
-Yasuo.m:SubMenu("I", "Items")
-Yasuo.m.I:Boolean("B", "Use BoTRK", true)
-Yasuo.m.I:Boolean("b", "Use BilgeWater", true)
-Yasuo.m.I:Boolean("G", "Use Ghostblade", true)
-Yasuo.m.I:Boolean("H", "Use Hydra", true)
-Yasuo.m.I:Boolean("T", "Use Tiamat", true)
-Yasuo.m.I:Slider("QM", " QSS HP", 75, 0, 100, 1)
-Yasuo.m.I:Boolean("R", "Use Randuins", true)
-Yasuo.m.I:Boolean("M", "Use Mercurial", true)
-Yasuo.m.I:Boolean("Q", "Use QSS", true)
-
-Yasuo:SubMenu("ks", "KillSteal")
-Yasuo.ks:Boolean("Q", "Use Q", true)
-Yasuo.ks:Boolean("E", "Use E", true)
-Yasuo.ks:Boolean("R", "Use R", true)
-
-Yasuo:SubMenu("Wall", "Wall")
-Yasuo.Wall:Boolean("W", "Use W", true)
-
-Yasuo:Info("Made", "Script by Cloud") 
+    Yasuo:SubMenu("j", "JungleSteal")
+      Yasuo.j:Boolean("Q", "Use Q", true)
+      Yasuo.j:Boolean("E", "Use E", true)
 
 
--- Q predictions
+    Yasuo:SubMenu("m", "Misc")
+      Yasuo.m:Key("ma", "Dash Force", string.byte("G"))
+      Yasuo.m:Boolean("tfra", "R Team Fight", true)
+      Yasuo.m:Boolean("ignite", "Use Ignite", true)
+      Yasuo.m:Slider("tfr", " R X Enemies", 3, 0, 5, 1)
+    Yasuo.m:SubMenu("I", "Items")
+      Yasuo.m.I:Boolean("B", "Use BoTRK", true)
+      Yasuo.m.I:Boolean("b", "Use BilgeWater", true)
+      Yasuo.m.I:Boolean("G", "Use Ghostblade", true)
+      Yasuo.m.I:Boolean("H", "Use Hydra", true)
+      Yasuo.m.I:Boolean("T", "Use Tiamat", true)
+      Yasuo.m.I:Slider("QM", " QSS HP", 75, 0, 100, 1)
+      Yasuo.m.I:Boolean("R", "Use Randuins", true)
+      Yasuo.m.I:Boolean("M", "Use Mercurial", true)
+      Yasuo.m.I:Boolean("Q", "Use QSS", true)
 
-QWPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
-Q2Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,GetCastRange(myHero, _Q),55,false,true)
-Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
+    Yasuo:SubMenu("ks", "KillSteal")
+      Yasuo.ks:Boolean("Q", "Use Q", true)
+      Yasuo.ks:Boolean("E", "Use E", true)
+      Yasuo.ks:Boolean("R", "Use R", true)
 
--- End of Q Predictions
+    Yasuo:SubMenu("Wall", "Wall")
+      Yasuo.Wall:Boolean("W", "Use W", true)
 
+    Yasuo:Info("Made", "Script by Cloud") 
+end
 
-function YasuoRinCombo()
+function Yasuo:Loop(myHero)
+    self:Checks()
+    if IOW:Mode() == "Combo" then
+      self:Combo()
+      self:Items()
+    end
+    if IOW:Mode() == "LaneClear" then
+      self:LaneClear()
+    end
+    if IOW:Mode() == "LaneClear" then
+      self:JungleClear()
+    end
+    if IOW:Mode() == "LastHit" then
+      self:LastHit()
+    end
+    self:YasuoRinCombo()
+    self:KillSteal()
+    self:AutoUlt()
+    self:AutoIgnite()
+    self:YasuoDash2minion()
+end
+
+function Yasuo:Checks()
+  self.QREADY = CanUseSpell(myHero,_Q) == READY
+  self.WREADY = CanUseSpell(myHero,_W) == READY
+  self.EREADY = CanUseSpell(myHero,_E) == READY
+  self.RREADY = CanUseSpell(myHero,_R) == READY
+  EnemyPos2 = GetOrigin(unit)
+  target = GetCurrentTarget()
+  unit = GetCurrentTarget()
+  QWPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
+  Q2Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,GetCastRange(myHero, _Q),55,false,true)
+  Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
+end
+
+function Yasuo:Combo()
+if Yasuo.c.Q:Value() then
+    self:CastQ(unit)
+    end
+if Yasuo.c.E:Value() then
+    self:CastE(unit)
+    end
+end
+
+function Yasuo:CastQ(unit)
+if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" then
+CastSkillShot(_Q,QWPred.PredPos.x,QWPred.PredPos.y,QWPred.PredPos.z)
+end
+
+if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() and GoS:ValidTarget(unit, 900) then
+CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
+end
+end
+
+function Yasuo:CastE(unit)
+if CanUseSpell(myHero,_E) == READY and Yasuo.c.combo:Value() and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
+CastTargetSpell(unit,_E)
+end
+end
+
+function Yasuo:YasuoRinCombo()
 if GoS:ValidTarget(unit, 1200) then
 if CanUseSpell(myHero,_R) == READY and Yasuo.c.R:Value() and (GetCurrentHP(unit)/GetMaxHP(unit))*100 <= Yasuo.c.RP:Value() then
 GoS:DelayAction(function()
 CastSpell(_R)
-end, 2 - GetLatency()/1000)
+end, 2 - GetLatency()/2000)
 end
 end
 end
 
 
-function KillSteal()
+function Yasuo:KillSteal()
 for i,enemy in pairs(GoS:GetEnemyHeroes()) do
-if GoS:ValidTarget(enemy, 1200) and IsDead(enemy) == false then
+if GoS:ValidTarget(enemy, 1200) then
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
 local hp = GetCurrentHP(enemy)
 local Dmg = GoS:CalcDamage(myHero, enemy, z)
@@ -238,7 +261,7 @@ end
 end
 end
 
-function LaneClear()
+function Yasuo:LaneClear()
 if Yasuo.f.l.lca:Value()then
 local towerPos = GetOrigin(objectManager2.turrents) 
 for _,Q in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
@@ -257,7 +280,7 @@ end
 end
 end
 
-function JungleClear()
+function Yasuo:JungleClear()
 if Yasuo.f.j.jca:Value() then
 
 for _,Q in pairs(GoS:GetAllMinions(MINION_JUNGLE)) do
@@ -275,9 +298,9 @@ end
 end
 end
 
-function LastHit()
+function Yasuo:LastHit()
 if Yasuo.f.h.lha:Value() then
-	
+  
 for _,M in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
 if GoS:ValidTarget(M, 475) then
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
@@ -302,7 +325,7 @@ end
 end
 end
 
-function JungleSteal()
+function Yasuo:JungleSteal()
 
 for _,js in pairs(GoS:GetAllMinions(MINION_JUNGLE)) do
 
@@ -327,7 +350,7 @@ end
 end
 end
 
-function YasuoDash2minion()
+function Yasuo:YasuoDash2minion()
 for _,Q in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
 if GoS:ValidTarget(Q, 375) then
 if GetCastName(myHero, _E) == "YasuoDashWrapper" and CanUseSpell(myHero, _E) == READY and Yasuo.m.ma:Value() and not GoS:ValidTarget(unit, 475) then
@@ -336,8 +359,9 @@ end
 end
 end
 end
-mydpos = GetOrigin(myHero)
+
 function GenerateWallPos(unitPos)
+local mydpos = GetOrigin(myHero)
 local tV = {x = (unitPos.x-mydpos.x), z = (unitPos.z-mydpos.z)}
 local len = math.sqrt(tV.x * tV.x + tV.z * tV.z)
 return {x = mydpos.x + 400 * tV.x / len, y = 0, z = mydpos.z + 400 * tV.z / len}
@@ -350,16 +374,16 @@ return {x = unitPos.x + range * tV.x / len, y = 0, z = unitPos.z + range * tV.z 
 end
 
 function UnderTower(p1)
-p1 = GetOrigin(p1) or p1
+local p1 = GetOrigin(p1) or p1
 for i,turrent in pairs(objectManager2.turrets) do
 if GetTeam(turrent) ~= GetTeam(myHero) and GoS:ValidTarget(turrent, 1450) then
 local turretPos = GetOrigin(turrent)
 if GoS:GetDistance(myHero, turrentPos) <= 1140 then
-	return true
+  return true
 end
 end
 end
-	return false
+  return false
 end
 
 function MinionsAround(pos, range)
@@ -374,7 +398,7 @@ function MinionsAround(pos, range)
 end
 
 
-function AutoUlt()
+function Yasuo:AutoUlt()
      if Yasuo.m.tfra:Value() and Yasuo.m.tfr:Value() > 0 and #EnemiesKnocked() >= Yasuo.m.tfr:Value() then
         CastR(unit)
     end
@@ -394,7 +418,7 @@ function EnemiesKnocked()
     return Knockeds
 end
 
-function AutoIgnite()
+function Yasuo:AutoIgnite()
     if Ignite then
         for _, k in pairs(GoS:GetEnemyHeroes()) do
             if GoS:ValidTarget(unit, 600) and CanUseSpell(myHero, Ignite) == READY and (20*GetLevel(myHero)+50) > GetCurrentHP(k)+GetHPRegen(k)*2.5 and GoS:GetDistanceSqr(GetOrigin(k)) < 600*600 and Yasuo.m.ignite:Value() then
@@ -405,7 +429,7 @@ function AutoIgnite()
   end
 
 
-function Items() -- Yes deftsu ik your looking right here kappa 
+function Yasuo:Items() -- Yes deftsu ik your looking right here kappa 
 
 -- QSS
 if GetItemSlot(myHero,3140) > 0 and Yasuo.m.I.Q:Value() and GotBuff(myHero, "rocketgrab2") > 0 or GotBuff(myHero, "charm") > 0 or GotBuff(myHero, "fear") > 0 or GotBuff(myHero, "flee") > 0 or GotBuff(myHero, "snare") > 0 or GotBuff(myHero, "taunt") > 0 or GotBuff(myHero, "suppression") > 0 or GotBuff(myHero, "stun") > 0 or GotBuff(myHero, "zedultexecute") > 0 or GotBuff(myHero, "summonerexhaust") > 0 and (GetCurrentHP(myHero)/GetMaxHP(myHero))*100 <= Yasuo.m.I.QM:Value() then
@@ -511,5 +535,8 @@ function EmptyObjManager()
   GoS:DelayAction(function() EmptyObjManager() end, 60000)
 end
 
+if _G[GetObjectName(myHero)] then
+  _G[GetObjectName(myHero)]()
+end
 
-PrintChat(string.format("<font color='#1244EA'>Yasuo:</font> <font color='#FFFFFF'> By Cloud Loaded</font>"))
+PrintChat(string.format("<font color='#1244EA'>Yasuo:</font> <font color='#FFFFFF'> By Cloud Loaded </font>"))
