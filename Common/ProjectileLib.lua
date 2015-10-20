@@ -81,7 +81,6 @@ PROJECTILE_SPELLS = {
     ["Talon"]                      = {Spellname ="TalonRake",Name ="Talon",Spellslot =_W},
     ["Talon2"]                      = {Spellname ="TalonShadowAssault",Name ="Talon",Spellslot =_R},
     ["Teemo"]                      = {Spellname ="BlindingDart",Name ="Teemo",Spellslot =_Q},
-    ["Teemo2"]                      = {Spellname ="BantamTrap",Name ="Teemo",Spellslot =_R}
     ["Thresh"]                      = {Spellname ="ThreshQ",Name ="Thresh",Spellslot =_Q},
     ["Tristana"]                      = {Spellname ="BusterShot",Name ="Tristana",Spellslot =_R},
     ["Varus"]                      = {Spellname ="VarusQ",Name ="Varus",Spellslot =_Q},
