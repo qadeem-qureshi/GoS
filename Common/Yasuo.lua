@@ -107,12 +107,12 @@ WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
 OnProcessSpell(function(unit, spell)
 myHero = GetMyHero()
 if Yasuo.Wall.W:Value() then
-if unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GoS:GetDistance(unit) < 1500 and Yasuo.Wall[GetObjectName(unit).."Wall"]:Value() then
+if unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GoS:GetDistance(unit) < 1500 then
 unispells = WALL_SPELLS[GetObjectName(unit)]
 if myHero == spell.target and GetRange(unit) >= 450 and GoS:CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 and not spell.name:lower():find("attack") then
 local wPos = GetOrigin(unit)
 CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
-elseif spell.endPos and not spell.name:lower():find("attack") and Yasuo.Wall[GetObjectName(unit).."Wall"]:Value() then
+elseif spell.endPos and not spell.name:lower():find("attack") then
 local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GoS:GetDistance(unit, myHero))
 if GoS:GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GoS:GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
 local wPos = GetOrigin(unit)
