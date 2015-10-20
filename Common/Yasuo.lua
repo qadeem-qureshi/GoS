@@ -1,5 +1,5 @@
 require("Inspired")
-
+if GetObjectName(myHero) ~= "Yasuo" then return end
 -- Global stuff
 KnockedUnits = {}
 Ignite = (GetCastName(myHero,SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
