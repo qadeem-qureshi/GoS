@@ -5,103 +5,103 @@ KnockedUnits = {}
 Ignite = (GetCastName(myHero,SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
 
 WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
-    ["Fizz"]                      = {Name = "Fizz", Spellslot =_R},
-    ["Aatrox"]                      = {Name= "Aatrox", Spellslot =_E},
-    ["Ahri"]                      = {Name = "Ahri", Spellslot =_Q},
-    ["Ahri2"]                      = {Name = "Ahri", Spellslot =_W},
-    ["Ahri3"]                      = {Name = "Ahri", Spellslot =_E},
-    ["Ahri3"]                      = {Name = "Ahri", Spellslot =_R},
-    ["Anivia"]                      = {Name = "Anivia", Spellslot =_Q},
-    ["Anivia2"]                      = {Name = "Anivia", Spellslot =_E},
-    ["Annie"]                      = {Name = "Annie", Spellslot =_Q},
-    ["Ashe"]                      = {Name ="Ashe", Spellslot =_W},
-    ["Ashe2"]                      = {Name ="Ashe", Spellslot =_R},
-    ["Amumu"]                      = {Name ="Amumu",Spellslot =_Q},
-    ["Blitzcrank"]                      = {Name ="Blitzcrank",Spellslot =_Q},
-    ["Brand"]                      = {Name ="Brand", Spellslot =_Q},
-    ["Brand2"]                      = {Name ="Brand", Spellslot =_R},
-    ["Braum"]                      = {Name ="Braum",Spellslot =_Q},
-    ["Braum2"]                      = {Name ="Braum",Spellslot =_R},
-    ["Caitlyn"]                      = {Name ="Caitlyn",Spellslot =_Q},
-    ["Caitlyn2"]                      = {Name ="Caitlyn",Spellslot =_E},
-    ["Caitlyn3"]                      = {Name ="Caitlyn",Spellslot =_R},
-    ["Cassiopiea"]                      = {Name ="Cassiopiea",Spellslot =_W},
-    ["Cassiopiea2"]                      = {Name ="Cassiopiea",Spellslot =_E},
-    ["Corki"]                      = {Name ="Corki",Spellslot =_Q},
-    ["Corki2"]                      = {Name ="Corki",Spellslot =_R},
-    ["Diana"]                      = {Name ="Diana",Spellslot =_Q},
-    ["DrMundo"]                      = {Name ="DrMundo",Spellslot =_Q},
-    ["Draven"]                      = {Name ="Draven",Spellslot =_Q},
-    ["Draven2"]                      = {Name ="Draven",Spellslot =_E},
-    ["Draven3"]                      = {Name ="Draven",Spellslot =_R},
-    ["Elise"]                      = {Name ="Elise",Spellslot =_Q},
-    ["Elise2"]                      = {Name ="Elise",Spellslot =_E},
-    ["Evelynn"]                      = {Name ="Evelynn",Spellslot =_Q},
-    ["Ezreal"]                      = {Name ="Ezreal",Spellslot =_Q,},
-    ["Ezreal2"]                      = {Name ="Ezreal",Spellslot =_W},
-    ["Ezreal3"]                      = {Name ="Ezreal",Spellslot =_R},
-    ["Galio"]                      = {Name ="Galio",Spellslot =_E},
-    ["Galio2"]                      = {Name ="Galio",Spellslot =_Q},
-    ["Gangplank"]                      = {Name ="Gangplank",Spellslot =_Q},
-    ["Gnar"]                      = {Name ="Gnar",Spellslot =_Q},
-    ["Graves"]                      = {Name ="Graves",Spellslot =_Q},
-    ["Graves2"]                      = {Name ="Graves",Spellslot =_R},
-    ["Heimerdinger"]                      = {Name ="Heimerdinger",Spellslot =_W},
-    ["Irelia"]                      = {Name ="Irelia",Spellslot =_R},
-    ["Janna"]                      = {Name ="Janna",Spellslot =_Q},
-    ["Jayce"]                      = {Name ="Jayce",Spellslot =_Q},
-    ["Jinx"]                      = {Name ="Jinx",Spellslot =_W},
-    ["Jinx2"]                      = {Name ="Jinx",Spellslot =_R},
-    ["Kalista"]                      = {Name ="Kalista",Spellslot =_Q},
-    ["Karma"]                      = {Name ="Karma",Spellslot =_Q},
-    ["Kassidan"]                      = {Name ="Kassidan",Spellslot =_Q},
-    ["Katarina"]                      = {Name ="Katarina",Spellslot =_R},
-    ["Leblanc"]                      = {Name ="Leblanc",Spellslot =_Q},
-    ["Leblanc2"]                      = {Name ="Leblanc",Spellslot =_E},
-    ["Leesin"]                      = {Name ="Leesin",Spellslot =_Q},
-    ["Leona"]                      = {Name ="Leona",Spellslot =_E},
-    ["Lissandra"]                      = {Name ="Lissandra",Spellslot =_E},
-    ["Lucian"]                      = {Name ="Lucian",Spellslot =_R}, 
-    ["Lux"]                      = {Name ="Lux",Spellslot =_Q},
-    ["Lux2"]                      = {Name ="Lux",Spellslot =_E},
-    ["Missfortune"]                      = {Name ="Missfortune",Spellslot =_R},
-    ["Morgana"]                      = {Name ="Morgana",Spellslot =_Q},
-    ["Nami"]                      = {Name ="Nami",Spellslot =_R},
-    ["Nocturne"]                      = {Name ="Nocturne",Spellslot =_Q},
-    ["Pantheon"]                      = {Name ="Pantheon",Spellslot =_Q},
-    ["Quinn"]                      = {Name ="Quinn",Spellslot =_Q},
-    ["Rengar"]                      = {Name ="Rengar",Spellslot =_E},
-    ["Riven"]                      = {Name ="Riven",Spellslot =_R},
-    ["Ryze"]                      = {Name ="Ryze",Spellslot =_Q},
-    ["Ryze2"]                      = {Name ="Ryze",Spellslot =_E},
-    ["Sejuani"]                      = {Name ="Sejuani",Spellslot =_R},
-    ["Sivir"]                      = {Name ="Sivir",Spellslot =_Q},
-    ["Sivir2"]                      = {Name ="Sivir",Spellslot =_E},
-    ["Skarner"]                      = {Name ="Skarner",Spellslot =_E},
-    ["Sona"]                      = {Name ="Sona",Spellslot =_R},
-    ["Swain"]                      = {Name ="Swain",Spellslot =_Q},
-    ["Swain2"]                      = {Name ="Swain",Spellslot =_R},
-    ["Syndra"]                      = {Name ="Syndra",Spellslot =_E},
-    ["Syndra2"]                      = {Name ="Syndra",Spellslot =_R},
-    ["Talon"]                      = {Name ="Talon",Spellslot =_W},
-    ["Talon2"]                      = {Name ="Talon",Spellslot =_R},
-    ["Teemo"]                      = {Name ="Teemo",Spellslot =_Q},
-    ["Teemo2"]                      = {Name ="Teemo",Spellslot =_R}
-    ["Thresh"]                      = {Name ="Thresh",Spellslot =_Q},
-    ["Tristana"]                      = {Name ="Tristana",Spellslot =_R},
-    ["Varus"]                      = {Name ="Varus",Spellslot =_Q},
-    ["Varus2"]                      = {Name ="Varus",Spellslot =_R},
-    ["Vayne"]                      = {Name ="Vayne",Spellslot =_E},
-    ["Veigar"]                      = {Name ="Veigar",Spellslot =_R},
-    ["Twistedfate"]                      = {Name ="Twistedfate",Spellslot =_Q},
-    ["Velkoz"]                      = {Name ="Velkoz",Spellslot =_Q},
-    ["Velkoz2"]                      = {Name ="Velkoz",Spellslot =_W},
-    ["Viktor"]                      = {Name ="Viktor",Spellslot =_E},
-    ["Xerath"]                      = {Name ="Xerath",Spellslot =_Q},
-    ["Zed"]                      = {Name ="Zed",Spellslot =_Q},
-    ["Ziggs"]                      = {Name ="Ziggs",Spellslot =_R},
-    ["Ziggs2"]                      = {Name ="Ziggs",Spellslot =_Q},
-    ["Zyra"]                      = {Name ="Zyra",Spellslot =_E}
+    ["Fizz"]                      = {Spellname ="FizzMarinerDoom",Name = "Fizz", Spellslot =_R},
+    ["Aatrox"]                      = {Spellname ="AatroxE",Name= "Aatrox", Spellslot =_E},
+    ["Ahri"]                      = {Spellname ="AhriOrbofDeception",Name = "Ahri", Spellslot =_Q},
+    ["Ahri2"]                      = {Spellname ="AhriFoxFire",Name = "Ahri", Spellslot =_W},
+    ["Ahri3"]                      = {Spellname ="AhriSeduce",Name = "Ahri", Spellslot =_E},
+    ["Ahri3"]                      = {Spellname ="AhriTumble",Name = "Ahri", Spellslot =_R},
+    ["Anivia"]                      = {Spellname ="FlashFrost",Name = "Anivia", Spellslot =_Q},
+    ["Anivia2"]                      = {Spellname ="Frostbite",Name = "Anivia", Spellslot =_E},
+    ["Annie"]                      = {Spellname ="Disintegrate",Name = "Annie", Spellslot =_Q},
+    ["Ashe"]                      = {Spellname ="Volley",Name ="Ashe", Spellslot =_W},
+    ["Ashe2"]                      = {Spellname ="EnchantedCrystalArrow",Name ="Ashe", Spellslot =_R},
+    ["Amumu"]                      = {Spellname ="BandageToss",Name ="Amumu",Spellslot =_Q},
+    ["Blitzcrank"]                      = {Spellname ="RocketGrabMissile",Name ="Blitzcrank",Spellslot =_Q},
+    ["Brand"]                      = {Spellname ="BrandBlaze",Name ="Brand", Spellslot =_Q},
+    ["Brand2"]                      = {Spellname ="BrandWildfire",Name ="Brand", Spellslot =_R},
+    ["Braum"]                      = {Spellname ="BraumQ",Name ="Braum",Spellslot =_Q},
+    ["Braum2"]                      = {Spellname ="BraumRWapper",Name ="Braum",Spellslot =_R},
+    ["Caitlyn"]                      = {Spellname ="CaitlynPiltoverPeacemaker",Name ="Caitlyn",Spellslot =_Q},
+    ["Caitlyn2"]                      = {Spellname ="CaitlynEntrapment",Name ="Caitlyn",Spellslot =_E},
+    ["Caitlyn3"]                      = {Spellname ="CaitlynAceintheHole",Name ="Caitlyn",Spellslot =_R},
+    ["Cassiopiea"]                      = {Spellname ="CassiopeiaMiasma",Name ="Cassiopiea",Spellslot =_W},
+    ["Cassiopiea2"]                      = {Spellname ="CassiopeiaTwinFang",Name ="Cassiopiea",Spellslot =_E},
+    ["Corki"]                      = {Spellname ="PhosphorusBomb",Name ="Corki",Spellslot =_Q},
+    ["Corki2"]                      = {Spellname ="MissileBarrage",Name ="Corki",Spellslot =_R},
+    ["Diana"]                      = {Spellname ="DianaArc",Name ="Diana",Spellslot =_Q},
+    ["DrMundo"]                      = {Spellname ="InfectedCleaverMissileCast",Name ="DrMundo",Spellslot =_Q},
+    ["Draven"]                      = {Spellname ="dravenspinning",Name ="Draven",Spellslot =_Q},
+    ["Draven2"]                      = {Spellname ="DravenDoubleShot",Name ="Draven",Spellslot =_E},
+    ["Draven3"]                      = {Spellname ="DravenRCast",Name ="Draven",Spellslot =_R},
+    ["Elise"]                      = {Spellname ="EliseHumanQ",Name ="Elise",Spellslot =_Q},
+    ["Elise2"]                      = {Spellname ="EliseHumanE",Name ="Elise",Spellslot =_E},
+    ["Evelynn"]                      = {Spellname ="EvelynnQ",Name ="Evelynn",Spellslot =_Q},
+    ["Ezreal"]                      = {Spellname ="EzrealMysticShot",Name ="Ezreal",Spellslot =_Q,},
+    ["Ezreal2"]                      = {Spellname ="EzrealEssenceFlux",Name ="Ezreal",Spellslot =_W},
+    ["Ezreal3"]                      = {Spellname ="EzrealArcaneShift",Name ="Ezreal",Spellslot =_R},
+    ["Galio"]                      = {Spellname ="GalioRighteousGust",Name ="Galio",Spellslot =_E},
+    ["Galio2"]                      = {Spellname ="GalioResoluteSmite",Name ="Galio",Spellslot =_Q},
+    ["Gangplank"]                      = {Spellname ="Parley",Name ="Gangplank",Spellslot =_Q},
+    ["Gnar"]                      = {Spellname ="GnarQ",Name ="Gnar",Spellslot =_Q},
+    ["Graves"]                      = {Spellname ="GravesClusterShot",Name ="Graves",Spellslot =_Q},
+    ["Graves2"]                      = {Spellname ="GravesChargeShot",Name ="Graves",Spellslot =_R},
+    ["Heimerdinger"]                      = {Spellname ="HeimerdingerW",Name ="Heimerdinger",Spellslot =_W},
+    ["Irelia"]                      = {Spellname ="IreliaTranscendentBlades",Name ="Irelia",Spellslot =_R},
+    ["Janna"]                      = {Spellname ="HowlingGale",Name ="Janna",Spellslot =_Q},
+    ["Jayce"]                      = {Spellname ="JayceToTheSkies" or "jayceshockblast",Name ="Jayce",Spellslot =_Q},
+    ["Jinx"]                      = {Spellname ="JinxW",Name ="Jinx",Spellslot =_W},
+    ["Jinx2"]                      = {Spellname ="JinxR",Name ="Jinx",Spellslot =_R},
+    ["Kalista"]                      = {Spellname ="KalistaMysticShot",Name ="Kalista",Spellslot =_Q},
+    ["Karma"]                      = {Spellname ="KarmaQ",Name ="Karma",Spellslot =_Q},
+    ["Kassidan"]                      = {Spellname ="NullLance",Name ="Kassidan",Spellslot =_Q},
+    ["Katarina"]                      = {Spellname ="KatarinaR",Name ="Katarina",Spellslot =_R},
+    ["Leblanc"]                      = {Spellname ="LeblancChaosOrb",Name ="Leblanc",Spellslot =_Q},
+    ["Leblanc2"]                      = {Spellname ="LeblancSoulShackle" or "LeblancSoulShackleM",Name ="Leblanc",Spellslot =_E},
+    ["Leesin"]                      = {Spellname ="BlindMonkQOne",Name ="Leesin",Spellslot =_Q},
+    ["Leona"]                      = {Spellname ="LeonaZenithBladeMissle",Name ="Leona",Spellslot =_E},
+    ["Lissandra"]                      = {Spellname ="LissandraE",Name ="Lissandra",Spellslot =_E},
+    ["Lucian"]                      = {Spellname ="LucianR",Name ="Lucian",Spellslot =_R}, 
+    ["Lux"]                      = {Spellname ="LuxLightBinding",Name ="Lux",Spellslot =_Q},
+    ["Lux2"]                      = {Spellname ="LuxLightStrikeKugel",Name ="Lux",Spellslot =_E},
+    ["Missfortune"]                      = {Spellname ="MissFortuneBulletTime",Name ="Missfortune",Spellslot =_R},
+    ["Morgana"]                      = {Spellname ="DarkBindingMissile",Name ="Morgana",Spellslot =_Q},
+    ["Nami"]                      = {Spellname ="NamiR",Name ="Nami",Spellslot =_R},
+    ["Nidalee"]                      = {Spellname ="JavelinToss",Name ="Nidalee",Spellslot =_Q},
+    ["Nocturne"]                      = {Spellname ="NocturneDuskbringer",Name ="Nocturne",Spellslot =_Q},
+    ["Pantheon"]                      = {Spellname ="Pantheon_Throw",Name ="Pantheon",Spellslot =_Q},
+    ["Quinn"]                      = {Spellname ="QuinnQ",Name ="Quinn",Spellslot =_Q},
+    ["Rengar"]                      = {Spellname ="RengarE",Name ="Rengar",Spellslot =_E},
+    ["Riven"]                      = {Spellname ="rivenizunablade",Name ="Riven",Spellslot =_R},
+    ["Ryze"]                      = {Spellname ="Overload",Name ="Ryze",Spellslot =_Q},
+    ["Ryze2"]                      = {Spellname ="SpellFlux",Name ="Ryze",Spellslot =_E},
+    ["Sejuani"]                      = {Spellname ="SejuaniGlacialPrisonStart",Name ="Sejuani",Spellslot =_R},
+    ["Sivir"]                      = {Spellname ="SivirQ",Name ="Sivir",Spellslot =_Q},
+    ["Sivir2"]                      = {Spellname ="SivirE",Name ="Sivir",Spellslot =_E},
+    ["Skarner"]                      = {Spellname ="SkarnerFractureMissileSpell",Name ="Skarner",Spellslot =_E},
+    ["Sona"]                      = {Spellname ="SonaCrescendo",Name ="Sona",Spellslot =_R},
+    ["Swain"]                      = {Spellname ="SwainDecrepify",Name ="Swain",Spellslot =_Q},
+    ["Swain2"]                      = {Spellname ="SwainMetamorphism",Name ="Swain",Spellslot =_R},
+    ["Syndra"]                      = {Spellname ="SyndraE",Name ="Syndra",Spellslot =_E},
+    ["Syndra2"]                      = {Spellname ="SyndraR",Name ="Syndra",Spellslot =_R},
+    ["Talon"]                      = {Spellname ="TalonRake",Name ="Talon",Spellslot =_W},
+    ["Talon2"]                      = {Spellname ="TalonShadowAssault",Name ="Talon",Spellslot =_R},
+    ["Teemo"]                      = {Spellname ="BlindingDart",Name ="Teemo",Spellslot =_Q},
+    ["Thresh"]                      = {Spellname ="ThreshQ",Name ="Thresh",Spellslot =_Q},
+    ["Tristana"]                      = {Spellname ="BusterShot",Name ="Tristana",Spellslot =_R},
+    ["Varus"]                      = {Spellname ="VarusQ",Name ="Varus",Spellslot =_Q},
+    ["Varus2"]                      = {Spellname ="VarusR",Name ="Varus",Spellslot =_R},
+    ["Vayne"]                      = {Spellname ="VayneCondemm",Name ="Vayne",Spellslot =_E},
+    ["Veigar"]                      = {Spellname ="VeigarPrimordialBurst",Name ="Veigar",Spellslot =_R},
+    ["Twistedfate"]                      = {Spellname ="WildCards",Name ="Twistedfate",Spellslot =_Q},
+    ["Velkoz"]                      = {Spellname ="VelkozQ",Name ="Velkoz",Spellslot =_Q},
+    ["Velkoz2"]                      = {Spellname ="VelkozW",Name ="Velkoz",Spellslot =_W},
+    ["Viktor"]                      = {Spellname ="ViktorDeathRay",Name ="Viktor",Spellslot =_E},
+    ["Xerath"]                      = {Spellname ="XerathArcanoPulseChargeUp",Name ="Xerath",Spellslot =_Q},
+    ["Zed"]                      = {Spellname ="ZedShuriken",Name ="Zed",Spellslot =_Q},
+    ["Ziggs"]                      = {Spellname ="ZiggsR",Name ="Ziggs",Spellslot =_R},
+    ["Ziggs2"]                      = {Spellname ="ZiggsQ",Name ="Ziggs",Spellslot =_Q},
+    ["Zyra"]                      = {Spellname ="ZyraGraspingRoots",Name ="Zyra",Spellslot =_E}
 }
 
 OnProcessSpell(function(unit, spell)
@@ -109,7 +109,7 @@ myHero = GetMyHero()
 if Yasuo.Wall.W:Value() then
 if unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GoS:GetDistance(unit) < 1500 and Yasuo.Wall[GetObjectName(unit).."Wall"]:Value() then
 unispells = WALL_SPELLS[GetObjectName(unit)]
-if myHero == spell.target and unispells and GetRange(unit) >= 450 and GoS:CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 and not spell.name:lower():find("attack") then
+if myHero == spell.target and GetRange(unit) >= 450 and GoS:CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 and not spell.name:lower():find("attack") then
 local wPos = GetOrigin(unit)
 CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
 elseif spell.endPos and not spell.name:lower():find("attack") and Yasuo.Wall[GetObjectName(unit).."Wall"]:Value() then
@@ -241,11 +241,11 @@ if Yasuo.c.E:Value() then
 end
 
 function Yasuo:CastQ(unit)
-if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" then
+if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" and Yasuo.c.combo:Value() then
 CastSkillShot(_Q,QWPred.PredPos.x,QWPred.PredPos.y,QWPred.PredPos.z)
 end
 
-if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() and GoS:ValidTarget(unit, 900) then
+if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() and GoS:ValidTarget(unit, 900) and Yasuo.c.combo:Value() then
 CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
 end
 end
@@ -284,7 +284,7 @@ local Dmgr = GoS:CalcDamage(myHero, enemy, ult)
 local QPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1025,90,false,false)
 if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(EnemyPos2, 475) and GetCastName(myHero,_Q) == "YasuoQW" or "yasuoq2w" and Dmg > hp and Yasuo.ks.Q:Value() then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-elseif CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and QPred.HitChance == 1 and Yasuo.ks.Q:Value() then
+elseif CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and QPred.HitChance == 1 and Yasuo.ks.Q:Value() and Dmg > hp then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
 end
 
@@ -580,4 +580,4 @@ if _G[GetObjectName(myHero)] then
   _G[GetObjectName(myHero)]()
 end
 
-PrintChat(string.format("<font color='#1244EA'>Yasuo:</font> <font color='#FFFFFF'> By Cloud Loaded</font>"))
+PrintChat(string.format("<font color='#1244EA'>Yasuo:</font> <font color='#FFFFFF'> By Cloud Loaded HI</font>"))
