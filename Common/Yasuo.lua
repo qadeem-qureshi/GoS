@@ -1,4 +1,3 @@
-
 require("MenuConfig")
 require("Inspired")
 if GetObjectName(myHero) ~= "Yasuo" then return end
@@ -235,12 +234,14 @@ if Yasuo.c.E:Value() then
 end
 
 function Yasuo:CastQ(unit)
-if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" and Yasuo.c.combo:Value() then
+if target or unit then
+if CanUseSpell(myHero, _Q) == READY and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" and Yasuo.c.combo:Value() then
 CastSkillShot(_Q,QWPred.PredPos.x,QWPred.PredPos.y,QWPred.PredPos.z)
 end
 
-if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() and GoS:ValidTarget(unit, 900) and Yasuo.c.combo:Value() then
+if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() and Yasuo.c.combo:Value() then
 CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
+end
 end
 end
 
@@ -251,7 +252,7 @@ end
 end
 
 function Yasuo:YasuoRinCombo()
-if GoS:ValidTarget(unit, 1200) then
+if target or unit then
 if CanUseSpell(myHero,_R) == READY and Yasuo.c.R:Value() and (GetCurrentHP(unit)/GetMaxHP(unit))*100 <= Yasuo.c.RP:Value() then
 GoS:DelayAction(function()
 CastSpell(_R)
@@ -263,7 +264,7 @@ end
 
 function Yasuo:KillSteal()
 for i,enemy in pairs(GoS:GetEnemyHeroes()) do
-if GoS:ValidTarget(enemy, 1200) then
+if target or unit then
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
 local hp = GetCurrentHP(enemy)
 local Dmg = GoS:CalcDamage(myHero, enemy, z)
@@ -440,28 +441,20 @@ function Yasuo:AutoUlt()
 end
 
 function CastR(unit)
-    if CanUseSpell(myHero, _R) == READY and GoS:ValidTarget(unit, 1200) and KnockedUnits[GetNetworkID(unit)] ~= nil then
+  if target then
+    if CanUseSpell(myHero, _R) == READY and KnockedUnits[GetNetworkID(unit)] ~= nil then
         CastSpell(_R)
     end
+  end
 end
 
 function EnemiesKnocked()
     local Knockeds = {}
     for i, enemy in ipairs(GoS:GetEnemyHeroes()) do
-        if GoS:ValidTarget(enemy, 1200) and KnockedUnits[GetNetworkID(enemy)] ~= nil then table.insert(Knockeds, enemy) end
+        if target and KnockedUnits[GetNetworkID(enemy)] ~= nil then table.insert(Knockeds, enemy) end
     end
     return Knockeds
 end
-
-function Yasuo:AutoIgnite()
-    if Ignite then
-        for _, k in pairs(GoS:GetEnemyHeroes()) do
-            if GoS:ValidTarget(unit, 600) and CanUseSpell(myHero, Ignite) == READY and (20*GetLevel(myHero)+50) > GetCurrentHP(k)+GetHPRegen(k)*2.5 and GoS:GetDistanceSqr(GetOrigin(k)) < 600*600 and Yasuo.m.ignite:Value() then
-                CastTargetSpell(k, Ignite)
-            end
-        end
-    end
-  end
 
 do
   _G.objectManager2 = {}
