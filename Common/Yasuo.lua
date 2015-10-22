@@ -1,3 +1,4 @@
+
 require("MenuConfig")
 require("Inspired")
 if GetObjectName(myHero) ~= "Yasuo" then return end
@@ -219,9 +220,6 @@ function Yasuo:Checks()
   EnemyPos2 = GetOrigin(unit)
   target = Yasuo.ts:GetTarget()
   unit = Yasuo.ts:GetTarget()
-  QWPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
-  Q2Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,GetCastRange(myHero, _Q),55,false,true)
-  Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
 end
 
 function Yasuo:Combo()
@@ -235,6 +233,8 @@ end
 
 function Yasuo:CastQ(unit)
 if target or unit then
+local QWPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
+local Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
 if CanUseSpell(myHero, _Q) == READY and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" and Yasuo.c.combo:Value() then
 CastSkillShot(_Q,QWPred.PredPos.x,QWPred.PredPos.y,QWPred.PredPos.z)
 end
