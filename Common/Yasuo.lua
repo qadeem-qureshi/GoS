@@ -1,4 +1,3 @@
-
 require("MenuConfig")
 require("Inspired")
 if GetObjectName(myHero) ~= "Yasuo" then return end
@@ -110,7 +109,7 @@ WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
 
 OnProcessSpell(function(unit, spell)
 myHero = GetMyHero()
-if Yasuo.Wall.W:Value() and WALL_SPELLS[spell.name] then
+if Yasuo.Wall.W:Value() and WALL_SPELLS[spell.name] and Yasuo.Wall[GetObjectName(unit).."Wall"]:Value()  then
 if unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GoS:GetDistance(unit) < 1500 then
 unispells = WALL_SPELLS[GetObjectName(unit)]
 if myHero == spell.target and GetRange(unit) >= 450 and GoS:CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 and not spell.name:lower():find("attack") then
@@ -194,7 +193,6 @@ function Yasuo:Loop(myHero)
     self:Checks()
     if IOW:Mode() == "Combo" then
       self:Combo()
-      self:Items()
     end
     if IOW:Mode() == "LaneClear" then
       self:LaneClear()
@@ -208,7 +206,6 @@ function Yasuo:Loop(myHero)
     self:YasuoRinCombo()
     self:KillSteal()
     self:AutoUlt()
-    self:AutoIgnite()
     self:YasuoDash2minion()
 end
 
