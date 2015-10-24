@@ -3,7 +3,6 @@ require("Inspired")
 if GetObjectName(myHero) ~= "Yasuo" then return end
 -- Global stuff
 KnockedUnits = {}
-Ignite = (GetCastName(myHero,SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
 
 WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
     ["FizzMarinerDoom"]                      = {Spellname ="FizzMarinerDoom",Name = "Fizz", Spellslot =_R},
@@ -232,18 +231,18 @@ function Yasuo:CastQ(unit)
 if target or unit then
 local QWPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
 local Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
-if CanUseSpell(myHero, _Q) == READY and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" and Yasuo.c.combo:Value() then
+if CanUseSpell(myHero, _Q) == READY and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" then
 CastSkillShot(_Q,QWPred.PredPos.x,QWPred.PredPos.y,QWPred.PredPos.z)
 end
 
-if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() and Yasuo.c.combo:Value() then
+if CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and Q3Pred.HitChance == 1 and Yasuo.c.Q:Value() then
 CastSkillShot(_Q,Q3Pred.PredPos.x,Q3Pred.PredPos.y,Q3Pred.PredPos.z)
 end
 end
 end
 
 function Yasuo:CastE(unit)
-if CanUseSpell(myHero,_E) == READY and Yasuo.c.combo:Value() and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
+if CanUseSpell(myHero,_E) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
 CastTargetSpell(unit,_E)
 end
 end
@@ -295,7 +294,6 @@ end
 end
 
 function Yasuo:LaneClear()
-if Yasuo.f.l.lca:Value()then
 local towerPos = GetOrigin(objectManager2.turrents) 
 for _,Q in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
 if GoS:ValidTarget(Q, 475) then
@@ -311,10 +309,8 @@ end
 end
 end
 end
-end
 
 function Yasuo:JungleClear()
-if Yasuo.f.j.jca:Value() then
 
 for _,Q in pairs(GoS:GetAllMinions(MINION_JUNGLE)) do
 if GoS:ValidTarget(Q, 475) then
@@ -329,10 +325,8 @@ end
 end
 end
 end
-end
 
 function Yasuo:LastHit()
-if Yasuo.f.h.lha:Value() then
 	
 for _,M in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
 if GoS:ValidTarget(M, 475) then
@@ -352,7 +346,6 @@ end
 local EnemyPos3 = GetOrigin(M)
 if CanUseSpell(myHero, _Q) == READY and Dmgq > hpq and Yasuo.f.h.Q:Value() then
 CastSkillShot(_Q,EnemyPos3.x,EnemyPos3.y,EnemyPos3.z)
-end
 end
 end
 end
