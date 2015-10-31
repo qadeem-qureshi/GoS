@@ -1,4 +1,5 @@
 require("Inspired")
+
 if GetObjectName(myHero) ~= "Yasuo" then return end
 -- Global stuff
 KnockedUnits = {}
@@ -174,10 +175,10 @@ function Yasuo:__init()
       PermaShow(Yasuo.m.ma)
       PermaShow(Yasuo.m.tfra)
 
-    --Yasuo:Menu("ks", "KillSteal")
-      --Yasuo.ks:Boolean("Q", "Use Q", true)
-      --Yasuo.ks:Boolean("E", "Use E", true)
-      --Yasuo.ks:Boolean("R", "Use R", true)
+    Yasuo:Menu("ks", "KillSteal")
+      Yasuo.ks:Boolean("Q", "Use Q", true)
+      Yasuo.ks:Boolean("E", "Use E", true)
+      Yasuo.ks:Boolean("R", "Use R", true)
 
     Yasuo:Menu("Wall", "Wall")
       Yasuo.Wall:Boolean("W", "Use W", true)
@@ -199,8 +200,7 @@ function Yasuo:Loop(myHero)
     if IOW:Mode() == "LastHit" then
       self:LastHit()
     end
-    self:YasuoRinCombo()
-    --self:KillSteal()
+    self:KillSteal()
     self:AutoUlt()
     self:YasuoDash2minion()
 end
@@ -244,20 +244,20 @@ CastTargetSpell(unit,_E)
 end
 end
 
-function Yasuo:YasuoRinCombo()
-if target or unit then
-if CanUseSpell(myHero,_R) == READY and Yasuo.c.R:Value() and (GetCurrentHP(unit)/GetMaxHP(unit))*100 <= Yasuo.c.RP:Value() then
+OnUpdateBuff(function(Object,buffProc)
+if ValidTarget(unit, 1200) then
+if CanUseSpell(myHero,_R) == READY and Yasuo.c.R:Value() and (GetCurrentHP(unit)/GetMaxHP(unit))*100 <= Yasuo.c.RP:Value() and buffProc.Type == 29 or buffProc.Type == 30 then
 DelayAction(function()
 CastSpell(_R)
 end, 2 - GetLatency()/2000)
 end
 end
-end
+end)
 
 
 function Yasuo:KillSteal()
 for i,enemy in pairs(GetEnemyHeroes()) do
-if target or unit  and  ValidTarget(unit, 1200) then
+if target or unit then
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
 local hp = GetCurrentHP(enemy)
 local Dmg = CalcDamage(myHero, enemy, z)
@@ -270,17 +270,17 @@ local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.50)+(GetBaseDam
 local Dmgr = CalcDamage(myHero, enemy, ult)
 
 local QPred = GetPredictionForPlayer(myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1025,90,false,false)
-if CanUseSpell(myHero, _Q) == READY and ValidTarget(EnemyPos2, 475) and GetCastName(myHero,_Q) == "YasuoQW" or "yasuoq2w" and Dmg > hp and Yasuo.ks.Q:Value() then
+if CanUseSpell(myHero, _Q) == READY and ValidTarget(EnemyPos2, 475) and GetCastName(myHero,_Q) == "YasuoQW" or "yasuoq2w" and Dmg > hp and Yasuo.ks.Q:Value() and ValidTarget(unit, 425) then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
-elseif CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and QPred.HitChance == 1 and Yasuo.ks.Q:Value() and Dmg > hp then
+elseif CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and QPred.HitChance == 1 and Yasuo.ks.Q:Value() and Dmg > hp and ValidTarget(unit, 425) then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
 end
 
-if GetCastName(myHero, _E) == "YasuoDashWrapper" and GotBuff(unit, "YasuoDashWrapper") == 0 and Dmg > hp and Yasuo.ks.E:Value() then
+if GetCastName(myHero, _E) == "YasuoDashWrapper" and GotBuff(unit, "YasuoDashWrapper") == 0 and Dmg > hp and Yasuo.ks.E:Value() and ValidTarget(unit, 425) then
 CastTargetSpell(enemy, _E)
 end
 
-if CanUseSpell(myHero, _R) == READY and Dmgr > hpq and Yasuo.ks.R:Value() then
+if CanUseSpell(myHero, _R) == READY and Dmgr > hpq and Yasuo.ks.R:Value() and ValidTarget(unit, 1200) then
 DelayAction(function()
 CastSpell(_R)
 end, 2 - GetLatency()/1000)
@@ -369,16 +369,15 @@ CastTargetSpell(js, _E)
 elseif CanUseSpell(myHero, _E) == READY and  Dmg > GetCurrentHp(js) and GetObjectName(js) == "SRU_Dragon" and Yasuo.j.E:Value() then
 CastTargetSpell(js, _E)
 end
-end
+end 
 end
 end
 
 function Yasuo:YasuoDash2minion()
-for _,Q in pairs(minionManager.objects) do
+local Q = ClosestMinion(GetMousePos(), GetTeam(unit))
 if ValidTarget(Q, 375) then
-if GetCastName(myHero, _E) == "YasuoDashWrapper" and CanUseSpell(myHero, _E) == READY and Yasuo.m.ma:Value() and not ValidTarget(unit, 475) then
+if CanUseSpell(myHero, _E) == READY and Yasuo.m.ma:Value() then
 CastTargetSpell(Q,_E)
-end
 end
 end
 end
@@ -407,17 +406,6 @@ end
 end
 end
 	return false
-end
-
-function MinionsAround(pos, range)
-    local c = 0
-    if pos == nil then return 0 end
-    for k,v in pairs(GetAllMinions(MINION_ALLY)) do 
-        if v and ValidTarget(v) and GetDistanceSqr(pos,GetOrigin(v)) < range*range then
-            c = c + 1
-        end
-    end
-    return c
 end
 
 
