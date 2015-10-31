@@ -1,4 +1,3 @@
-require("MenuConfig")
 require("Inspired")
 if GetObjectName(myHero) ~= "Yasuo" then return end
 -- Global stuff
@@ -109,14 +108,14 @@ WALL_SPELLS = { -- Yea boiz and grillz its all right here.......
 OnProcessSpell(function(unit, spell)
 myHero = GetMyHero()
 if Yasuo.Wall.W:Value() and WALL_SPELLS[spell.name] and Yasuo.Wall[GetObjectName(unit).."Wall"]:Value()  then
-if unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GoS:GetDistance(unit) < 1500 then
+if unit and GetTeam(unit) ~= GetTeam(myHero) and GetObjectType(unit) == GetObjectType(myHero) and GetDistance(unit) < 1500 then
 unispells = WALL_SPELLS[GetObjectName(unit)]
-if myHero == spell.target and GetRange(unit) >= 450 and GoS:CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 and not spell.name:lower():find("attack") then
+if myHero == spell.target and GetRange(unit) >= 450 and CalcDamage(unit, myHero, GetBonusDmg(unit)+GetBaseDamage(unit))/GetCurrentHP(myHero) > 0.1337 and not spell.name:lower():find("attack") then
 local wPos = GetOrigin(unit)
 CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
 elseif spell.endPos and not spell.name:lower():find("attack") then
-local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GoS:GetDistance(unit, myHero))
-if GoS:GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GoS:GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
+local makeUpPos = GenerateSpellPos(GetOrigin(unit), spell.endPos, GetDistance(unit, myHero))
+if GetDistanceSqr(makeUpPos) < (GetHitBox(myHero)*3)^2 or GetDistanceSqr(spell.endPos) < (GetHitBox(myHero)*3)^2 then
 local wPos = GetOrigin(unit)
 CastSkillShot(_W, wPos.x, wPos.y, wPos.z)
 end
@@ -124,12 +123,12 @@ end
 end
 end
 end)
-GoS:DelayAction(function() --Deftsu
+DelayAction(function() --Deftsu
 
   local str = {[_Q] = "Q", [_W] = "W", [_E] = "E", [_R] = "R"}
 
   for i, spell in pairs(WALL_SPELLS) do
-    for _,k in pairs(GoS:GetEnemyHeroes()) do
+    for _,k in pairs(GetEnemyHeroes()) do
         if spell["Name"] == GetObjectName(k) then
             Yasuo.Wall:Boolean(GetObjectName(k).."Wall", "On "..GetObjectName(k).." "..(type(spell.Spellslot) == 'number' and str[spell.Spellslot]), true)
         end
@@ -141,7 +140,7 @@ end, 1)
 
 class "Yasuo"
 function Yasuo:__init()
-  OnLoop(function(myHero) self:Loop(myHero) end)
+  OnTick(function(myHero) self:Loop(myHero) end)
   Yasuo = MenuConfig("Yasuo", "Yasuo")
     Yasuo:Menu("c", "Combo")
       Yasuo.c:Boolean("Q", "Use Q", true)
@@ -175,15 +174,13 @@ function Yasuo:__init()
       PermaShow(Yasuo.m.ma)
       PermaShow(Yasuo.m.tfra)
 
-    Yasuo:Menu("ks", "KillSteal")
-      Yasuo.ks:Boolean("Q", "Use Q", true)
-      Yasuo.ks:Boolean("E", "Use E", true)
-      Yasuo.ks:Boolean("R", "Use R", true)
+    --Yasuo:Menu("ks", "KillSteal")
+      --Yasuo.ks:Boolean("Q", "Use Q", true)
+      --Yasuo.ks:Boolean("E", "Use E", true)
+      --Yasuo.ks:Boolean("R", "Use R", true)
 
     Yasuo:Menu("Wall", "Wall")
       Yasuo.Wall:Boolean("W", "Use W", true)
-
-    Yasuo:TargetSelector("ts", "TargetSelector", DAMAGE_PHYSICAL, 1200, TARGET_LOW_HP)
 
     Yasuo:Info("Made", "Script by Cloud") 
 end
@@ -203,7 +200,7 @@ function Yasuo:Loop(myHero)
       self:LastHit()
     end
     self:YasuoRinCombo()
-    self:KillSteal()
+    --self:KillSteal()
     self:AutoUlt()
     self:YasuoDash2minion()
 end
@@ -214,8 +211,8 @@ function Yasuo:Checks()
   self.EREADY = CanUseSpell(myHero,_E) == READY
   self.RREADY = CanUseSpell(myHero,_R) == READY
   EnemyPos2 = GetOrigin(unit)
-  target = Yasuo.ts:GetTarget()
-  unit = Yasuo.ts:GetTarget()
+  target = GetCurrentTarget()
+  unit = GetCurrentTarget()
 end
 
 function Yasuo:Combo()
@@ -229,8 +226,8 @@ end
 
 function Yasuo:CastQ(unit)
 if target or unit then
-local QWPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
-local Q3Pred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
+local QWPred = GetPredictionForPlayer(myHeroPos(),unit,GetMoveSpeed(unit),1500,250,425,90,false,false)
+local Q3Pred = GetPredictionForPlayer(myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1000,90,false,false)
 if CanUseSpell(myHero, _Q) == READY and Yasuo.c.Q:Value() and QWPred.HitChance == 1 and GetCastName(myHero,_Q) ~= "yasuoq3w" then
 CastSkillShot(_Q,QWPred.PredPos.x,QWPred.PredPos.y,QWPred.PredPos.z)
 end
@@ -242,7 +239,7 @@ end
 end
 
 function Yasuo:CastE(unit)
-if CanUseSpell(myHero,_E) == READY and GoS:ValidTarget(unit, 475) and Yasuo.c.E:Value() then
+if CanUseSpell(myHero,_E) == READY and ValidTarget(unit, 475) and Yasuo.c.E:Value() then
 CastTargetSpell(unit,_E)
 end
 end
@@ -250,7 +247,7 @@ end
 function Yasuo:YasuoRinCombo()
 if target or unit then
 if CanUseSpell(myHero,_R) == READY and Yasuo.c.R:Value() and (GetCurrentHP(unit)/GetMaxHP(unit))*100 <= Yasuo.c.RP:Value() then
-GoS:DelayAction(function()
+DelayAction(function()
 CastSpell(_R)
 end, 2 - GetLatency()/2000)
 end
@@ -259,21 +256,21 @@ end
 
 
 function Yasuo:KillSteal()
-for i,enemy in pairs(GoS:GetEnemyHeroes()) do
-if target or unit then
+for i,enemy in pairs(GetEnemyHeroes()) do
+if target or unit  and  ValidTarget(unit, 1200) then
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
 local hp = GetCurrentHP(enemy)
-local Dmg = GoS:CalcDamage(myHero, enemy, z)
+local Dmg = CalcDamage(myHero, enemy, z)
 
 local y = (GetCastLevel(myHero,_E)*20)+(GetBonusDmg(myHero)*1)+(GetBaseDamage(myHero))
 local hpq = GetCurrentHP(enemy)
-local Dmgq = GoS:CalcDamage(myHero, enemy, y)
+local Dmgq = CalcDamage(myHero, enemy, y)
 
 local ult = (GetCastLevel(myHero,_R)*100)+(GetBonusDmg(myHero)*1.50)+(GetBaseDamage(myHero))
-local Dmgr = GoS:CalcDamage(myHero, enemy, ult)
+local Dmgr = CalcDamage(myHero, enemy, ult)
 
-local QPred = GetPredictionForPlayer(GoS:myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1025,90,false,false)
-if CanUseSpell(myHero, _Q) == READY and GoS:ValidTarget(EnemyPos2, 475) and GetCastName(myHero,_Q) == "YasuoQW" or "yasuoq2w" and Dmg > hp and Yasuo.ks.Q:Value() then
+local QPred = GetPredictionForPlayer(myHeroPos(),unit,GetMoveSpeed(unit),1500,250,1025,90,false,false)
+if CanUseSpell(myHero, _Q) == READY and ValidTarget(EnemyPos2, 475) and GetCastName(myHero,_Q) == "YasuoQW" or "yasuoq2w" and Dmg > hp and Yasuo.ks.Q:Value() then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
 elseif CanUseSpell(myHero, _Q) == READY and GetCastName(myHero,_Q) == "yasuoq3w" and QPred.HitChance == 1 and Yasuo.ks.Q:Value() and Dmg > hp then
 CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
@@ -284,7 +281,7 @@ CastTargetSpell(enemy, _E)
 end
 
 if CanUseSpell(myHero, _R) == READY and Dmgr > hpq and Yasuo.ks.R:Value() then
-GoS:DelayAction(function()
+DelayAction(function()
 CastSpell(_R)
 end, 2 - GetLatency()/1000)
 end
@@ -295,8 +292,8 @@ end
 
 function Yasuo:LaneClear()
 local towerPos = GetOrigin(objectManager2.turrents) 
-for _,Q in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
-if GoS:ValidTarget(Q, 475) then
+for _,Q in pairs(minionManager.objects) do
+if ValidTarget(Q, 475) then
 
 EnemyPos3 = GetOrigin(Q)
 if CanUseSpell(myHero, _E) == READY and Yasuo.f.l.E:Value() and UnderTower(myHero) == false then
@@ -312,8 +309,8 @@ end
 
 function Yasuo:JungleClear()
 
-for _,Q in pairs(GoS:GetAllMinions(MINION_JUNGLE)) do
-if GoS:ValidTarget(Q, 475) then
+for _,Q in pairs(minionManager.objects) do
+if ValidTarget(Q, 475) then
 
 local EnemyPos = GetOrigin(Q)
 if CanUseSpell(myHero, _Q) == READY and Yasuo.f.j.Q:Value() then
@@ -328,15 +325,15 @@ end
 
 function Yasuo:LastHit()
 	
-for _,M in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
-if GoS:ValidTarget(M, 475) then
+for _,M in pairs(minionManager.objects) do
+if ValidTarget(M, 475) then
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
 local hp = GetCurrentHP(M)
-local Dmg = GoS:CalcDamage(myHero, M, z)
+local Dmg = CalcDamage(myHero, M, z)
 
 local y = (GetCastLevel(myHero,_Q)*20)+(GetBonusDmg(myHero)*1)+(GetBaseDamage(myHero))
 local hpq = GetCurrentHP(M)
-local Dmgq = GoS:CalcDamage(myHero, M, y)
+local Dmgq = CalcDamage(myHero, M, y)
 
 local towerPos = GetOrigin(objectManager2.turrents) 
 
@@ -353,16 +350,16 @@ end
 
 function Yasuo:JungleSteal()
 
-for _,js in pairs(GoS:GetAllMinions(MINION_JUNGLE)) do
+for _,js in pairs(minionManager.objects) do
 
 local y = (GetCastLevel(myHero,_Q)*20)+(GetBonusDmg(myHero)*1)+(GetBaseDamage(myHero))
 local hpq = GetCurrentHP(M)
-local Dmgq = GoS:CalcDamage(myHero, js, y)
+local Dmgq = CalcDamage(myHero, js, y)
 local EnemyPos4 = GetOrigin(js)
 
 local z = (GetCastLevel(myHero,_E)*20)+(GetBonusAP(myHero)*.60)+(GetBaseDamage(myHero))
-local Dmg = GoS:CalcDamage(myHero, js, z)
-if GoS:ValidTarget(js, 475) and IsInDistance(js, GetCastRange(myHero,_Q)) then  
+local Dmg = CalcDamage(myHero, js, z)
+if ValidTarget(js, 475) and IsInDistance(js, GetCastRange(myHero,_Q)) then  
 if CanUseSpell(myHero, _Q) == READY and  Dmgq > GetCurrentHp(js) and GetObjectName(js) == "SRU_Baron" and Yasuo.j.Q:Value() then
 CastSkillShot(_Q,EnemyPos4.x,EnemyPos4.y,EnemyPos4.z)
 elseif CanUseSpell(myHero, _Q) == READY and  Dmgq > GetCurrentHp(js) and GetObjectName(js) == "SRU_Dragon" and Yasuo.j.Q:Value() then
@@ -377,9 +374,9 @@ end
 end
 
 function Yasuo:YasuoDash2minion()
-for _,Q in pairs(GoS:GetAllMinions(MINION_ENEMY)) do
-if GoS:ValidTarget(Q, 375) then
-if GetCastName(myHero, _E) == "YasuoDashWrapper" and CanUseSpell(myHero, _E) == READY and Yasuo.m.ma:Value() and not GoS:ValidTarget(unit, 475) then
+for _,Q in pairs(minionManager.objects) do
+if ValidTarget(Q, 375) then
+if GetCastName(myHero, _E) == "YasuoDashWrapper" and CanUseSpell(myHero, _E) == READY and Yasuo.m.ma:Value() and not ValidTarget(unit, 475) then
 CastTargetSpell(Q,_E)
 end
 end
@@ -402,9 +399,9 @@ end
 function UnderTower(p1)
 local p1 = GetOrigin(p1) or p1
 for i,turrent in pairs(objectManager2.turrets) do
-if GetTeam(turrent) ~= GetTeam(myHero) and GoS:ValidTarget(turrent, 1450) then
+if GetTeam(turrent) ~= GetTeam(myHero) and ValidTarget(turrent, 1450) then
 local turretPos = GetOrigin(turrent)
-if GoS:GetDistance(myHero, turrentPos) <= 1140 then
+if GetDistance(myHero, turrentPos) <= 1140 then
 	return true
 end
 end
@@ -415,8 +412,8 @@ end
 function MinionsAround(pos, range)
     local c = 0
     if pos == nil then return 0 end
-    for k,v in pairs(GoS:GetAllMinions(MINION_ALLY)) do 
-        if v and GoS:ValidTarget(v) and GetDistanceSqr(pos,GetOrigin(v)) < range*range then
+    for k,v in pairs(GetAllMinions(MINION_ALLY)) do 
+        if v and ValidTarget(v) and GetDistanceSqr(pos,GetOrigin(v)) < range*range then
             c = c + 1
         end
     end
@@ -440,7 +437,7 @@ end
 
 function EnemiesKnocked()
     local Knockeds = {}
-    for i, enemy in ipairs(GoS:GetEnemyHeroes()) do
+    for i, enemy in ipairs(GetEnemyHeroes()) do
         if target and KnockedUnits[GetNetworkID(enemy)] ~= nil then table.insert(Knockeds, enemy) end
     end
     return Knockeds
@@ -463,7 +460,7 @@ do
   OnObjectLoop(function(object, myHero)
     objectManager2.objects[GetNetworkID(object)] = object
   end)
-  OnLoop(function(myHero)
+  OnTick(function(myHero)
     objectManager2.maxObjects = 0
     for _, obj in pairs(objectManager2.objects) do
       objectManager2.maxObjects = objectManager2.maxObjects + 1
@@ -494,7 +491,7 @@ do
       end
     end
   end)
-  GoS:DelayAction(function() EmptyObjManager() end, 60000)
+  DelayAction(function() EmptyObjManager() end, 60000)
 end
 
 function EmptyObjManager()
@@ -512,7 +509,7 @@ function EmptyObjManager()
   objectManager2.wards = {}
   objectManager2.unknown = {}
   collectgarbage()
-  GoS:DelayAction(function() EmptyObjManager() end, 60000)
+  DelayAction(function() EmptyObjManager() end, 60000)
 end
 
 if _G[GetObjectName(myHero)] then
