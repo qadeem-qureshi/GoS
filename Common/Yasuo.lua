@@ -294,9 +294,9 @@ function Yasuo:LaneClear()
 local towerPos = GetOrigin(objectManager2.turrents) 
 for _,Q in pairs(minionManager.objects) do
 if ValidTarget(Q, 475) then
-
 EnemyPos3 = GetOrigin(Q)
-if CanUseSpell(myHero, _E) == READY and Yasuo.f.l.E:Value() and UnderTower(myHero) == false then
+ETower = GetOrigin(myHero) + (Vector(GetOrigin(myHero)) - GetOrigin(myHero)):normalized() * 300
+if CanUseSpell(myHero, _E) == READY and Yasuo.f.l.E:Value() and UnderTower(ETower) == false then
 CastTargetSpell(Q, _E)
 end
 
@@ -316,7 +316,7 @@ local EnemyPos = GetOrigin(Q)
 if CanUseSpell(myHero, _Q) == READY and Yasuo.f.j.Q:Value() then
 CastSkillShot(_Q,EnemyPos.x,EnemyPos.y,EnemyPos.z)
 end
-if CanUseSpell(myHero, _E) == READY and Yasuo.f.j.E:Value() then
+if CanUseSpell(myHero, _E) == READY and Yasuo.f.j.E:Value() and UnderTower(ETower) == false then
 CastTargetSpell(Q, _E)
 end
 end
@@ -400,7 +400,7 @@ local p1 = GetOrigin(p1) or p1
 for i,turrent in pairs(objectManager2.turrets) do
 if GetTeam(turrent) ~= GetTeam(myHero) and ValidTarget(turrent, 1450) then
 local turretPos = GetOrigin(turrent)
-if GetDistance(myHero, turrentPos) <= 1140 then
+if GetDistance(myHero, turrentPos) <= 900 then
 	return true
 end
 end
