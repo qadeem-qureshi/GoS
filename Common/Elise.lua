@@ -40,6 +40,8 @@ function Elise:__init()
       	Elise.m:Boolean("E", "Draw E", true)
       	Elise.m:Boolean("W", "Draw W", true)
       	--Elise.m:KeyBinding("ma", "Flee E", 90) I have to make better flee logic so for now i wont add it.
+      Elise.InterruptMenu:Menu("I", "InterruptMenu")
+      	Elise.I:Boolean("IU", "Use E", true)
    	OnTick(function(myHero) self:Loop(myHero) end)
    	EP = { name = "EliseHumanE", speed = 1450, delay = 0.250, range = 1075, width = 55, collision = true, aoe = false, type = "linear"}
    	W = { name = "EliseHumanW", speed = 5000, delay = 0.250, range = 975, width = 235, collision = false, aoe = false, type = "linear"}
@@ -79,7 +81,7 @@ DelayAction(function()
   for i, spell in pairs(CHANELLING_SPELLS) do
     for _,k in pairs(GetEnemyHeroes()) do
         if spell["Name"] == GetObjectName(k) then
-        InterruptMenu:Boolean(GetObjectName(k).."Inter", "On "..GetObjectName(k).." "..(type(spell.Spellslot) == 'number' and str[spell.Spellslot]), true)   
+        Elise.InterruptMenu:Boolean(GetObjectName(k).."Inter", "On "..GetObjectName(k).." "..(type(spell.Spellslot) == 'number' and str[spell.Spellslot]), true)   
         end
     end
   end		
@@ -87,8 +89,8 @@ end, 1)
  
 function Elise:ProcessSpell(unit, spell)
       if GetObjectType(unit) == Obj_AI_Hero and GetTeam(unit) ~= GetTeam(myHero) and CanUseSpell(myHero, _E) == READY then
-        if CHANELLING_SPELLS[spell.name] then
-          if IsInDistance(unit, 975) and GetObjectName(unit) == CHANELLING_SPELLS[spell.name].Name and InterruptMenu[GetObjectName(unit).."Inter"]:Value() then 
+        if CHANELLING_SPELLS[spell.name] and Elise.InterruptMenu.I.IU:Value() then
+          if IsInDistance(unit, 975) and GetObjectName(unit) == CHANELLING_SPELLS[spell.name].Name and Elise.InterruptMenu[GetObjectName(unit).."Inter"]:Value() then 
           	local hitchance, pos = EP.pred:Predict(unit)
 			 if hitchance > 2 then 
 				CastSkillShot(_E, pos) 
