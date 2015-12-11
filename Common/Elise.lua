@@ -1,3 +1,6 @@
+
+if GetObjectName(GetMyHero()) ~= "Elise" then return end
+
 require('Inspired')
 require("IPrediction")
 
