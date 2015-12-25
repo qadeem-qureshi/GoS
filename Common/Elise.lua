@@ -43,14 +43,12 @@ function Elise:__init()
       	Elise.m:Boolean("E", "Draw E", true)
       	Elise.m:Boolean("W", "Draw W", true)
       	--Elise.m:KeyBinding("ma", "Flee E", 90) I have to make better flee logic so for now i wont add it.
-      Elise.InterruptMenu:Menu("I", "InterruptMenu")
-      	Elise.I:Boolean("IU", "Use E", true)
    	OnTick(function(myHero) self:Loop(myHero) end)
    	EP = { name = "EliseHumanE", speed = 1450, delay = 0.250, range = 1075, width = 55, collision = true, aoe = false, type = "linear"}
    	W = { name = "EliseHumanW", speed = 5000, delay = 0.250, range = 975, width = 235, collision = false, aoe = false, type = "linear"}
     EP.pred = IPrediction.Prediction(EP)
     W.pred = IPrediction.Prediction(W)
-    OnProcessSpell(function(unit, spell) self:ProcessSpell(unit, spell) end)
+    --OnProcessSpell(function(unit, spell) self:ProcessSpell(unit, spell) end)
     OnDraw(function(myHero) self:Draw(myHero) end)
     AutoUpdate("/Cloudhax23/GoS/blob/master/Common/Elise.lua","/Cloudhax23/GoS/blob/master/Common/Elise.version","Elise.lua",2)
 end
@@ -78,17 +76,6 @@ CHANELLING_SPELLS = {
     
 }
 
-DelayAction(function()
-  local str = {[_Q] = "Q", [_W] = "W", [_E] = "E", [_R] = "R"}
-
-  for i, spell in pairs(CHANELLING_SPELLS) do
-    for _,k in pairs(GetEnemyHeroes()) do
-        if spell["Name"] == GetObjectName(k) then
-        Elise.InterruptMenu:Boolean(GetObjectName(k).."Inter", "On "..GetObjectName(k).." "..(type(spell.Spellslot) == 'number' and str[spell.Spellslot]), true)   
-        end
-    end
-  end		
-end, 1)
  
 function Elise:ProcessSpell(unit, spell)
       if GetObjectType(unit) == Obj_AI_Hero and GetTeam(unit) ~= GetTeam(myHero) and CanUseSpell(myHero, _E) == READY then
