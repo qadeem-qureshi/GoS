@@ -3,7 +3,7 @@ require("OpenPredict")
 require("DamageLib")
 
 wards = {}
-QPred = { delay = 0.5, speed = 1800, width = 60, range = 1100 }
+QPred = { delay = 0.25, speed = 1800, width = 60, range = 1100 }
 
 lastWardTime = GetGameTimer()
 
