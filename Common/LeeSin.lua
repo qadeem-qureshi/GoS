@@ -95,7 +95,7 @@ end
 function combo(unit)
   if ValidTarget(unit, 1100) and Config.c.Q1:Value() and GetCastName(myHero,_Q) =="BlindMonkQOne" then
       local QQPred = GetPrediction(unit, QPred)
-    if QQPred and QQPred.hitChance >= .25 then
+    if QQPred and QQPred.hitChance >= .25 and not QQPred:mCollision(1) then
       CastSkillShot(_Q, QQPred.castPos)
     end
   end
@@ -246,8 +246,10 @@ function Insec()
     elseif ValidTarget(enemy, 1100) and CanUseSpell(myHero, _Q) == READY then
     local QQPred = GetPrediction(enemy, QPred)
       if GetDistance(myHero, enemy) <= 1100 then
-        CastSkillShot(_Q, QQPred.castPos)
-        CastSpell(_Q)
+      local QQPred = GetPrediction(unit, QPred)
+    if QQPred and QQPred.hitChance >= .25 and not QQPred:mCollision(1) then
+      CastSkillShot(_Q, QQPred.castPos)
+    end
     end
   end
 end
@@ -265,8 +267,10 @@ function Insec2()
     elseif ValidTarget(enemy, 1100) and CanUseSpell(myHero, _Q) == READY then
     local QQPred = GetPrediction(enemy, QPred)
       if GetDistance(myHero, enemy) <= 1100 then
-        CastSkillShot(_Q, QQPred.castPos)
-        CastSpell(_Q)
+      local QQPred = GetPrediction(unit, QPred)
+    if QQPred and QQPred.hitChance >= .25 and not QQPred:mCollision(1) then
+      CastSkillShot(_Q, QQPred.castPos)
+    end
     end
   end
 end
@@ -301,5 +305,5 @@ function OnWndMsg(Msg, Key)
   end
 end
 
-PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud</font>")
+PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1</font>")
 PrintChat("Insec is a little wonky. \nBut if you use manual mode, Click T then select a point by clicking the Middle mouse scroll wheel. If you are in Manual mode and want to insec to an ally, Hold M and left click the ally you want to insec to.")
