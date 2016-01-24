@@ -44,7 +44,6 @@ unit = GetCurrentTarget()
 enemy = GetCurrentTarget()
   if IOW:Mode() == "Combo" then
     combo(unit)
-    Insec()
   end
  if CanUseSpell(myHero, _R) == READY then
   if Config.i.mode:Value() == 1 then
@@ -208,7 +207,7 @@ function InsecLogic()
   else
     no2 = true
   end
-  if GetDistance(myHero, ally2) > 1500 and  GetDistance(myHero, ally3) <= 2000 then
+  if no2 == true and GetDistance(myHero, ally3) <= 2000 then
     ally = ally3
   else
     no3 = true
@@ -305,5 +304,5 @@ function OnWndMsg(Msg, Key)
   end
 end
 
-PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1</font>")
+PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1.1</font>")
 PrintChat("Insec is a little wonky. \nBut if you use manual mode, Click T then select a point by clicking the Middle mouse scroll wheel. If you are in Manual mode and want to insec to an ally, Hold M and left click the ally you want to insec to.")
