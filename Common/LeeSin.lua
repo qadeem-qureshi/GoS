@@ -1,8 +1,10 @@
 require("Inspired")
 require("OpenPredict")
 require("DamageLib")
+
 wards = {}
 QPred = { delay = 0.25, speed = 1800, width = 60, range = 1100 }
+Flash = (GetCastName(myHero,SUMMONER_1):lower():find("summonerflash") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerflash") and SUMMONER_2 or nil))
 
 lastWardTime = GetGameTimer()
 
@@ -10,6 +12,7 @@ lastWardTime = GetGameTimer()
   Callback.Add("Tick", function() Loop() end)
   Callback.Add("CreateObj", function(obj) CreateObj(obj) end)
   Callback.Add("Draw", function(myHero) OnDraw(myHero) end)
+  Callback.Add("WndMsg", function(Msg, Key) OnWndMsg2(Msg, Key) end)
   LoadIOW()
 
 if GetObjectName(GetMyHero()) ~= "LeeSin" then return end
@@ -23,10 +26,12 @@ Config.c:Boolean("W1", "Use W1", true)
 Config.c:Boolean("W2", "Use W2", true)
 Config.c:Boolean("E1", "Use E1", true)
 Config.c:Boolean("E2", "Use E2", true)
+Config.c:DropDown("mode", "Combo Mode", 1, {"Passive Manager", "No Logic"})
 
 Config:SubMenu("i", "Insec")
 Config.i:DropDown("mode", "Insec Mode", 2, {"Manual", "Automatic"})
 Config.i:KeyBinding("Insec", "Insec", string.byte("T"))
+Config.i:Boolean("FI", "Use Flash if no W or Ward", true)
 
 Config:SubMenu("ks", "Killsteal")
 Config.ks:Boolean("KSR","Killsteal with R", true)
@@ -42,37 +47,45 @@ wardRange = 600
 function Loop()
 unit = GetCurrentTarget()
 enemy = GetCurrentTarget()
-  if IOW:Mode() == "Combo" then
+if Config.c.mode:Value() == 1 then
+  if IOW:Mode() == "Combo" and GotBuff(myHero, "blindmonkpassive_cosmetic") == 0 then
+    combo(unit)
+    elseif GotBuff(myHero, "blindmonkpassive_cosmetic") <= 1 and ValidTarget(enemy, myHero.range) then
+      AttackUnit(enemy)
+      elseif ValidTarget(enemy, 1100) and CanUseSpell(myHero, _Q) == READY and  IOW:Mode() == "Combo" then
+        CastSpell(_Q)
+        elseif GotBuff(myHero, "blindmonkpassive_cosmetic") <= 1 and ValidTarget(enemy, 550) and GetCastName(myHero, _Q) ~= "BlindMonkEOne" and CanUseSpell(myHero, _E) == READY and  IOW:Mode() == "Combo" then
+          CastSpell(_E)
+          elseif GotBuff(myHero, "blindmonkpassive_cosmetic") <= 1 and ValidTarget(enemy, myHero.range+150) and GetCastName(myHero, _E) ~= "BlindMonkWOne" and CanUseSpell(myHero, _W) == READY and  IOW:Mode() == "Combo" then
+            CastSpell(_W)
+  end
+end
+  if Config.c.mode:Value() == 2 and IOW:Mode() == "Combo" then
     combo(unit)
   end
  if CanUseSpell(myHero, _R) == READY then
-  if Config.i.mode:Value() == 1 then
+  if Ready(Flash) and Config.i.Insec:Value() and Config.i.FI:Value() and Ready(_R) and CanUseSpell(myHero, _W) ~= READY or CanUseSpell(myHero, getWard()) ~= READY then
+    FlashSec()
+  end 
+     Callback.Add("WndMsg", function(Msg, Key) OnWndMsg(Msg, Key) end)
+  if Config.i.mode:Value() == 1 and CanUseSpell(myHero, _W) == READY then
     if Config.i.Insec:Value() then
       MoveToXYZ(GetMousePos())
       if ally ~= nil then
       Insec()
       end
+       Callback.Add("WndMsg", function(Msg, Key) OnWndMsg(Msg, Key) end)
     end
-    Callback.Add("WndMsg", function(Msg, Key) OnWndMsg(Msg, Key) end)
-  elseif Config.i.Insec:Value() and Config.i.mode:Value() == 2 then
+  elseif Config.i.Insec:Value() and Config.i.mode:Value() == 2 and CanUseSpell(myHero, _W) == READY then
     MoveToXYZ(GetMousePos())
     Insec2()
     InsecLogic()
-  end
+      end
  end
   if Config.m.Jump:Value() and CanUseSpell(myHero, _W) == READY then
     MoveToXYZ(GetMousePos())
     jump2creep()
     wardjump()
-  end
-  if KeyIsDown(string.byte("K")) then
-    if Config.i.mode:Value() == 1 then
-    Config.i.mode:Value(2)
-    PrintChat("Automatic insec")
-    elseif Config.i.mode:Value() == 2 then
-      Config.i.mode:Value(1)
-      PrintChat("Manual insec")
-      end 
   end
   ks()
   getWard()
@@ -96,6 +109,7 @@ function combo(unit)
       local QQPred = GetPrediction(unit, QPred)
     if QQPred and QQPred.hitChance >= .25 and not QQPred:mCollision(1) then
       CastSkillShot(_Q, QQPred.castPos)
+      CastSpell(_Q)
     end
   end
   if ValidTarget(unit, 1100) and Config.c.Q1:Value() and GetCastName(myHero,_Q) ~="BlindMonkQOne" then
@@ -118,11 +132,11 @@ end
 function getWard()
   for slot = ITEM_1, ITEM_7 do
     local name = myHero:GetSpellData(slot).name
-    if name == "TrinketTotemLvl1" then 
+    if name == "TrinketTotemLvl1" and CanUseSpell(myHero, slot) ~=READYNONCAST  then 
       return slot
-    elseif name == "VisionWard"  then
+    elseif name == "VisionWard" and CanUseSpell(myHero, slot) ~= READYNONCAST then
       return slot
-    elseif name == "ItemGhostWard" then
+    elseif name == "ItemGhostWard" and CanUseSpell(myHero, slot) ~=READYNONCAST  then
       return slot
     end
   end
@@ -259,11 +273,11 @@ end
 
 function Insec()
   if ValidTarget(enemy, 550) and CanUseSpell(myHero, _R) == READY --[[and GetDistance(ally, myHero) <= 2000]] then 
-  wardEnd = GetInsecPos(enemy, ally)
+  local wardEnd = GetInsecPos(enemy, ally)
     if GetDistance(myHero, wardEnd) >= 150 and CanUseSpell(myHero, _W) == READY then
-    wardHop(wardEnd)
+      wardHop(wardEnd) 
     else
-    CastTargetSpell(enemy, _R)
+     CastTargetSpell(enemy, _R)
     end
     elseif ValidTarget(enemy, 1100) and CanUseSpell(myHero, _Q) == READY then
     local QQPred = GetPrediction(enemy, QPred)
@@ -277,9 +291,30 @@ function Insec()
   end
 end
 
+function FlashSec()
+if Config.i.Insec:Value() then
+  if ValidTarget(enemy, 425) and CanUseSpell(myHero, _R) == READY --[[and GetDistance(ally, myHero) <= 2000]] then 
+  local wardEnd = GetInsecPos(enemy, ally)
+    if GetDistance(myHero, wardEnd) >= 120 and CanUseSpell(myHero, Flash) == READY then
+    CastTargetSpell(enemy, _R)
+    DelayAction(function() CastSkillShot(Flash, wardEnd) end, .001)
+    end
+    elseif ValidTarget(enemy, 1100) and CanUseSpell(myHero, _Q) == READY then
+    local QQPred = GetPrediction(enemy, QPred)
+      if GetDistance(myHero, enemy) <= 1100 then
+      local QQPred = GetPrediction(unit, QPred)
+    if QQPred and QQPred.hitChance >= .25 and not QQPred:mCollision(1) then
+      CastSkillShot(_Q, QQPred.castPos)
+      CastSpell(_Q)
+        end
+      end
+    end
+  end
+end
+
 function Insec2()
   if ValidTarget(enemy, 550) and CanUseSpell(myHero, _R) == READY then 
-  wardEnd = GetInsecPos(enemy, ally)
+  local wardEnd = GetInsecPos(enemy, ally)
     if GetDistance(myHero, wardEnd) >= 150 and CanUseSpell(myHero, _W) == READY then
     wardHop(wardEnd)
     else
@@ -314,7 +349,7 @@ function OnWndMsg(Msg, Key)
     end
     ally = nil
   end
-  if KeyIsDown(string.byte("M")) then
+  if Key == string.byte("M") then
     if Msg == WM_LBUTTONDOWN then
       for _,allie in pairs(GetAllyHeroes()) do
         if GetDistance(allie, GetMousePos()) <= 200 then
@@ -327,5 +362,26 @@ function OnWndMsg(Msg, Key)
   end
 end
 
-PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1.2</font>")
-PrintChat("Insec should be really good. Wardjump will not use normal trinket after jungler item purchase same for insec.\nBut if you use manual mode, Click T then select a point by clicking the Middle mouse scroll wheel. If you are in Manual mode and want to insec to an ally, Hold M and left click the ally you want to insec to.")
+function OnWndMsg2(Msg, Key)
+  if Msg == KEY_UP and Key == string.byte("K") then
+  if Config.i.mode:Value() == 1 then
+    Config.i.mode:Value(2)
+    PrintChat("<font color=\"#00FFFF\">Automatic insec</font>")
+    elseif Config.i.mode:Value() == 2 then
+      Config.i.mode:Value(1)
+      PrintChat("<font color=\"#00FFFF\">Manual insec</font>")
+        end
+    end
+     if Msg == KEY_UP and Key == string.byte("N") then
+        if Config.c.mode:Value() == 1 then
+        Config.c.mode:Value(2)
+        PrintChat("<font color=\"#00FFFF\">No Logic Combo</font>")
+    elseif Config.c.mode:Value() == 2 then
+      Config.c.mode:Value(1)
+      PrintChat("<font color=\"#00FFFF\">Passive Manager Combo</font>")
+    end
+    end
+end
+
+PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1.3</font>")
+PrintChat("Insec should be really good. Wardjump will use any possible item.\nBut if you use manual mode, Click T then select a point by clicking the Middle mouse scroll wheel. If you are in Manual mode and want to insec to an ally, Hold M and left click the ally you want to insec to.")
