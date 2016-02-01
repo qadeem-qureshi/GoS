@@ -1,7 +1,51 @@
 require("Inspired")
 require("OpenPredict")
 require("DamageLib")
-
+--[[    Heres Brain.lua guys!                   
+                                                                     
+                           ```.`.`..:,...`                           
+                       ..,....,,.``,;,`.:::..                        
+                     .:.:,.,.``.;:;;:`,::,`.,..                      
+                   .....`,.`,``..:```.,:..,:;,.,`                    
+                 .,..,,,:::..,:,..`.`.,:`.,:`..,,,`                  
+               .:.:.,;,,`:``.;:`,.``.,;.,`.,`,`.,:,.                 
+              .:..:,.`..`;.`.,.:.`.::.`.,,..:;,.,',..                
+             .:.::,..:.`.;..,:::.:;,```..,.,;;,`,,,:,,               
+            ,.,.`:,..:.`,:`,',..:;,`.,,,,,:,.,.:,::,,;,              
+           ::;;:.:;:.,..,;`...``,:``.,;':,``....::;,.,,.             
+         `,,;.`:'....,..:;.`...`,:...,'`:,`...,:,::`.,::             
+         `:;:,.,...`,;:,.;::...,;;:.`:.,```..,;,..,.,,,:.            
+         ;;,;;;,,,...,'::;:..,:;;,.`,,`,...,,,'..,,::;:,:`           
+         :::,,:;::,.,``:'.:,.:;.`..:'`..,:,:,,;`,,,,.,.:,,           
+        `:,::,,''';:,,`.:.::,;`,;;'+;.,,,;,,,,;`,,:,,,,::,,          
+        :::;,;;:,:,:',,:;`,;::```..',,;:;;,,::'.,;,,:::,,:,.         
+        ,:;:,.,,;:,,..:;;..;:,,:,,::,,:;;:,:;:',:;:,,:,:,:,:         
+        :;:':,.,;:,,,:;'',.:',:::;;;:::;'::;;:'::;,,:,,:::,:         
+       ,::,,+,,,.,:,:;'+:,.,':::;'::;::;+:;:::;:::':':;::,::.        
+       ,::;:,,:::;;;'++',:,:;;:;:;+::,;;+::::;':,,,:,::,::,;,        
+       ::;:;:,:;;'+''.::,:,:;::::;'+;;;+.,:::;':,::::'::::::,`       
+       ,;;::;;::+::::,:;:;::;;:;;'#;;'':,,::;'':;::::';:,,,:,,       
+       .;:;;:;:'::,:::';:;::;+:;+;.,:;;::::;:+,;:;;:;:;:::,:,,       
+        :;;;:;'+;:::;;#':;:;;';+:.,,,.,,:;;:+;:,;''';:;::'';;:       
+        `::;;'':;:;;:;++;:::''+,,::::,,:::;+'::;;:;'::;;:,:,,,       
+        `:;::;:::;;'++###++'+#:,::::::::::'+;:;;::';::;;:,:,,,       
+         ::;:;;:::;;'+#:,,:'+;;::;::::;;'+;+:;:::::;:;::,::::.       
+          :::;:;;;;;'+::::;;,..;'';+';::::;+;:::::';;;::::;;,,       
+         ` .;::;;;;'';::;'::,:::;':::::;::+;::;;;;;;;::,:,:,,`       
+               .:;,`;::;+:,::;;;;;'::;:;'+';;;::::;;:::;:,,,,        
+                    ::;';::;:;;;:;':;;;;;;;;:;;:::'';:::,;;:.        
+                   ,:;;':::;;:;;:;':::;;:;++'':::,;;:;;;:,:,         
+                   ,:;;;:;;'+:;::;;:::::;;;;;;::,;;;::::,,,`         
+                   `;;;;:;;::;::::;::::;::::::::::::::,:.`           
+                     :::::::;:;:'''';;';;;;:;+++'''';;;:             
+                    `:;:;:;:;''+;::;::::;:'+++++'';;:;;.             
+                     .:::;;;:;;;:;;:` :+'++++'';;;;;;;:              
+                       .:;';;:;;::`    ++''''';;;;;;:;               
+                        ` :;;:'``      #'';'''';;;;'                 
+                                        ;.''';;;',                   
+                                           ++'.                      
+                                           `+;                                                                                   
+]]                                                                
 wards = {}
 QPred = { delay = 0.25, speed = 1800, width = 60, range = 1100 }
 Flash = (GetCastName(myHero,SUMMONER_1):lower():find("summonerflash") and SUMMONER_1 or (GetCastName(myHero,SUMMONER_2):lower():find("summonerflash") and SUMMONER_2 or nil))
@@ -383,5 +427,5 @@ function OnWndMsg2(Msg, Key)
     end
 end
 
-PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1.3</font>")
-PrintChat("Insec should be really good. Wardjump will use any possible item.\nBut if you use manual mode, Click T then select a point by clicking the Middle mouse scroll wheel. If you are in Manual mode and want to insec to an ally, Hold M and left click the ally you want to insec to.")
+PrintChat("<font color=\"#00FFFF\">Lee Loaded - Enjoy your game - Logge and Cloud v1.2</font>")
+PrintChat("Insec should be really good. Wardjump will not use normal trinket after jungler item purchase same for insec.\nBut if you use manual mode, Click T then select a point by clicking the Middle mouse scroll wheel. If you are in Manual mode and want to insec to an ally, Hold M and left click the ally you want to insec to.")
