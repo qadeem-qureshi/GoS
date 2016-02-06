@@ -2,7 +2,7 @@ require("Inspired")
 require("OpenPredict")
 
 QPred = { delay = 0.25, speed = 1600, width = 80, range = 1000 }
-EPred = { delay = 0.25, speed = 1750, width = 150, range = 950 }
+EPred = { delay = 0.25, speed = 1750, radius = 150, range = 950 }
 
 Config = Menu("Urgot", "Urgot")
 Config:SubMenu("c", "Combo")
