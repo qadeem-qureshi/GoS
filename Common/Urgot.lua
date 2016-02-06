@@ -17,7 +17,7 @@ function Loop()
 	local EPred = GetCircularAOEPrediction(unit, EPred) -- Filthy Zwei PogChamp
 	local QPred = GetPrediction(unit, QPred) -- Filthy Zwei PogChamp
 	if IOW:Mode() == "Combo" then
-		if Config.c.Q2:Value() and CanUseSpell(myHero, _E) and EPred and EPred.hitChance >= (Config.c.hE:Value()/100) and not EPred:mCollision(1) then
+		if Config.c.Q2:Value() and CanUseSpell(myHero, _E) and EPred and EPred.hitChance >= (Config.c.hE:Value()/100) then
 			CastSkillShot(_E, EPred.castPos)
 		end
 		if Config.c.Q1:Value() and CanUseSpell(myHero, _Q) and QPred and QPred.hitChance >= (Config.c.hQ:Value()/100) and GotBuff(unit, "urgotcorrosivedebuff") == 0 and not QPred:mCollision(1) then
