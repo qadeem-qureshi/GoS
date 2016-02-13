@@ -16,5 +16,5 @@ function IssueOrders(order)
 		end)
 	end 
 end
-PrintChat("Disable Show mouse in obs or whatever, this does not show clicks (greens things), this does show mouse and attack but they are glitched
-no recommended for use because of lag. tl;dr right now it is pretty much worthless.")
+PrintChat("Disable Show mouse in obs or whatever, this does not show clicks (greens things), this does show mouse and attack but they are glitched if you attack and move
+not recommended for use because of lag. tl;dr right now it is pretty much worthless.")
