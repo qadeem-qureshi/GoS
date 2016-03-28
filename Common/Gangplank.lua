@@ -240,7 +240,7 @@ function Gangplank:AutoKS()
 	for i,zenmy in pairs(GetEnemyHeroes()) do
 		z = (20*GetCastLevel(myHero, _R)+.1*GetBonusAP(myHero)*wavetime()+30)
 		local dmg = myHero:CalcDamage(zenmy, z)
-		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((dmg*4 > zenmy.health) or GetPercentHP(zenmy)=<0.2)  and MenuG.m.AR:Value() then -- 4 waves min
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((dmg*4 > zenmy.health) or GetPercentHP(zenmy)<=0.2)  and MenuG.m.AR:Value() then -- 4 waves min
 			CastSkillShot(_R, GetOrigin(zenmy))
 		end
 		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",zenmy,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
