@@ -1,6 +1,20 @@
 require("OpenPredict")
 require("Inspired")
 
+local ver = "0.2"
+
+function AutoUpdate(data)
+    if tonumber(data) > tonumber(ver) then
+        PrintChat("New version found! " .. data)
+        PrintChat("Downloading update, please wait...")
+        DownloadFileAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Gangplank.lua", SCRIPT_PATH .. "Gangplank.lua", function() PrintChat("Update Complete, please 2x F6!") return end)
+    else
+        PrintChat("No updates found!")
+    end
+end
+
+GetWebResultAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Gangplank.version", AutoUpdate)
+
 class "Gangplank"
 function Gangplank:__init()
 	MenuG = MenuConfig("Gangplank", "Gangplank")
@@ -78,7 +92,6 @@ function Gangplank:Loop()
 	if MenuG.m.AR:Value() or MenuG.m.AQKS:Value() then
 		self:AutoKS()
 	end
-
 	BarrelNearPlayer()
 	KillBarrelWithEnemyNearMe()
 	KillBarrelWithEnemy()
@@ -160,6 +173,10 @@ function Gangplank:CastQBarrels()
 			end
 		end
 	end
+	local Barrelz = KillBarrelWithEnemy()
+	if Barrelz ~= nil and CanUseSpell(myHero, _Q) == READY and GetDistance(myHero, Barrelz) <= 625 and BarrelHpPred(Barrelz) == true then
+		CastTargetSpell(Barrelz, _Q)
+	end
 end
 
 function Gangplank:CastQ()
@@ -175,7 +192,7 @@ function Gangplank:CastQ()
 end
 
 function Gangplank:CastQEnemy(unit)
-	if ValidTarget(unit, 625) and CanUseSpell(myHero, _Q) and (CanUseSpell(myHero, _E) ~= READY or GetBarrel() == nil or GetBarrel() ~= nil and GetDistance(GetBarrel(), unit) >= 1000) then
+	if ValidTarget(unit, 625) and CanUseSpell(myHero, _Q) and ((CanUseSpell(myHero, _E) ~= READY and GetBarrel() == nil) or (GetBarrel() ~= nil and KillBarrelWithEnemy() == nil)) then
 		CastTargetSpell(unit, _Q)
 	end
 end
@@ -221,13 +238,23 @@ end
 
 function Gangplank:AutoKS()
 	for i,zenmy in pairs(GetEnemyHeroes()) do
-		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and 350 > zenmy.health and MenuG.m.AR:Value() then
+		z = (20*GetCastLevel(myHero, _R)+.1*GetBonusAP(myHero)*wavetime()+30)
+		local dmg = myHero:CalcDamage(zenmy, z)
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((dmg*4 > zenmy.health) or GetPercentHP(zenmy)=<0.2)  and MenuG.m.AR:Value() then -- 4 waves min
 			CastSkillShot(_R, GetOrigin(zenmy))
 		end
-		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",unit ,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
+		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",zenmy,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
 			CastTargetSpell(zenmy, _Q)
 		end
 	end	
+end
+
+function wavetime()
+	if GotBuff(myHero, "GangplankRUpgrade1") >=1 then
+		return 18
+	else 
+		return 12
+	end
 end
 
 function Gangplank:AutoRR()
@@ -330,7 +357,7 @@ end
 
 function KillBarrelWithEnemy()
 	for i,object in pairs(Barrel) do
-		if object ~= nil and EnemiesAround(object, 380) >= 1 and GetCurrentHP(object) <= 1 and GetCurrentHP(object) ~= 0 then --Make sure that this barrel is actually real kappa
+		if object ~= nil and EnemiesAround(object, 380) >= 1 and BarrelHpPred(object) == true then 
 			return object
 		end
 	end
