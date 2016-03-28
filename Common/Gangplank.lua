@@ -1,147 +1,204 @@
-require("Inspired_new")
 require("OpenPredict")
+require("Inspired")
 
 class "Gangplank"
 function Gangplank:__init()
 	MenuG = MenuConfig("Gangplank", "Gangplank")
 
 	MenuG:Menu("c", "Combo")
-	MenuG.c:Section("h", "Defaults")
-	MenuG.c.h:Boolean("Q", "Use Q", true)
-	MenuG.c.h:Boolean("QB", "Use Q on Barrel", true)
-	MenuG.c.h:Boolean("W", "Use W", true)
-	MenuG.c.h:Boolean("E", "Use E", true)
-	MenuG.c.h:Slider("BarrelLinkM", "Minimum Barrel Link", 2, 1, 5)
+	MenuG.c:Boolean("Q", "Use Q", true)
+	MenuG.c:Boolean("E", "Use E", true)
 
 	MenuG:Menu("f", "Farm")
-	MenuG.f:Section("lh", "LastHit")
+	MenuG.f:Menu("lh", "LastHit")
 	MenuG.f.lh:Boolean("Q", "Use Q Lashit", true)
-	MenuG.f:Section("l", "LaneClear")
+	MenuG.f:Menu("l", "LaneClear")
 	MenuG.f.l:Boolean("Q", "Use Q LaneClear", true)
-	MenuG.f.l:Boolean("QB", "Use Q on Barrel", true)
 	MenuG.f.l:Boolean("E", "Use E LaneClear", true)
-	MenuG.f.l:Slider("BarrelLinkM", "Minimum Barrel Link", 2, 1, 5)
 
 	MenuG:Menu("m", "Misc")
-	MenuG.m:Section("m", "Others")
-	MenuG.m.m:Boolean("AQ", "Use Q Farm Auto", false)
-	MenuG.m.m:Boolean("AR", "Auto KS ult", false)
-	MenuG.m.m:Boolean("ARR", "Auto R if Enemies >= x", false)
-	MenuG.m.m:Slider("ARRS", "Auto R Minimum Enemies", 3, 1, 5)
+	MenuG.m:Boolean("AQ", "Use Q Farm Auto", false)
+	MenuG.m:Boolean("W", "Use W", true)
+	MenuG.m:Boolean("AQKS", "Use Q KS Auto", true)
+	MenuG.m:Boolean("AR", "Auto KS ult", false)
+	MenuG.m:Boolean("ARR", "Auto R if Enemies >= x", false)
+	MenuG.m:Slider("ARRS", "Auto R Minimum Enemies", 3, 1, 5)
 
-	BarrelPred = { delay = 0.25, speed = 1700, width = 400, range = 630 }
+	BarrelPred = { delay = 0.25, speed = math.huge, width = 390, range = 1000 }
+	GPR = { delay = 0.25, speed = math.huge, width = 575, range = math.huge }
 	BarrelCount = 0
-	Killablebarrels = {}
-	Killablebarrels2 = {}
-	Callback.Add("Tick", function() self:Loop() end)
+	Barrel = { }
+-- GoSWalk downloader Icey
+if not file_exists(COMMON_PATH.. "GoSWalk.lua") then
+  DownloadFileAsync("https://raw.githubusercontent.com/KeVuong/GoS/master/GoSWalk.lua", COMMON_PATH .. "GoSWalk.lua", function() PrintChat("Downloaded GoSWalk, please 2x F6!") return end)
+else
+  require "GoSWalk"
+  	Walk = Orbwalking()
+	Walk:LoadMenu()
+  Callback.Add("Tick", function() self:Loop() end)
+end
+
+if not _G.InspiredLoaded then
+  require('Inspired')
+end
+
+if _G.GetSave("MenuConfig").Orbwalker.on.value then
+  _G.GetSave("MenuConfig").Orbwalker.on.value = false
+  PrintChat("IOW Disabled! Please 2x F6 for changes to take effect!")
+  return
+end
+-- GoSWalk downloader end
 	Callback.Add("CreateObj", function(Object) self:CreateObj(Object) end)
 	Callback.Add("DeleteObj", function(Object) self:DeleteObj(Object) end)
-	LoadIOW()
 end
 
 function Gangplank:Loop()
-	if IOW:Mode() == "Combo" then
+	enemy = GetCurrentTarget()
+	
+	if Walk:GetCurrentMode() == 0 and ValidTarget(enemy, 2000) then
 		self:Combo()
 	end
-	if IOW:Mode() == "LastHit" and MenuG.f.lh.Q:Value() then
-		self:LastHit()
+
+	if Walk:GetCurrentMode() == 3 then
+		self:UseQFarm()
 	end
-	if IOW:Mode() == "LaneClear" and (MenuG.f.l.Q:Value() or MenuG.f.l.E:Value()) then
+
+	if Walk:GetCurrentMode() == 2 then
 		self:LaneClear()
 	end
-	unit = GetCurrentTarget()
-	if BarrelCount > 0 then
-	self:AddingBarrel()
-	elseif BarrelCount <= 0 then
-	self:RemoveBarrel() 
+	
+	if MenuG.m.AQ:Value() then
+		self:UseQFarm()
 	end
-	if MenuG.m.m.AQ:Value() then
-		self:AuotQ()
+
+	if MenuG.m.W:Value() then
+		self:UseW()
 	end
-	if MenuG.m.m.AR:Value() then
-		self:AutoRKs()
+
+	if MenuG.m.AR:Value() or MenuG.m.AQKS:Value() then
+		self:AutoKS()
 	end
-	if MenuG.m.m.ARR:Value() then
-		self:AutoRR()
-	end
+
+	BarrelNearPlayer()
+	KillBarrelWithEnemyNearMe()
+	KillBarrelWithEnemy()
+	BarrelWithEnemy()
+	GetBarrel()
 end
 
 function Gangplank:Combo()
-IOW.forceTarget = nil
-local Ori = ClosestBarrel(GetOrigin(myHero))
-for _,Killablebarrel in pairs(Killablebarrels2) do 
-	if MenuG.c.h.QB:Value() and Ori ~= nil and CanUseSpell(myHero, _Q) == READY and GetDistance(GetOrigin(unit), GetOrigin(Killablebarrel)) <=380 and BarrelCount >= MenuG.c.h.BarrelLinkM:Value() then
-		CastTargetSpell(Ori, _Q)
-		elseif Ori and GetDistance(GetOrigin(myHero), GetOrigin(Ori)) <=GetRange(myHero) and GetDistance(GetOrigin(unit), GetOrigin(Ori)) <=400 then
-			IOW.forceTarget = Ori 
-	end
-	if MenuG.c.h.E:Value() and CanUseSpell(myHero, _E) == READY and ValidTarget(unit, 1000) then
-		PredPos = GetCircularAOEPrediction(unit, BarrelPred, GetOrigin(Ori))
-		CastSkillShot(_E, PredPos)
-		elseif CanUseSpell(myHero, _E) ~= READY and ValidTarget(unit, 650) and BarrelCount <=0 then
-			CastTargetSpell(unit, _Q)
+	if ValidTarget(enemy, 2000) then
+		if MenuG.c.E:Value() then
+			self:CastE(enemy)
+			self:CastEInception()
+			self:CastQBarrels()
+		end
+		if MenuG.c.Q:Value() then
+			self:CastQ()
 		end
 	end
 end
 
-function Gangplank:AutoRKs()
-for i,enemy in pairs(GetEnemyHeroes()) do
-	local z = (GetCastLevel(myHero, _Q)*240)+(GetBonusAP(myHero)*1.20)+(GetBaseDamage(myHero))
-	local Dmg = myHero:CalcDamage(enemy, z)
-	if CanUseSpell(myHero, _R) == READY and ValidTarget(enemy, 100000) and Dmg > enemy.health then
-		CastSkillShot(_R, GetOrigin(enemy))
+function Gangplank:LaneClear()
+	if MenuG.f.l.Q:Value() then
+		self:UseQFarm()
 	end
 end
+
+function Gangplank:CastE(unit)
+	if ValidTarget(unit, 2000) and CanUseSpell(myHero, _E) == READY then 
+		local barrelnearplayer = BarrelNearPlayer()
+		if barrelnearplayer == nil then
+			local vectornear = GetOrigin(myHero) + (Vector(GetOrigin(unit)) - GetOrigin(myHero)):normalized() * 150
+			local vectorfar = GetOrigin(myHero) + (Vector(GetOrigin(unit)) - GetOrigin(myHero)):normalized() * 350
+			if GetDistance(unit, myHero) <= 650 and GetDistance(vectornear, myHero) <= 650 then
+				CastSkillShot(_E, vectornear)
+				elseif GetDistance(unit, myHero) >= 650 and GetDistance(unit, myHero) <= 1250 and GetDistance(vectorfar, myHero) <= 1250 then
+					CastSkillShot(_E, vectorfar)
+			end
+		elseif barrelnearplayer ~= nil and BarrelHpPred(barrelnearplayer) == true then
+		local prediction = GetCircularAOEPrediction(unit, BarrelPred)
+		local barrelrework = BarrelFinder(prediction.castPos)
+			if barrelrework == nil then
+				local predpos = prediction.castPos
+				if barrelnearplayer ~= nil and CanUseSpell(myHero, _Q) == READY and GetDistance(predpos, barrelnearplayer) <= 650 then
+					CastSkillShot(_E, predpos.x, predpos.y, predpos.z)
+					self:CastEInception()
+					local barrelcombo = KillBarrelWithEnemyNearMe()
+					local barrelwithenemyk = BarrelWithEnemy()
+					if barrelcombo ~= nil and barrelwithenemyk ~= nil and BarrelHpPred(barrelcombo) == true and barrelcombo ~= barrelwithenemyk and (GetDistance(barrelcombo, barrelwithenemyk) < 825 or BarrelLinkManager() == true) then
+						CastTargetSpell(barrelcombo, _Q)
+					end
+				end
+			end
+		end
+	end 
 end
 
-function Gangplank:AutoRR()
-for i,enemy in pairs(GetEnemyHeroes()) do
-	if CanUseSpell(myHero, _R) == READY and ValidTarget(enemy, 100000) then
-end
-end
+function Gangplank:CastEInception()
+	local barrelcombo = KillBarrelWithEnemyNearMe()
+	if barrelcombo ~= nil then
+		local barrelwithenemyk = BarrelWithEnemy()
+		if barrelwithenemyk ~= nil and GetCurrentHP(barrelwithenemyk) > 1 then
+			if barrelwithenemyk ~= nil and BarrelLinkManager() == false and CanUseSpell(myHero, _E) == READY then
+				local posit = GetOrigin(barrelcombo) + (Vector(GetOrigin(barrelwithenemyk)) - GetOrigin(barrelcombo)):normalized() *500
+				if GetDistance(barrelcombo, barrelwithenemyk) <= 825 and GetDistance(myHero, postit) <= 700 then
+					CastSkillShot(_E, posit)
+				end
+			end
+		end
+	end
 end
 
-function Gangplank:LastHit()
+function Gangplank:CastQBarrels()
+	local barrelcombo = KillBarrelWithEnemyNearMe()
+	if barrelcombo ~= nil then
+		local barrelwithenemyk = BarrelWithEnemy()
+		if barrelwithenemyk ~= nil and GetCurrentHP(barrelwithenemyk) >= 1 and BarrelHpPred(barrelcombo) == true then
+			if BarrelLinkManager() == true and CanUseSpell(myHero, _Q) == READY then
+				CastTargetSpell(barrelcombo, _Q)
+			end
+		end
+	end
+end
+
+function Gangplank:CastQ()
+	local barrelc = KillBarrelWithEnemy()
+	if CanUseSpell(myHero, _E) == READY and myHero:GetSpellData(_E).ammo >= 1 then
+		self:CastQBarrel()
+	else 
+		if barrelc ~= nil and GetDistance(myHero, barrelc) <= 625 and CanUseSpell(myHero, _Q) == READY and BarrelHpPred(barrelc) == true then
+			CastTargetSpell(barrelc, _Q)
+		end
+		self:CastQEnemy(enemy)
+	end
+end
+
+function Gangplank:CastQEnemy(unit)
+	if ValidTarget(unit, 625) and CanUseSpell(myHero, _Q) and (CanUseSpell(myHero, _E) ~= READY or GetBarrel() == nil or GetBarrel() ~= nil and GetDistance(GetBarrel(), unit) >= 1000) then
+		CastTargetSpell(unit, _Q)
+	end
+end
+
+function Gangplank:CastQBarrel()
+	local barrelc = KillBarrelWithEnemy()
+	if barrelc ~= nil and GetDistance(barrelc, myHero) <= 700 then
+		if CanUseSpell(myHero, _Q) and GetDistance(myHero, barrelc) <= 625 and BarrelHpPred(barrelc) == true then
+			CastTargetSpell(barrelc, _Q)
+			local barrelenemy = KillBarrelWithEnemyNearMe()
+		elseif barrelenemy ~= nil and barrelc ~= nil then
+			if GetDistance(GetOrigin(barrelenemy), barrelc) < 850 and GetDistance(myHero, barrelenemy) <= 700 and BarrelHpPred(barrelenemy) == true then
+				CastTargetSpell(barrelenemy, _Q)
+			end
+		end
+	end
+end
+
+function Gangplank:UseQFarm()
 	for _,minion in pairs(minionManager.objects) do
 		if GetTeam(minion) == MINION_ENEMY then
 			local MHP = minion.health
-			local z = (GetCastLevel(myHero, _Q)*25)+(GetBonusDmg(myHero)*.9)+(GetBaseDamage(myHero))
-			local Dmg = myHero:CalcDamage(minion, z)
-			if CanUseSpell(myHero, _Q) == READY and ValidTarget(minion, 625) and MHP <= Dmg then
-				CastTargetSpell(minion, _Q)
-			end
-		end
-	end
-end
- 
-function Gangplank:LaneClear()
-for _,minion in pairs(minionManager.objects) do
-		if GetTeam(minion) == MINION_ENEMY then
-			local MHP = minion.health
-			local z = (GetCastLevel(myHero, _Q)*25)+(GetBonusDmg(myHero)*.9)+(GetBaseDamage(myHero))
-			local Dmg = myHero:CalcDamage(minion, z)
-			local Ori = ClosestBarrel(GetOrigin(myHero))
-			if CanUseSpell(myHero, _Q) == READY and ValidTarget(minion, 625) and MHP <= Dmg and BarrelCount <= 0 and MenuG.f.l.Q:Value() then
-				CastTargetSpell(minion, _Q)
-				elseif BarrelCount >= 1 and CanUseSpell(myHero, _Q) == READY and GetDistance(GetOrigin(minion), GetOrigin(Killablebarrel)) <=380 and GetDistance(GetOrigin(myHero), GetOrigin(Ori)) >=GetRange(myHero) and BarrelCount >= MenuG.f.l.BarrelLinkM:Value() then 
-					CastTargetSpell(Ori, _Q)
-					elseif BarrelCount >= 1 and CanUseSpell(myHero, _Q) == READY and GetDistance(GetOrigin(minion), GetOrigin(Killablebarrel)) <=380 and GetDistance(GetOrigin(myHero), GetOrigin(Ori)) <=GetRange(myHero) and BarrelCount >= MenuG.f.l.BarrelLinkM:Value() then 
-						IOW.forceTarget = Ori
-					else
-						IOW.forceTarget = nil
-			end
-			if CanUseSpell(myHero, _E) == READY and ValidTarget(minion, 650) and MenuG.f.l.E:Value() then
-				CastSkillShot(_E, GetOrigin(minion))
-			end
-		end
-	end
-end
-
-function Gangplank:AuotQ()
-for _,minion in pairs(minionManager.objects) do
-		if GetTeam(minion) == MINION_ENEMY then
-			local MHP = minion.health
-			local z = (GetCastLevel(myHero, _Q)*25)+(GetBonusDmg(myHero)*.9)+(GetBaseDamage(myHero))
+			local z = (GetCastLevel(myHero, _Q)*25)+(GetBonusDmg(myHero)*1)+(GetBaseDamage(myHero))
 			local Dmg = myHero:CalcDamage(minion, z)
 			if CanUseSpell(myHero, _Q) == READY and ValidTarget(minion, 625) and MHP <= Dmg then
 				CastTargetSpell(minion, _Q)
@@ -150,45 +207,157 @@ for _,minion in pairs(minionManager.objects) do
 	end
 end
 
-function Gangplank:CreateObj(Object) 
+function Gangplank:UseW() -- WIP will add more logic
+	local CC = {"Stun", "Taunt","Snare","Fear", "Charm", "Suppression", "Blind", "Silence", "Root", "Slow" }
+	for _,v in pairs(CC) do
+		if CanUseSpell(myHero, _W) == READY and MenuG.m.W:Value() and GotBuff(myHero, v) >= 1 then
+			CastSpell(_W)
+		end
+	end
+	if GetPercentHP(myHero)<=.25 and GotBuff(myHero, "recall") == 0 and MenuG.m.W:Value() then
+		CastSpell(_W)
+	end
+end
+
+function Gangplank:AutoKS()
+	for i,zenmy in pairs(GetEnemyHeroes()) do
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and 350 > zenmy.health and MenuG.m.AR:Value() then
+			CastSkillShot(_R, GetOrigin(zenmy))
+		end
+		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",unit ,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
+			CastTargetSpell(zenmy, _Q)
+		end
+	end	
+end
+
+function Gangplank:AutoRR()
+	for i,zenmy in pairs(GetEnemyHeroes()) do
+		local Pred = GetCircularAOEPrediction(zenmy, GPR)
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and MenuG.m.ARR:Value() and Pred:hCollision(MenuG.m.ARR:Value()) and AlliesAround(Pred.castPos, 750) > 0 and Pred.hitChance > 0.45 then
+			CastSkillShot(_R, GetOrigin(zenmy))
+		end
+	end	
+end
+
+function Gangplank:CreateObj(Object)
 	if GetObjectBaseName(Object) == "Barrel" then
 		BarrelCount = BarrelCount + 1
-		table.insert(Killablebarrels, Object)
-	end
-end
-
-function Gangplank:AddingBarrel()
-	for i, Killablebarrel in pairs(Killablebarrels) do
-		if GetPercentHP(Killablebarrel) <= 34 then
-			table.insert(Killablebarrels2, Killablebarrel)
+		table.insert(Barrel, Object)
+		if BarrelCount == 1 then
+			CT = GetTickCount()
 		end
-	end
-end
-
-function Gangplank:RemoveBarrel()
-for i, Killablebarrel in pairs(Killablebarrels2) do
-			Killablebarrels2[i] = nil
 	end
 end
 
 function Gangplank:DeleteObj(Object)
 	if GetObjectBaseName(Object) == "Gangplank_Base_E_AoE_Green.troy" then 
 		BarrelCount = BarrelCount - 1
-		table.remove(Killablebarrels, 1)
-		self:RemoveBarrel()
+		table.remove(Barrel, 1)
+		CT = nil
 	end
 end
 
-function ClosestBarrel(pos) -- Inspired all credits and shiz. Main reason is travel speed to closest barrel so we shoot that.
+function BarrelHpPred(barrel)	
+ 	if CT ~= nil then
+ 		if BarrelWithMe() ~= nil and barrel ~= nil then
+ 			local barrelwithme = BarrelWithMe()
+ 			if GetCurrentHP(barrel) == 2 and GetLevel(myHero) >= 7 and ((GetTickCount() - CT >= 2*time() - GetLatency()-300) or GetTickCount() - CT >= time() - GetLatency()-300) then 
+ 				return true
+ 				elseif GetCurrentHP(barrel) == 1 then
+ 					return true
+ 			end
+ 		end
+ 	end
+end
+
+--[[function QTravelTime(target)
+	return GetDistance(myHero, target)/2800 + .25
+end]]
+
+function time() -- Return miliseconds for barrel decay
+	if GetLevel(myHero) >= 13 then
+		return 500
+	end
+	if GetLevel(myHero) >= 7 and GetLevel(myHero) < 13 then 
+		return 1000
+	end  
+	if GetLevel(myHero) < 7 then
+		return 2000
+	end
+end
+
+function BarrelWithMe()
+	for i,object in pairs(Barrel) do
+		if object ~= nil and GetDistance(object, myHero) <= 625 then
+			return object
+		end
+	end
+end 
+
+function BarrelLinkManager() -- Sorry LongDong got lazy......
+	if GetBarrel() ~= nil and GotBuff(GetBarrel(), "gangplankebarrellink") == 1 then
+		return true
+	end
+	return false
+end
+
+function BarrelFinder(pos)
+	for i,object in pairs(Barrel) do
+		if GetDistance(object, pos) <= 120 then
+			return object
+		end
+	end
+end
+
+function BarrelNearPlayer()
+	for i,object in pairs(Barrel) do
+		if GetDistance(myHero, KillBarrelWithEnemy()) <= 1000 then
+			return object
+		end
+	end
+end
+
+function KillBarrelWithEnemyNearMe() -- Inspired all credits. Main reason is travel speed to closest barrel so we shoot that.
   local bArrel = nil
-  for _,v in pairs(Killablebarrels2) do 
+  for _,v in pairs(Barrel) do 
     if not bArrel and v then bArrel = v end
-    if bArrel and v and GetDistanceSqr(GetOrigin(bArrel),pos) > GetDistanceSqr(GetOrigin(v),pos) then
+    if bArrel and v and (BarrelHpPred(bArrel) == true or BarrelHpPred(v) == true) and GetDistanceSqr(GetOrigin(bArrel),myHero) > GetDistanceSqr(GetOrigin(v),myHero) then
       bArrel = v
     end
   end
   return bArrel
 end
+
+function KillBarrelWithEnemy()
+	for i,object in pairs(Barrel) do
+		if object ~= nil and EnemiesAround(object, 380) >= 1 and GetCurrentHP(object) <= 1 and GetCurrentHP(object) ~= 0 then --Make sure that this barrel is actually real kappa
+			return object
+		end
+	end
+end
+
+function BarrelWithEnemy()
+	for i,object in pairs(Barrel) do
+		if object ~= nil and EnemiesAround(object, 380) >= 1 then
+			return object
+		end
+	end
+end
+
+function GetBarrel()
+	for i,object in pairs(Barrel) do
+		if  object ~= nil then
+			return object
+		end
+	end
+end
+
+function file_exists(path)
+  assert(type(path) == "string", "file_exists: wrong argument types (<string> expected for path)")
+  local file = io.open(path, "r")
+  if file then file:close() return true else return false end
+end
+
 
 if _G[GetObjectName(myHero)] then
   _G[GetObjectName(myHero)]()
