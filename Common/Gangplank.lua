@@ -1,6 +1,6 @@
 require("OpenPredict")
 require("DamageLib")
-local ver = "0.5"
+local ver = "0.6"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -234,9 +234,10 @@ end
 
 function Gangplank:AutoKS()
 	for i,zenmy in pairs(GetEnemyHeroes()) do
+		local Pred = GetCircularAOEPrediction(zenmy, GPR)
 		local z = (20*GetCastLevel(myHero, _R)+.1*GetBonusAP(myHero)*wavetime()+30)
-		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((z*4 > zenmy.health) or GetPercentHP(zenmy)<=0.2)  and MenuG.m.AR:Value() then -- 4 waves min
-			CastSkillShot(_R, GetOrigin(zenmy))
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((z*4 > zenmy.health) or GetPercentHP(zenmy)<=0.2) and MenuG.m.AR:Value() and Pred.hitChance > 0.45 then -- 4 waves min
+			CastSkillShot(_R, Pred.castPos)
 		end
 		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",zenmy,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
 			CastTargetSpell(zenmy, _Q)
