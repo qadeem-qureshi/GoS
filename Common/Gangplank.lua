@@ -1,7 +1,7 @@
 require("OpenPredict")
 require("Inspired")
 
-local ver = "0.2"
+local ver = "0.3"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -261,7 +261,7 @@ function Gangplank:AutoRR()
 	for i,zenmy in pairs(GetEnemyHeroes()) do
 		local Pred = GetCircularAOEPrediction(zenmy, GPR)
 		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and MenuG.m.ARR:Value() and Pred:hCollision(MenuG.m.ARR:Value()) and AlliesAround(Pred.castPos, 750) > 0 and Pred.hitChance > 0.45 then
-			CastSkillShot(_R, GetOrigin(zenmy))
+			CastSkillShot(_R, Pred.castPos)
 		end
 	end	
 end
