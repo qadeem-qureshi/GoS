@@ -1,5 +1,6 @@
 require("OpenPredict")
-local ver = "0.4"
+require("DamageLib")
+local ver = "0.5"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -35,47 +36,44 @@ function Gangplank:__init()
 	MenuG.m:Boolean("AR", "Auto KS ult", false)
 	MenuG.m:Boolean("ARR", "Auto R if Enemies >= x", false)
 	MenuG.m:Slider("ARRS", "Auto R Minimum Enemies", 3, 1, 5)
-
+	self:LoadWalker()
 	BarrelPred = { delay = 0.25, speed = math.huge, width = 390, range = 1000 }
 	GPR = { delay = 0.25, speed = math.huge, width = 575, range = math.huge }
 	BarrelCount = 0
 	Barrel = { }
--- GoSWalk downloader Icey
-if not file_exists(COMMON_PATH.. "GoSWalk.lua") then
-  DownloadFileAsync("https://raw.githubusercontent.com/KeVuong/GoS/master/GoSWalk.lua", COMMON_PATH .. "GoSWalk.lua", function() PrintChat("Downloaded GoSWalk, please 2x F6!") return end)
-else
-  require "GoSWalk"
-  	Walk = Orbwalking()
-	Walk:LoadMenu()
-  Callback.Add("Tick", function() self:Loop() end)
-end
-
-if not _G.InspiredLoaded then
-  require('Inspired')
-end
-
-if _G.GetSave("MenuConfig").Orbwalker.on.value then
-  _G.GetSave("MenuConfig").Orbwalker.on.value = false
-  PrintChat("IOW Disabled! Please 2x F6 for changes to take effect!")
-  return
-end
--- GoSWalk downloader end
 	Callback.Add("CreateObj", function(Object) self:CreateObj(Object) end)
 	Callback.Add("DeleteObj", function(Object) self:DeleteObj(Object) end)
 end
 
-function Gangplank:Loop()
+function Gangplank:LoadWalker()
+	if IOW_Loaded then
+		Callback.Add("Tick", function() self:Loop(IOW:Mode(), "Combo", "LastHit", "LaneClear") end)
+	end
+	if DAC_Loaded then
+		Callback.Add("Tick", function() self:Loop(DAC:Mode(), "Combo", "LastHit", "LaneClear") end)
+	end
+	if PW_Loaded then
+		Callback.Add("Tick", function() self:Loop(PW:Mode(), "Combo", "LastHit", "LaneClear") end)
+	end
+	if GosWalk_Loaded then
+		Walk = Orbwalking()
+		Walk:LoadMenu()
+		Callback.Add("Tick", function() self:Loop(Walk:GetCurrentMode(), 0, 3, 2) end)
+	end
+end
+
+function Gangplank:Loop(orb,value,value1,value2)
 	enemy = GetCurrentTarget()
-	
-	if Walk:GetCurrentMode() == 0 and ValidTarget(enemy, 2000) then
+
+	if orb== value and ValidTarget(enemy, 2000) then
 		self:Combo()
 	end
 
-	if Walk:GetCurrentMode() == 3 then
+	if orb == value1 then
 		self:UseQFarm()
 	end
 
-	if Walk:GetCurrentMode() == 2 then
+	if orb == value2 then
 		self:LaneClear()
 	end
 	
@@ -236,9 +234,8 @@ end
 
 function Gangplank:AutoKS()
 	for i,zenmy in pairs(GetEnemyHeroes()) do
-		z = (20*GetCastLevel(myHero, _R)+.1*GetBonusAP(myHero)*wavetime()+30)
-		local dmg = myHero:CalcDamage(zenmy, z)
-		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((dmg*4 > zenmy.health) or GetPercentHP(zenmy)<=0.2)  and MenuG.m.AR:Value() then -- 4 waves min
+		local z = (20*GetCastLevel(myHero, _R)+.1*GetBonusAP(myHero)*wavetime()+30)
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((z*4 > zenmy.health) or GetPercentHP(zenmy)<=0.2)  and MenuG.m.AR:Value() then -- 4 waves min
 			CastSkillShot(_R, GetOrigin(zenmy))
 		end
 		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",zenmy,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
@@ -376,13 +373,6 @@ function GetBarrel()
 		end
 	end
 end
-
-function file_exists(path)
-  assert(type(path) == "string", "file_exists: wrong argument types (<string> expected for path)")
-  local file = io.open(path, "r")
-  if file then file:close() return true else return false end
-end
-
 
 if _G[GetObjectName(myHero)] then
   _G[GetObjectName(myHero)]()
