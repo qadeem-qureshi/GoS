@@ -1,7 +1,5 @@
 require("OpenPredict")
-require("Inspired")
-
-local ver = "0.3"
+local ver = "0.4"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
