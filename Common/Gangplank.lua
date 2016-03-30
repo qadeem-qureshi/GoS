@@ -1,6 +1,6 @@
 require("OpenPredict")
 require("DamageLib")
-local ver = "0.7"
+local ver = "0.8"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -47,16 +47,16 @@ end
 
 function Gangplank:LoadWalker()
 	if IOW_Loaded then
-		Callback.Add("Tick", function() self:Loop(IOW:Mode(), "Combo", "LastHit", "LaneClear") end)
+		Callback.Add("Tick", function() self:Loop(_G.IOW:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if DAC_Loaded then
-		Callback.Add("Tick", function() self:Loop(DAC:Mode(), "Combo", "LastHit", "LaneClear") end)
+		Callback.Add("Tick", function() self:Loop(_G.DAC:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if PW_Loaded then
-		Callback.Add("Tick", function() self:Loop(PW:Mode(), "Combo", "LastHit", "LaneClear") end)
+		Callback.Add("Tick", function() self:Loop(_G.PW:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if GosWalk_Loaded then
-		Callback.Add("Tick", function() self:Loop(GetCurrentMode(), 0, 3, 2) end)
+		Callback.Add("Tick", function() self:Loop(_G.GoSWalk:GetCurrentMode(), 0, 3, 2) end)
 	end
 end
 
