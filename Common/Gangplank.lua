@@ -1,6 +1,6 @@
 require("OpenPredict")
-require("DamageLib")
-local ver = "0.8"
+
+local ver = "0.9"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -47,16 +47,16 @@ end
 
 function Gangplank:LoadWalker()
 	if IOW_Loaded then
-		Callback.Add("Tick", function() self:Loop(_G.IOW:Mode(), "Combo", "LastHit", "LaneClear") end)
+		Callback.Add("Tick", function() self:Loop(IOW:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if DAC_Loaded then
-		Callback.Add("Tick", function() self:Loop(_G.DAC:Mode(), "Combo", "LastHit", "LaneClear") end)
+		Callback.Add("Tick", function() self:Loop(DAC:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if PW_Loaded then
-		Callback.Add("Tick", function() self:Loop(_G.PW:Mode(), "Combo", "LastHit", "LaneClear") end)
+		Callback.Add("Tick", function() self:Loop(PW:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if GosWalk_Loaded then
-		Callback.Add("Tick", function() self:Loop(_G.GoSWalk:GetCurrentMode(), 0, 3, 2) end)
+		Callback.Add("Tick", function() self:Loop(GosWalk:GetCurrentMode(), 0, 3, 2) end)
 	end
 end
 
@@ -86,7 +86,6 @@ function Gangplank:Loop(orb,value,value1,value2)
 	if MenuG.m.AR:Value() or MenuG.m.AQKS:Value() then
 		self:AutoKS()
 	end
-	
 	BarrelNearPlayer()
 	KillBarrelWithEnemyNearMe()
 	KillBarrelWithEnemy()
@@ -129,7 +128,7 @@ function Gangplank:CastE(unit)
 		local barrelrework = BarrelFinder(prediction.castPos)
 			if barrelrework == nil then
 				local predpos = prediction.castPos
-				if barrelnearplayer ~= nil and CanUseSpell(myHero, _Q) == READY and GetDistance(predpos, barrelnearplayer) <= 650 then
+				if barrelnearplayer ~= nil and CanUseSpell(myHero, _Q) == READY and GetDistance(predpos, barrelnearplayer) <= 700 then
 					CastSkillShot(_E, predpos.x, predpos.y, predpos.z)
 					self:CastEInception()
 					local barrelcombo = KillBarrelWithEnemyNearMe()
@@ -187,7 +186,7 @@ function Gangplank:CastQ()
 end
 
 function Gangplank:CastQEnemy(unit)
-	if ValidTarget(unit, 625) and CanUseSpell(myHero, _Q) and ((CanUseSpell(myHero, _E) ~= READY and GetBarrel() == nil) or (GetBarrel() ~= nil and KillBarrelWithEnemy() == nil)) then
+	if ValidTarget(unit, 625) and CanUseSpell(myHero, _Q) and ((CanUseSpell(myHero, _E) ~= READY and GetBarrel() == nil) or (GetBarrel() ~= nil and GetDistance(unit, GetBarrel()) > 850)) then
 		CastTargetSpell(unit, _Q)
 	end
 end
@@ -226,7 +225,7 @@ function Gangplank:UseW() -- WIP will add more logic
 			CastSpell(_W)
 		end
 	end
-	if GetPercentHP(myHero)<=.25 and GotBuff(myHero, "recall") == 0 and MenuG.m.W:Value() then
+	if GetPercentHP(myHero)<=25 and (GotBuff(myHero, "recall") == 0 or GotBuff(myHero, "odinrecall") == 0) and MenuG.m.W:Value() then
 		CastSpell(_W)
 	end
 end
@@ -235,10 +234,13 @@ function Gangplank:AutoKS()
 	for i,zenmy in pairs(GetEnemyHeroes()) do
 		local Pred = GetCircularAOEPrediction(zenmy, GPR)
 		local z = (20*GetCastLevel(myHero, _R)+.1*GetBonusAP(myHero)*wavetime()+30)
-		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((z*4 > zenmy.health) or GetPercentHP(zenmy)<=0.2) and MenuG.m.AR:Value() and Pred.hitChance > 0.45 then -- 4 waves min
+		if CanUseSpell(myHero, _R) == READY and IsDead(zenmy) == false and ((z*3.9 > zenmy.health) or GetPercentHP(zenmy)<=15) and MenuG.m.AR:Value() and Pred.hitChance > 0.45 then -- 4 waves min
 			CastSkillShot(_R, Pred.castPos)
 		end
-		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and getdmg("Q",zenmy,myHero) > zenmy.health and MenuG.m.AQKS:Value() then
+			local MHP = zenmy.health
+			local z = (GetCastLevel(myHero, _Q)*25)+(GetBonusDmg(myHero)*1)+(GetBaseDamage(myHero))
+			local Dmg = myHero:CalcDamage(zenmy, z)
+		if CanUseSpell(myHero, _Q) == READY and ValidTarget(zenmy, 625) and Dmg >= zenmy.health and MenuG.m.AQKS:Value() then
 			CastTargetSpell(zenmy, _Q)
 		end
 	end	
@@ -281,9 +283,8 @@ end
 
 function BarrelHpPred(barrel)	
  	if CT ~= nil then
- 		if BarrelWithMe() ~= nil and barrel ~= nil then
- 			local barrelwithme = BarrelWithMe()
- 			if GetCurrentHP(barrel) == 2 and GetLevel(myHero) >= 7 and ((GetTickCount() - CT >= 2*time() - GetLatency()-300) or GetTickCount() - CT >= time() - GetLatency()-300) then 
+ 		if barrel ~= nil then
+ 			if GetDistance(myHero, barrel) <= 650 and (GetTickCount() - CT >= 2 * time() - GetLatency() - 350 + 50 or (GetTickCount() - CT >= time() - GetLatency() - 350 + 50 and GetCurrentHP(barrel) == 2 and GetTickCount() - CT < time() )) then
  				return true
  				elseif GetCurrentHP(barrel) == 1 then
  					return true
@@ -292,9 +293,9 @@ function BarrelHpPred(barrel)
  	end
 end
 
---[[function QTravelTime(target)
+function QTravelTime(target)
 	return GetDistance(myHero, target)/2800 + .25
-end]]
+end
 
 function time() -- Return miliseconds for barrel decay
 	if GetLevel(myHero) >= 13 then
