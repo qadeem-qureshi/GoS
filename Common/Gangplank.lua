@@ -1,6 +1,6 @@
 require("OpenPredict")
 require("DamageLib")
-local ver = "0.6"
+local ver = "0.7"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -56,9 +56,7 @@ function Gangplank:LoadWalker()
 		Callback.Add("Tick", function() self:Loop(PW:Mode(), "Combo", "LastHit", "LaneClear") end)
 	end
 	if GosWalk_Loaded then
-		Walk = Orbwalking()
-		Walk:LoadMenu()
-		Callback.Add("Tick", function() self:Loop(Walk:GetCurrentMode(), 0, 3, 2) end)
+		Callback.Add("Tick", function() self:Loop(GetCurrentMode(), 0, 3, 2) end)
 	end
 end
 
@@ -88,6 +86,7 @@ function Gangplank:Loop(orb,value,value1,value2)
 	if MenuG.m.AR:Value() or MenuG.m.AQKS:Value() then
 		self:AutoKS()
 	end
+	
 	BarrelNearPlayer()
 	KillBarrelWithEnemyNearMe()
 	KillBarrelWithEnemy()
