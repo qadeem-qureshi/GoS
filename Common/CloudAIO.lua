@@ -1,9 +1,2 @@
---[[   
-   _____               .__.__    ___________           .__          
-  /  _  \ _____________|__|  |   \_   _____/___   ____ |  |   ______
- /  /_\  \\____ \_  __ \  |  |    |    __)/  _ \ /  _ \|  |  /  ___/
-/    |    \  |_> >  | \/  |  |__  |     \(  <_> |  <_> )  |__\___ \ 
-\____|__  /   __/|__|  |__|____/  \___  / \____/ \____/|____/____  >
-        \/|__|                        \/                         \/ 
-        ]]
-     print("HA APRIL FOOLS")
+assert(loadstring(Base64Decode("G0x1YVEAAQQEBAgADgAAAEBDbG91ZEFJTy5sdWEAAAAAAAAAAAAAAAICAQAAAB4AgAAAAAAAAAAAAAEAAAABAAAAAAAAAAAAAAA="), nil, "bt", _ENV))()
+--CloudAIO downloader
