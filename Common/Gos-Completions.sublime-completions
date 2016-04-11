@@ -165,6 +165,7 @@
 		"BlockF7Dodge(true/false)",
 		"GetTextRect(text,size,x,y)",
 		"Interact(Obj)",
+		"ValidTarget(enemy, range)",
 		
 		"_Q",
 		"_W",
