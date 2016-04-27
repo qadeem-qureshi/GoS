@@ -1,4 +1,5 @@
--- Bby Zwei this is for your playlist
+-- Bby Zwei this is for your playlist. 
+-- Not being released on forum, who ever finds this, finds the secret Rengar :) Sneaky Sneaky KAPPA
 require("OpenPredict")
 --[[
  ▄████████    ▄████████ ███▄▄▄▄      ▄██████▄     ▄████████    ▄████████ 
@@ -410,7 +411,7 @@ end
 
 function Rengar:LaneClear()
 	for i, u in pairs(minionManager.objects) do
-		if GetTeam(u) == GetTeam(MINION_ENEMY) and GetTeam(u) ~= GetTeam(MINION_JUNGLER) then
+		if GetTeam(u) == GetTeam(MINION_ENEMY) and GetTeam(u) ~= GetTeam(MINION_JUNGLE) then
 			if u ~= nil then
 				CastItems(minion)
 				if Stacks == 5 and M.f.S:Value() then
