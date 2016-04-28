@@ -1,5 +1,4 @@
--- Bby Zwei this is for your playlist. 
--- Not being released on forum, who ever finds this, finds the secret Rengar :) Sneaky Sneaky KAPPA
+-- Bby Zwei this is for your playlist
 require("OpenPredict")
 --[[
  ▄████████    ▄████████ ███▄▄▄▄      ▄██████▄     ▄████████    ▄████████ 
@@ -16,7 +15,10 @@ local Stacks = myHero.mana
 local Passive = function() return GotBuff(myHero, "rengarpassivebuff") >= 1 end
 local RBuff = function() return GotBuff(myHero, "RengarR") >= 1 end
 local version = "1"
-local ignite, ignitedamage = function() local summonerNameOne = myHero:GetSpellData(SUMMONER_1).name local summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name (summonerNameOne:lower():find("summonerdot") and SUMMONER_1 or (summonerNameTwo:lower():find("summonerdot") and SUMMONER_2 or nil)) end, function() if ignite ~= nil then return 70 + 20*GetLevel(myHero) end end
+local summonerNameOne = myHero:GetSpellData(SUMMONER_1).name 
+local summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name
+local ignite = (summonerNameOne:lower():find("summonerdot") and SUMMONER_1 or (summonerNameTwo:lower():find("summonerdot") and SUMMONER_2 or nil))
+local ignitedamage = 70 + 20*GetLevel(myHero) 
 local smitetable = {"s5_summonersmiteplayerganker", "s5_summonersmiteduel", "summonersmite"}
 local Smite = function() for i, u in pairs(smitetable) do local summonerNameOne = myHero:GetSpellData(SUMMONER_1).name local summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name return (summonerNameOne:lower():find(u) and SUMMONER_1 or (summonerNameTwo:lower():find(u) and SUMMONER_2 or nil)) end end
 local SwitchTime = 0
@@ -24,7 +26,7 @@ local LastAttack, LastQAA = 0, 0
 local LastQ, LastW, LastE, LastSpell = 0, 0, 0, 0
 local Youmuu = GetItemSlot(myHero, 3142)
 local Tiamat = GetItemSlot(myHero, 3077)
-local Hydra = GetItemSlote(myHero, 3074)
+local Hydra = GetItemSlot(myHero, 3074)
 local Titanic = GetItemSlot(myHero, 3053)
 local Enemy = nil
 
@@ -110,7 +112,7 @@ function Rengar:AfterAttack()
 	if (PW:Mode() == "Combo" or PW:Mode() == "Harass") and Ready(_Q) and ValidTarget(Enemy, Q.range) then
 		CastSpell(_Q)
 	end
-	CastItems(Enemy)
+	self:CastItems(Enemy)
 end
 
 function Rengar:DMG(sender, receiver, dmg)
@@ -131,10 +133,10 @@ end
 
 function Rengar:KillSteal()
 	for i, u in pairs(GetEnemyHeroes()) do
-		if ValidTarget(u, W.range) and u.health < myHero:CalcMagicDamage(u, W.dmg()) and M.k.W:Value() then
+		if ValidTarget(u, W.range) and u.health < myHero:CalcMagicDamage(u, W.damage()) and M.k.W:Value() then
 			CastSpell(_W) 
 		end
-		if ValidTarget(u, 660) and ignite() ~= nil and u.health < ignitedamage() and M.s.i:Value() then
+		if ValidTarget(u, 660) and ignite ~= nil and u.health < ignitedamage and M.s.i:Value() then
 			CastTargetSpell(u, iginte())
 		end
 	end
@@ -154,7 +156,7 @@ function Rengar:OnJump(unit, ani)
 						CastSpell(_W)
 					end
 					CastSkillShot(_E, Enemy.pos)
-					CastItems(Enemy)
+					self:CastItems(Enemy)
 			end
 		end 
 		if PW:Mode() == "Combo" then
@@ -164,7 +166,7 @@ function Rengar:OnJump(unit, ani)
 				elseif  M.c.m:Value() == 2 and M.b.Q:Value() then
 					CastSpell(_Q)
 			end
-			CastItems(Enemy)
+			self:CastItems(Enemy)
 		end
 	end
 end
@@ -175,7 +177,7 @@ function Rengar:Draw()
 		DrawCircle(SelectedTarget, 80, 2, 15, GoS.White)
 	end
 	if GetCastLevel(myHero, _R) > 0 then 
-		DrawCircle(myHero, M.b.SDR:Value(), 2, 15, GoS.White)
+		DrawCircle(myHero, M.b.SR:Value(), 2, 15, GoS.White)
 		DrawCircle(myHero, M.b.QR:Value(), 2, 15, GoS.White)
 	end
 	if RBuff() and M.m.DE:Value() then
@@ -221,12 +223,10 @@ function Rengar:Tick()
 		if PW:Mode() == "Harass" then
 			self:Harass()
 		end
-		SwitchCombo()
+		self:SwitchCombo()
 		Smite()
 		Passive()
 		RBuff()
-		ignite()
-		ignitedamage()
 		if ValidTarget(Enemy, 1500) then
 			self:KillSteal()
 		end
@@ -294,8 +294,8 @@ function Rengar:Combo()
 			CastSpell(_Q)
 		end
 		if not RBuff() then
-			CastItems(Enemy)
-			if Ready(_E) and M.c.E:Value() not Passive() then
+			self:CastItems(Enemy)
+			if Ready(_E) and M.c.E:Value() and not Passive() then
 				self:CastE(Enemy)
 				elseif Ready(_E) and M.c.E:Value() then
 					self:CastE(Enemy)
@@ -323,7 +323,7 @@ function Rengar:Combo()
 		if M.c.m:Value() == 3 and Ready(_Q) and ValidTarget(Enemy, Q.range) then
 			CastSpell(_Q)
 		end
-		if M.c.SoE:Value() and Ready(_E) not RBuff() then
+		if M.c.SoE:Value() and Ready(_E) and not RBuff() then
 			self:CastE(Enemy)
 		end
 	end
@@ -333,8 +333,8 @@ function Rengar:Combo()
 	if M.s.s:Value() and Smite() ~= nil and Ready(Smite()) and not RBuff() then
 		CastTargetSpell(Enemy, Smite())
 	end
-	if M.s.i:Value() and ignite() ~= nil and ValidTarget(Enemy, 660) and ignitedamage() > Enemy.health then 
-		CastTargetSpell(Enemy, ignite())
+	if M.s.i:Value() and ignite ~= nil and ValidTarget(Enemy, 660) and ignitedamage > Enemy.health then 
+		CastTargetSpell(Enemy, ignite)
 	end 
 end
 
@@ -358,7 +358,7 @@ function Rengar:Harass()
 	if ValidTarget(Enemy, E.range) then
 		if Stacks == 5 then
 			if M.h.m:Value() == 1 then
-				if M.h.E:Value() and Ready(_E) and not Passive()
+				if M.h.E:Value() and Ready(_E) and not Passive() then
 					self:CastE(Enemy)
 				end
 			end
@@ -373,7 +373,7 @@ function Rengar:Harass()
 				CastSpell(_Q)
 			end
 			if RBuff() then return end
-			CastItems(Enemy)
+			self:CastItems(Enemy)
 			if M.h.E:Value() and Ready(_E) then
 				self:CastE(Enemy)
 			end
@@ -386,22 +386,22 @@ end
 
 function Rengar:JunglerClear()
 	for i, u in pairs(minionManager.objects) do
-		if GetTeam(u) == GetTeam(MINION_JUNGLE) then
+		if GetTeam(u) == MINION_JUNGLE then
 			if u ~= nil then
-				CastItems(minion)
+				self:CastItems(minion)
 				if Stacks == 5 and M.f.SJ:Value() then
 					if ValidTarget(u, W.range) and not Passive() then
-						CastItems(u)
+						self:CastItems(u)
 					end
 					return
 				end
-				if M.f.Qj:Value() and Ready(_Q) and ValidTarget(u, Q.range) then
+				if M.f.QJ:Value() and Ready(_Q) and ValidTarget(u, Q.range) then
 					CastSpell(_Q)
 				end
-				if M.f.Wj:Value() and Ready(_W) and ValidTarget(u, W.range) then
+				if M.f.WJ:Value() and Ready(_W) and ValidTarget(u, W.range) then
 					CastSpell(_W)
 				end
-				if M.f.Ej:Value() and Ready(_E) and ValidTarget(u, E.range) then
+				if M.f.EJ:Value() and Ready(_E) and ValidTarget(u, E.range) then
 					CastSkillShot(_E, u.pos)
 				end
 			end
@@ -411,12 +411,12 @@ end
 
 function Rengar:LaneClear()
 	for i, u in pairs(minionManager.objects) do
-		if GetTeam(u) == GetTeam(MINION_ENEMY) and GetTeam(u) ~= GetTeam(MINION_JUNGLE) then
+		if GetTeam(u) == MINION_ENEMY and GetTeam(u) ~= 300 then
 			if u ~= nil then
-				CastItems(minion)
+				self:CastItems(minion)
 				if Stacks == 5 and M.f.S:Value() then
 					if ValidTarget(u, W.range) and not Passive() then
-						CastItems(u)
+						self:CastItems(u)
 					end
 					return
 				end
@@ -436,7 +436,7 @@ end
 
 function Rengar:CastItems(unit)
 	if not RBuff() then
-		local Total = EnemiesAround(myHero, 385) + MinionsAround(myHero, 385)
+		local Total = EnemiesAround(myHero, 385)
 		if Ready(Tiamat) and Total > 0 then 
 			CastSpell(Tiamat)
 		end
