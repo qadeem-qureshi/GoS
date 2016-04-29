@@ -12,8 +12,10 @@ require("OpenPredict")
   ███    ███                                                    ███    ███ 
 ]]
 local Stacks = myHero.mana
-local Passive = function() return GotBuff(myHero, "rengarpassivebuff") >= 1 end
-local RBuff = function() return GotBuff(myHero, "RengarR") >= 1 end
+local PassiveF = function() return GotBuff(myHero, "rengarpassivebuff") >= 1 end
+local RBuffF = function() return GotBuff(myHero, "RengarR") >= 1 end
+local RBuff = RBuffF()
+local Passive = PassiveF()
 local version = "1"
 local summonerNameOne = myHero:GetSpellData(SUMMONER_1).name 
 local summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name
@@ -117,14 +119,14 @@ end
 
 function Rengar:DMG(sender, receiver, dmg)
 	if not M.h.AH:Value() then return end
-	if RBuff() or CanUseSpell(myHero, _W) ~= READY or GotBuff(myHero, "recall") > 0  or GotBuff(myHero, "teleport") or Stacks <= 4 then return end
+	if RBuff or CanUseSpell(myHero, _W) ~= READY or GotBuff(myHero, "recall") > 0  or GotBuff(myHero, "teleport") or Stacks <= 4 then return end
 	if (dmg/myHero.health) > M.h.AHI:Value() or GetPercentHP(myHero) < M.h.HP:Value() then
 		CastSpell(_W)
 	end
 end
 
 function Rengar:BeforeAttack()
-	if PW:Mode() == "Combo" and Ready(_Q) and not (Passive() or Stacks == 5 or M.c.m:Value() == 1) then
+	if PW:Mode() == "Combo" and Ready(_Q) and not (Passive or Stacks == 5 or M.c.m:Value() == 1) then
 		if ValidTarget(Enemy, GetRange(myHero)) then
 			CastSpell(_Q)
 		end
@@ -180,7 +182,7 @@ function Rengar:Draw()
 		DrawCircle(myHero, M.b.SR:Value(), 2, 15, GoS.White)
 		DrawCircle(myHero, M.b.QR:Value(), 2, 15, GoS.White)
 	end
-	if RBuff() and M.m.DE:Value() then
+	if RBuff and M.m.DE:Value() then
 		DrawCircle(myHero, 1450, 2, 15, GoS.White)
 	end
 	if M.m.DW:Value() and myHero:CanUseSpell(_W) then
@@ -225,13 +227,11 @@ function Rengar:Tick()
 		end
 		self:SwitchCombo()
 		Smite()
-		Passive()
-		RBuff()
 		if ValidTarget(Enemy, 1500) then
 			self:KillSteal()
 		end
 		if M.c.TQ:Value() and ValidTarget(Enemy, E.range) then
-			if RBuff() then
+			if RBuff then
 				if Stacks == 5 and Enemy.distance < Q.range then
 					CastSpell(_Q)
 				end
@@ -253,7 +253,7 @@ function Rengar:Tick()
 		if M.b.Q:Value() then
 			if M.b.Y:Value() and Youmuu == nil then return end
 			if ValidTarget(Enemy, M.b.SR:Value()) then
-				if Stacks == 5 and RBuff() then
+				if Stacks == 5 and RBuff then
 					if target.distance <= M.b.QR:Value() then
 						CastSpell(_Q)
 					end
@@ -293,9 +293,9 @@ function Rengar:Combo()
 		if Ready(_Q) and ValidTarget(Enemy, Q.range) and M.c.Q:Value() then
 			CastSpell(_Q)
 		end
-		if not RBuff() then
+		if not RBuff then
 			self:CastItems(Enemy)
-			if Ready(_E) and M.c.E:Value() and not Passive() then
+			if Ready(_E) and M.c.E:Value() and not Passive then
 				self:CastE(Enemy)
 				elseif Ready(_E) and M.c.E:Value() then
 					self:CastE(Enemy)
@@ -306,8 +306,8 @@ function Rengar:Combo()
 		end
 	end
 	if Stacks == 5 then
-		if M.c.m:Value() == 1 and not RBuff() then
-			if Ready(_E) and not Passive() then
+		if M.c.m:Value() == 1 and not RBuff then
+			if Ready(_E) and not Passive then
 				self:CastE(Enemy)
 				if M.c.SE:Value() and GetTickCount() - LastE >= 500 and GetTickCount() - SwitchTime >= 350 then
 					M.c.m:Value(3)
@@ -323,14 +323,14 @@ function Rengar:Combo()
 		if M.c.m:Value() == 3 and Ready(_Q) and ValidTarget(Enemy, Q.range) then
 			CastSpell(_Q)
 		end
-		if M.c.SoE:Value() and Ready(_E) and not RBuff() then
+		if M.c.SoE:Value() and Ready(_E) and not RBuff then
 			self:CastE(Enemy)
 		end
 	end
 	if Youmuu ~= nil and Ready(Youmuu) and ValidTarget(Enemy, Q.range) then
 		CastSpell(Youmuu)
 	end
-	if M.s.s:Value() and Smite() ~= nil and Ready(Smite()) and not RBuff() then
+	if M.s.s:Value() and Smite() ~= nil and Ready(Smite()) and not RBuff then
 		CastTargetSpell(Enemy, Smite())
 	end
 	if M.s.i:Value() and ignite ~= nil and ValidTarget(Enemy, 660) and ignitedamage > Enemy.health then 
@@ -358,7 +358,7 @@ function Rengar:Harass()
 	if ValidTarget(Enemy, E.range) then
 		if Stacks == 5 then
 			if M.h.m:Value() == 1 then
-				if M.h.E:Value() and Ready(_E) and not Passive() then
+				if M.h.E:Value() and Ready(_E) and not Passive then
 					self:CastE(Enemy)
 				end
 			end
@@ -372,7 +372,7 @@ function Rengar:Harass()
 			if M.h.Q:Value() and ValidTarget(Enemy, Q.range) then
 				CastSpell(_Q)
 			end
-			if RBuff() then return end
+			if RBuff then return end
 			self:CastItems(Enemy)
 			if M.h.E:Value() and Ready(_E) then
 				self:CastE(Enemy)
@@ -390,7 +390,7 @@ function Rengar:JunglerClear()
 			if u ~= nil then
 				self:CastItems(minion)
 				if Stacks == 5 and M.f.SJ:Value() then
-					if ValidTarget(u, W.range) and not Passive() then
+					if ValidTarget(u, W.range) and not Passive then
 						self:CastItems(u)
 					end
 					return
@@ -415,7 +415,7 @@ function Rengar:LaneClear()
 			if u ~= nil then
 				self:CastItems(minion)
 				if Stacks == 5 and M.f.S:Value() then
-					if ValidTarget(u, W.range) and not Passive() then
+					if ValidTarget(u, W.range) and not Passive then
 						self:CastItems(u)
 					end
 					return
@@ -435,15 +435,15 @@ function Rengar:LaneClear()
 end
 
 function Rengar:CastItems(unit)
-	if not RBuff() then
+	if not RBuff then
 		local Total = EnemiesAround(myHero, 385)
 		if Ready(Tiamat) and Total > 0 then 
 			CastSpell(Tiamat)
 		end
-		if Ready(Hydra) and Total > 0 and not RBuff() then 
+		if Ready(Hydra) and Total > 0 and not RBuff then 
 			CastSpell(Hydra)
 		end
-		if Ready(Titanic) and Total > 0 and not RBuff() then 
+		if Ready(Titanic) and Total > 0 and not RBuff then 
 			CastSpell(Titanic)
 		end 
 		if PW:Mode() == "Combo" or PW:Mode() == "Harass" then 
