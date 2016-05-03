@@ -1,14 +1,14 @@
 require("OpenPredict")
 
-local ver = "1.0"
+local ver = "2.0"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
         PrintChat("New version found! " .. data)
         PrintChat("Downloading update, please wait...")
-        DownloadFileAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Mundo.lua", SCRIPT_PATH .. "Mundo.lua", function() PrintChat("Update Complete, please 2x F6!") return end)
+        DownloadFileAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Mundo.lua", SCRIPT_PATH .. "Mundo.lua", function() PrintChat("<font color=\"#D9A300\"><b>[Mundo OnS]:</b></font><font color=\"#FFFFFF\"> Update Complete, please 2x F6!</font>") return end)
     else
-        PrintChat("No updates found!")
+       PrintChat("<font color=\"#D9A300\"><b>[Mundo OnS]:</b></font><font color=\"#FFFFFF\"> No Updates Found!</font>")
     end
 end
 
@@ -24,15 +24,14 @@ function DrMundo:__init()
 	W = { delay = 0.25, speed = math.huge, width = 0, range = 325}
 	E = { delay = 0.25, speed = math.huge, width = 0, range = GetRange(myHero)+25}
 	R = { delay = 0.25, speed = math.huge, width = 0, range = 0} 
-	Callback.Add("Load", function() self:Load() end)
+	Callback.Add("Load", function() self:Load() Mundo_LoadSprite()  end)
 end
 
 function DrMundo:Load()
 	Callback.Add("Tick", function() self:Tick() end)
-	Callback.Add("Draw", function() if M.d.Q:Value() and Ready(_Q) then DrawCircle(myHero, Q.range, 2,30,GoS.Blue) end end)
-	--Callback.Add("Draw", function() self:DrawMeme() end)
-	--[[Callback.Add("CreateObj", function(Object) self:CreateObj(Object) end)
-	Callback.Add("DeleteObj", function(Object) self:DeleteObj(Object) end)]]
+	Callback.Add("Draw", function() Mundo_DrawSprite() if M.d.Q:Value() and Ready(_Q) then DrawCircle(myHero, Q.range, 2,30,GoS.Blue) end end)
+	Callback.Add("CreateObj", function(Obj) Mundo_CreateObj(Obj) end)
+	Callback.Add("DeleteObj", function(Obj) Mundo_DeleteObj(Obj) end)
 	M = MenuConfig("Mundo", "Dr.Mundo")
 		M:Menu("c", "Combo")
 			M.c:Boolean("Q", "Use Q", true)
@@ -65,9 +64,9 @@ function DrMundo:Load()
 			M.m:Boolean("RE", "Dont waste R?", true)
 			M.m:Boolean("Z", "Turn off W automatically?", true)
 		M:Menu("d", "Drawings!")
-			tablez = {"Salt", "Kappa", "Doge", "Platypus", "None :("}
-			--M.d:DropDown("meme", "Meme?", 2, tablez)
+ 			M.d:DropDown("OP", "Choose Meme?", 1, {"Kappa", "Salt", "Doge", "None :("}, function() DownloadSprites(Mundo_Sprite[M.d.OP:Value()], true) end)
 			M.d:Boolean("Q", "Draw Q Range", true)
+			PrintChat("<font color=\"#D9A300\"><b>[Mundo OnS]:</b></font><font color=\"#FFFFFF\"> Loaded!</font>")
 end
 
 function DrMundo:AutoAttackd()
@@ -228,24 +227,78 @@ function DrMundo:AutoR()
 			CastSpell(_R) 
 	end
 end	
+
 --[[local myspriteID = {["Salt"] = CreateSpriteFromFile("\\DrMundo\\Salt.png"), ["Kappa"] = CreateSpriteFromFile("\\DrMundo\\Kappa.png"), ["Doge"] = CreateSpriteFromFile("\\DrMundo\\Doge.png"), ["Platypus"] = CreateSpriteFromFile("\\DrMundo\\Platypus.png") }
+
 function DrMundo:CreateObj(Obj)
-	if GetObjectBaseName(Obj) == "missile" then
+	if GetObjectBaseName(Obj) == "DrMundo_Base_Q_mis.troy" then
 		savedobject = Obj
 	end
 end
 function DrMundo:DeleteObj(Obj)
-	if GetObjectBaseName(Obj) == "missile" then
-		ReleaseSprite(myspriteID[tablez[M.d.meme:Value()][) fix
+	if GetObjectBaseName(Obj) == "DrMundo_Base_Q_mis.troy" then
+		savedobject = nil
 	end
 end
 
 function DrMundo:DrawMeme()
-	if M.d.meme:Value() == 5 then return end 
-	if M.d.meme:Value() ~= 5 and savedobject ~= nil and GetObjectSpellOwner(savedobject) == myHero then
-		DrawSprite(myspriteID[tablez[M.d.meme:Value()][,GetOrigin(savedobject).x, GetOrigin(savedobject).y,0,0,0,0,ARGB(255,255,255,255))  fix
+	if M.d.meme:Value() == 5 or savedobject == nil then return end 
+	if M.d.meme:Value() ~= 5 and savedobject ~= nil then
+		local pos = WorldToScreen(1, Vector(savedobject))
+		DrawSprite(myspriteID[tablez[M.d.meme:Value()][,pos.x, pos.y,0,0,0,0,ARGB(255,255,255,255)) 
 	end
 end]]
+
+function Mundo_LoadSprite()
+    Mundo_Sprite = {
+    [1] = { name = "Kappa.png", width = 25, height = 28, path = SPRITE_PATH.."Mundo\\Kappa.png", link = "https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Mundo/Kappa.png" },
+    [2] = { name = "Salt.png",  width = 36, height = 30, path = SPRITE_PATH.."Mundo\\Salt.png",  link = "https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Mundo/Salt.png" },
+    [3] = { name = "Doge.png",  width = 33, height = 33, path = SPRITE_PATH.."Mundo\\Doge.png",  link = "https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Mundo/Doge.png" }
+    }
+    savedobject, run = nil, nil
+
+    if not DirExists(SPRITE_PATH.."Mundo\\") then CreateDir(SPRITE_PATH.."Mundo\\") end
+      if Mundo_Sprite[M.d.OP:Value()] then DownloadSprites(Mundo_Sprite[M.d.OP:Value()], false) end
+end
+
+local function Mundo_Print(text)
+    PrintChat(string.format("<font color=\"#D9A300\"><b>[Mundo OnS]:</b></font><font color=\"#FFFFFF\"> %s</font>", tostring(text)))
+end
+
+function DownloadSprites(table, boolean)
+    if boolean and M.d.OP:Value() < 4 and FileExist(table.path) then
+      local OPP = Mundo_Sprite[M.d.OP:Value()].name:gsub(".png", "")
+      Mundo_Print("Meme has been changed to "..OPP..". Have fun")
+    elseif boolean and M.d.OP:Value() == 4 then
+      Mundo_Print("Meme has been Disabled. much sad :(")
+    end
+
+    if not table then return end
+    if FileExist(table.path) then run = Sprite("Mundo\\"..table.name, table.width, table.height, 0, 0, 1.6) return end
+    Mundo_Print("Please wait for download "..table.name)
+    DelayAction(function() DownloadFileAsync(table.link, table.path, function() Mundo_Print(table.name.." has been downloaded. Have fun") DelayAction(function() run = Sprite("Mundo\\"..table.name, table.width, table.height, 0, 0, 1.6) end, 0.1)  end) end, 1)
+end
+
+function Mundo_CreateObj(Obj)
+    if GetObjectBaseName(Obj) == "DrMundo_Base_Q_mis.troy" then
+        savedobject = Obj
+    end
+end
+
+function Mundo_DeleteObj(Obj)
+    if GetObjectBaseName(Obj) == "DrMundo_Base_Q_mis.troy" then
+        savedobject = nil
+    end
+end
+
+function Mundo_DrawSprite()
+    if M.d.OP:Value() == 4 or savedobject == nil or run == nil then return end
+      local sprite = Mundo_Sprite[M.d.OP:Value()]
+      if FileExist(sprite.path) then
+        local Pos = WorldToScreen(1, Vector(savedobject))
+        run:Draw(Pos.x - sprite.width*0.8, Pos.y - sprite.height*0.8, GoS.White)
+      end
+end
 
 if _G[GetObjectName(myHero)] then
   _G[GetObjectName(myHero)]()
