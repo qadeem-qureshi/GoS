@@ -151,52 +151,52 @@ function Rengar_Checks()
 	end
 end
 
-function Rengar_OnJump(unit, ani)
-	if unit.isMe and ani == "Spell5" then
-		if Mode == "Combo" and myHero.mana == 5 then
-			if M.c.WJ:Value() == 1 and Er then
-				local prediction = GetPrediction(Enemy, E)
-				Skills[_E].combo(Enemy, prediction.castPos)
-				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
-					Skills[_W].combo(Enemy)
-					elseif M.c.WJ:Value() == 3 or Qr then
-						
-			end
-			DelayAction(function() 
-				if M.c.AL:Value() == 1 and Er then 
-					local prediction = GetPrediction(Enemy, E)
-					Skills[_E].combo(Enemy, prediction.castPos)
-					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
-						Skills[_W].combo(Enemy)
-						elseif M.c.AL:Value() == 3 or Qr then
-							
-				end
-			end, .450)
-			Rengar_CastItems(Enemy) 
-		end
-		if Mode == "Combo" and M.c.SWA:Value() then
-			if M.c.WJ:Value() == 1 and Er then
-				local prediction = GetPrediction(Enemy, E)
-				Skills[_E].combo(Enemy, prediction.castPos)
-				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
-					Skills[_W].combo(Enemy)
-					elseif M.c.WJ:Value() == 3 or Qr then
-						
-			end
-			DelayAction(function() 
-				if M.c.AL:Value() == 1 and Er then 
-					local prediction = GetPrediction(Enemy, E)
-					Skills[_E].combo(Enemy, prediction.castPos)
-					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
-						Skills[_W].combo(Enemy)
-						elseif M.c.AL:Value() == 3 or Qr then
-							
-				end 
-			end, .450)
-			Rengar_CastItems(Enemy) 
-		end
-	end
-end
+ function Rengar_OnJump(unit, ani)
+ 	if unit.isMe and ani == "Spell5" then
+ 		if Mode == "Combo" and myHero.mana == 5 and (Buffs.R > 0 or Buffs.P > 0) then
+ 			if M.c.WJ:Value() == 1 and Er then
+ 				local prediction = GetPrediction(Enemy, E)
+ 				Skills[_E].combo(Enemy, prediction.castPos)
+ 				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
+ 					Skills[_W].combo(Enemy)
+ 					elseif M.c.WJ:Value() == 3 or Qr then
+ 						Skills[_Q].combo(Enemy)
+ 			end
+ 			DelayAction(function() 
+ 				if M.c.AL:Value() == 1 and Er then 
+ 					local prediction = GetPrediction(Enemy, E)
+ 					Skills[_E].combo(Enemy, prediction.castPos)
+ 					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
+ 						Skills[_W].combo(Enemy)
+ 						elseif M.c.AL:Value() == 3 or Qr then
+ 							Skills[_Q].combo(Enemy)
+ 				end
+ 			end, .450)
+ 			Rengar_CastItems(Enemy) 
+ 		end
+ 		if Mode == "Combo" and M.c.SWA:Value() and (Buffs.R > 0 or Buffs.P > 0) then
+ 			if M.c.WJ:Value() == 1 and Er then
+ 				local prediction = GetPrediction(Enemy, E)
+ 				Skills[_E].combo(Enemy, prediction.castPos)
+ 				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
+ 					Skills[_W].combo(Enemy)
+ 					elseif M.c.WJ:Value() == 3 or Qr then
+ 						Skills[_Q].combo(Enemy)
+ 			end
+ 			DelayAction(function() 
+ 				if M.c.AL:Value() == 1 and Er then 
+ 					local prediction = GetPrediction(Enemy, E)
+ 					Skills[_E].combo(Enemy, prediction.castPos)
+ 					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
+ 						Skills[_W].combo(Enemy)
+ 						elseif M.c.AL:Value() == 3 or Qr then
+ 							Skills[_Q].combo(Enemy)
+ 				end 
+ 			end, .450)
+ 			Rengar_CastItems(Enemy) 
+ 		end
+ 	end
+ end
 
 function Rengar_Combo()
 	if Buffs.P == 0 and Mode == "Combo" then 
