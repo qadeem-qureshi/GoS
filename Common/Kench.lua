@@ -1,5 +1,19 @@
 require("OpenPredict")
 require("DamageLib")
+local ver = "1.0"
+
+function AutoUpdate(data)
+    if tonumber(data) > tonumber(ver) then
+        PrintChat("New version found! " .. data)
+        PrintChat("Downloading update, please wait...")
+        DownloadFileAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Kench.lua", SCRIPT_PATH .. "Kench.lua", function() PrintChat("<font color=\"#cd0fc8\"><b>[Kench OnS]:</b></font><font color=\"#FFFFFF\"> Update Complete, please 2x F6!</font>") return end)
+    else
+       PrintChat("<font color=\"#cd0fc8\"><b>[Kench OnS]:</b></font><font color=\"#FFFFFF\"> No Updates Found!</font>")
+    end
+end
+
+GetWebResultAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Kench.version", AutoUpdate)
+
 Callback.Add("Load", function() if myHero.charName == "TahmKench" then Kench_Load() end end)
 
 function Kench_Load()
