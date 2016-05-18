@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.1"
+local ver = "1.2"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -392,7 +392,7 @@ end
 function Rengar_Smite()
 	if smite and Ready(smite) then
 		for i, u in pairs(minionManager.objects) do
-			if u.team ~= MINION_ENEMY and u.team == 300 then
+			if u.team ~= MINION_ENEMY and u.team == 300 and ValidTarget(u, 650) then
 				local smiteDMG = (({[1]=390,[2]=410,[3]=430,[4]=450,[5]=480,[6]=510,[7]=540,[8]=570,[9]=600,[10]=640,[11]=680,[12]=720,[13]=760,[14]=800,[15]=850,[16]=900,[17]=950,[18]=1000})[GetLevel(myHero)])
 				local wdmg1 = (80+30*GetCastLevel(myHero, _W) + .8*GetBonusAP(myHero)); 
 				local edmg1 = (50+50*GetCastLevel(myHero, _E)+.7*GetBonusDmg(myHero));
@@ -401,13 +401,13 @@ function Rengar_Smite()
 				if u.charName:lower():find("dragon") and M.l.D:Value() then
 					if u.health < smiteDMG then
 						CastTargetSpell(u, smite)
-						elseif u.health < smiteDMG + wdmg and ValidTarget(u, Q.range) then
+						elseif u.health < smiteDMG + wdmg and Wr and ValidTarget(u, W.range) then
 							CastSpell(_W)
 							DelayAction(function() CastTargetSpell(u, smite) end, W.delay+.25)
-							elseif u.health < smiteDMG + wdmg + edmg and ValidTarget(u, Q.range) then
+							elseif u.health < smiteDMG + wdmg + edmg and Wr and Er and ValidTarget(u, E.range) then
 								CastSkillShot(_E, u)
 								CastSpell(_W)
-								DelayAction(function() CastTargetSpell(u, smite) end, Q.delay+W.delay+E.delay+.25)
+								DelayAction(function() CastTargetSpell(u, smite) end, W.delay+E.delay+.25)
 					end
 				end
 				local smiteable = {["SRU_Red"]={menu = M.l.R:Value()},["SRU_Blue"]={menu = M.l.B:Value()},["SRU_RiftHerald"]={menu = M.l.H:Value()},["SRU_Baron"]={menu = M.l.Ba:Value()}}
@@ -415,14 +415,14 @@ function Rengar_Smite()
 					if u.health < smiteDMG then
 						CastTargetSpell(u, smite)
 					end
-					if u.health < smiteDMG + wdmg and ValidTarget(u, Q.range) then
+					if u.health < smiteDMG + wdmg  and Wr and ValidTarget(u, W.range) then
 						CastSpell(_W)
 						DelayAction(function() CastTargetSpell(u, smite) end, W.delay+.25)
 					end
-					if u.health < smiteDMG + wdmg + edmg and ValidTarget(u, Q.range) then
+					if u.health < smiteDMG + wdmg + edmg and Wr and Er and ValidTarget(u, E.range) then
 						CastSkillShot(_E, u)
 						CastSpell(_W)
-						DelayAction(function() CastTargetSpell(u, smite) end, Q.delay+W.delay+E.delay+.25)
+						DelayAction(function() CastTargetSpell(u, smite) end, W.delay+E.delay+.25)
 					end
 				end		
 			end
