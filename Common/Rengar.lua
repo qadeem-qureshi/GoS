@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.0"
+local ver = "1.1"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -36,7 +36,7 @@ function Rengar_Load()
 			M.c:Boolean("W", "Use W", true)
 			M.c:Boolean("E", "Use E", true)
 			M.c:DropDown("CM", "Combo Mode", 1, {"QWE (E Prio)", "QWE (Q Prio)", "QWE (W Prio)"})
-			M.c:KeyBinding("cm", "Change Combo Mode", string.byte("T"))
+			M.c:KeyBinding("cms", "Change Combo Mode", string.byte("T"))
 			M.c:DropDown("WJ", "While Jumping", 1, {"E", "W", "Q"})
 			M.c:DropDown("AL", "After Landing", 3, {"E", "W", "Q"})
 			M.c:Boolean("SWA", "Use Spells Leap w/o 5 Stacks", true)
@@ -53,21 +53,32 @@ function Rengar_Load()
 			M.h:Slider("HP", "What Hp %?", 25, 1, 100, 1)
 		M:Menu("k", "KillSteal")
 			M.k:Boolean("W", "Use W", true)
+			M.k:Boolean("E", "Use E", true)
 		M:Menu("m", "Misc")
 			M.m:Boolean("Y", "Use Youmuu When Ult", true)
 			M.m:KeyBinding("E", "Flee", string.byte("Z"))
+		M:Menu("l", "Smite Settings")
+			M.l:Boolean("B", "Blue", true)
+			M.l:Boolean("R", "Red", true)
+			M.l:Boolean("D", "Dragon", true)
+			M.l:Boolean("H", "Rift Herald", true)
+			M.l:Boolean("Ba", "Baron", true)
+			M.l:Boolean("K", "Ks", true)
+
 	-- Vars
 	Mode = nil
-	local summonerNameOne = myHero:GetSpellData(SUMMONER_1).name 
-	local summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name
+	summonerNameOne = myHero:GetSpellData(SUMMONER_1).name 
+	summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name
 	ignite = (summonerNameOne:lower():find("summonerdot") and SUMMONER_1 or (summonerNameTwo:lower():find("summonerdot") and SUMMONER_2 or nil))
-	Q = { delay = 0.25, speed = math.huge, width = 0, range = GetRange(myHero)+100}
+	smite = nil
+	smitetable = {"SummonerSmite","S5_SummonerSmitePlayerGanker","S5_SummonerSmiteDuel"}
+	Q = { delay = 0.25, speed = math.huge, width = 0, range = 200}
 	W = { delay = 0.25, speed = math.huge, width = 490, range = myHero.boundingRadius+700}
 	E = { delay = 0.25, speed = 1500, width = 70, range = myHero.boundingRadius+1000}
 	R = { delay = 0.25, speed = math.huge, width = 0, range = 2000}
 	Buffs = {R=0, P=0}
 	Skills = {
-		[_Q] = {combo = function(unit) if ValidTarget(unit, Q.range) and Ready(_Q) and M.c.Q:Value() then CastSpell(_Q) end end, laneclear = function(unit) if Ready(_Q) and ValidTarget(unit, Q.range) then CastSpell(_Q) end end, jungleclear = function(unit) if Ready(_Q) and ValidTarget(unit, Q.range) then CastSpell(_Q) end end},
+		[_Q] = {combo = function(unit) if ValidTarget(unit, Q.range) and Mode == "Combo" and Ready(_Q) and M.c.Q:Value() then CastSpell(_Q) end end, laneclear = function(unit) if Ready(_Q) and Mode == "LaneClear" and ValidTarget(unit, Q.range) then CastSpell(_Q) end end, jungleclear = function(unit) if Ready(_Q) and Mode == "LaneClear" and ValidTarget(unit, Q.range) then CastSpell(_Q) end end},
 		[_W] = {combo = function(unit) if ValidTarget(unit, W.width) and Ready(_W) and M.c.W:Value() then CastSpell(_W) end end, laneclear = function(unit) if Ready(_W) and ValidTarget(unit, W.width) then CastSpell(_W) end end, jungleclear = function(unit) if Ready(_W) and ValidTarget(unit, W.width) then CastSpell(_W) end end, heal = function() if myHero.mana == 5 then CastSpell(_W) end end},
 		[_E] = {combo = function(unit,pos) if ValidTarget(unit, E.range) and Ready(_E) and M.c.E:Value() then CastSkillShot(_E, pos) end end, laneclear = function(unit, pos) if Ready(_E) and ValidTarget(unit, E.range) then CastSkillShot(_E, pos) end end, jungleclear = function(unit, pos) if Ready(_E) and ValidTarget(unit, E.range) then CastSkillShot(_E, pos) end end, escape = function(pos) MoveToXYZ(GetMousePos()) if Ready(_E) and ValidTarget(pos, E.range) then local prediction = GetPrediction(pos, E); if prediction.hitChance > .65 and not prediction:mCollision(1) then CastSkillShot(_E, prediction.castPos) end end end},
 	}
@@ -98,14 +109,14 @@ function Rengar_Tick(m,c,l)
 	if myHero.dead then return end
 	Rengar_Checks()
 	if m == c then
-		Mode = "Combo"
 		Rengar_Combo()
 		Rengar_CastItems(Enemy)
+		Mode = "Combo"
 	end
 	if m == l then
-		Mode = "LaneClear"
 		Rengar_LaneClear()
 		Rengar_JungleClear()
+		Mode = "LaneClear"
 	end
 	if M.m.E:Value() then
 		Skills[_E].escape(Enemy)
@@ -121,6 +132,7 @@ function Rengar_Tick(m,c,l)
 	end
 	Rengar_KillSteal()
 	Rengar_SwitchCombo()
+	Rengar_Smite()
 end
 
 function Rengar_Checks()
@@ -132,18 +144,23 @@ function Rengar_Checks()
 	Tiamat = GetItemSlot(myHero, 3077)
 	Hydra = GetItemSlot(myHero, 3074)
 	Titanic = GetItemSlot(myHero, 3053)
+	for i=1,3 do 
+		if smite == nil then
+			smite = (summonerNameOne:lower():find(smitetable[i]:lower()) and SUMMONER_1 or (summonerNameTwo:lower():find(smitetable[i]:lower()) and SUMMONER_2 or nil))
+		end
+	end
 end
 
 function Rengar_OnJump(unit, ani)
 	if unit.isMe and ani == "Spell5" then
-		if Mode == "Combo" and myHero.mana == 5 and (Buffs.R > 0 or Buffs.P > 0) then
+		if Mode == "Combo" and myHero.mana == 5 then
 			if M.c.WJ:Value() == 1 and Er then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
 				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
 					Skills[_W].combo(Enemy)
 					elseif M.c.WJ:Value() == 3 or Qr then
-						Skills[_Q].combo(Enemy)
+						
 			end
 			DelayAction(function() 
 				if M.c.AL:Value() == 1 and Er then 
@@ -152,19 +169,19 @@ function Rengar_OnJump(unit, ani)
 					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
 						Skills[_W].combo(Enemy)
 						elseif M.c.AL:Value() == 3 or Qr then
-							Skills[_Q].combo(Enemy)
+							
 				end
 			end, .450)
 			Rengar_CastItems(Enemy) 
 		end
-		if Mode == "Combo" and M.c.SWA:Value() and (Buffs.R > 0 or Buffs.P > 0) then
+		if Mode == "Combo" and M.c.SWA:Value() then
 			if M.c.WJ:Value() == 1 and Er then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
 				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
 					Skills[_W].combo(Enemy)
 					elseif M.c.WJ:Value() == 3 or Qr then
-						Skills[_Q].combo(Enemy)
+						
 			end
 			DelayAction(function() 
 				if M.c.AL:Value() == 1 and Er then 
@@ -173,7 +190,7 @@ function Rengar_OnJump(unit, ani)
 					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
 						Skills[_W].combo(Enemy)
 						elseif M.c.AL:Value() == 3 or Qr then
-							Skills[_Q].combo(Enemy)
+							
 				end 
 			end, .450)
 			Rengar_CastItems(Enemy) 
@@ -182,14 +199,16 @@ function Rengar_OnJump(unit, ani)
 end
 
 function Rengar_Combo()
-	if Buffs.P == 0 then 
+	if Buffs.P == 0 and Mode == "Combo" then 
 		if myHero.mana == 5 and M.c.CM:Value() == 1 then
 			if Er and ValidTarget(Enemy, E.range) then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
-			elseif Qr and ValidTarget(Enemy, Q.range) then
+			end
+			if Qr and ValidTarget(Enemy, Q.range) then
 				Skills[_Q].combo(Enemy)
-			elseif Wr and ValidTarget(Enemy, W.width) then
+			end
+			if Wr and ValidTarget(Enemy, W.width) then
 				Skills[_W].combo(Enemy)
 			end
 		end
@@ -197,49 +216,59 @@ function Rengar_Combo()
 			if Er and ValidTarget(Enemy, E.range) then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
-			elseif Qr and myHero.mana < 5 and ValidTarget(Enemy, Q.range) then
+			end
+			if Qr and myHero.mana < 5 and ValidTarget(Enemy, Q.range) then
 				Skills[_Q].combo(Enemy)
-			elseif Wr and myHero.mana < 5 and ValidTarget(Enemy, W.width) then
+			end
+			if Wr and myHero.mana < 5 and ValidTarget(Enemy, W.width) then
 				Skills[_W].combo(Enemy)
 			end
 		end
 		if myHero.mana == 5 and M.c.CM:Value() == 2 then
 			if Qr and ValidTarget(Enemy, Q.range) then
 				Skills[_Q].combo(Enemy)
-			elseif Er and ValidTarget(Enemy, E.range) then
+			end
+			if Er and ValidTarget(Enemy, E.range) then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
-			elseif Wr and ValidTarget(Enemy, W.width) then
+			end
+			if Wr and ValidTarget(Enemy, W.width) then
 				Skills[_W].combo(Enemy)
 			end
 		end
 		if myHero.mana < 5 and M.c.CM:Value() == 2 then
 			if Qr and ValidTarget(Enemy, Q.range) then
 				Skills[_Q].combo(Enemy)
-			elseif Er and myHero.mana < 5 and ValidTarget(Enemy, E.range) then
+			end
+			if Er and myHero.mana < 5 and ValidTarget(Enemy, E.range) then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
-			elseif Wr and myHero.mana < 5 and ValidTarget(Enemy, W.width) then
+			end
+			if Wr and myHero.mana < 5 and ValidTarget(Enemy, W.width) then
 				Skills[_W].combo(Enemy)
 			end
 		end
 		if myHero.mana == 5 and M.c.CM:Value() == 3 then
 			if Wr and ValidTarget(Enemy, W.width) then
 				Skills[_W].combo(Enemy)
-			elseif Er and ValidTarget(Enemy, E.range) then
+			end
+			if Er and ValidTarget(Enemy, E.range) then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
-			elseif Qr and ValidTarget(Enemy, Q.range)  then
-				Skills[_Q].combo(Enemy)			
+			end
+			if Qr and ValidTarget(Enemy, Q.range)  then
+				Skills[_Q].combo(Enemy)		
 			end
 		end
 		if myHero.mana < 5 and M.c.CM:Value() == 3 then
 			if Wr and ValidTarget(Enemy, W.width) and myHero.mana < 5 then
 				Skills[_W].combo(Enemy)
-			elseif Er and ValidTarget(Enemy, E.range) and myHero.mana < 5 then
+			end
+			if Er and ValidTarget(Enemy, E.range) and myHero.mana < 5 then
 				local prediction = GetPrediction(Enemy, E)
 				Skills[_E].combo(Enemy, prediction.castPos)
-			elseif Qr and ValidTarget(Enemy, Q.range) and myHero.mana < 5 then
+			end
+			if Qr and ValidTarget(Enemy, Q.range) and myHero.mana < 5 then
 				Skills[_Q].combo(Enemy)			
 			end
 		end
@@ -295,27 +324,27 @@ end
 
 function Rengar_RBuff(unit, buff)
 	if unit and unit == myHero and buff.Name:lower():find("rengarpassivebuff") then
-		Buffs.P = buff.Count
+		Buffs.P = 0
 	end
 	if unit and unit == myHero and buff.Name == "RengarR" then
-		Buffs.R = buff.Count 
+		Buffs.R = 0 
 	end
 end
 
 function Rengar_CastItems(unit)
-	if Buffs.R == 0 then
-		local Total = EnemiesAround(myHero, 385) + MinionsAround(myHero, 385, MINION_ENEMY)
-		if Ready(Tiamat) and Total > 0 then 
+	if Buffs.P == 0 then
+		local Total = ValidTarget(unit, 385)
+		if Ready(Tiamat) and Total then 
 			CastSpell(Tiamat)
 		end
-		if Ready(Hydra) and Total > 0 then 
+		if Ready(Hydra) and Total then 
 			CastSpell(Hydra)
 		end
-		if Ready(Titanic) and Total > 0 then 
+		if Ready(Titanic) and Total then 
 			CastSpell(Titanic)
 		end 
 		if Mode == "Combo" then 
-			if Ready(Youmuu) and Total > 0 then 
+			if Ready(Youmuu) and Total then 
 				CastSpell(Youmuu)
 			end
 		end 
@@ -325,12 +354,16 @@ end
 function Rengar_KillSteal()
 	for i,u in pairs(GetEnemyHeroes()) do 
 		local idmg = (70 + 20*GetLevel(myHero)); 
-		local wdmg = (80+30*GetCastLevel(myHero, _Q) + .8*GetBonusAP(myHero)); 
+		local wdmg = (80+30*GetCastLevel(myHero, _W) + .8*GetBonusAP(myHero)); 
+		local edmg = (50+50*GetCastLevel(myHero, _E)+.7*GetBonusDmg(myHero))
 		if ignite and Ready(ignite) and ValidTarget(u, 660) and M.s.I:Value() and idmg > u.health then 
 			CastTargetSpell(u, ignite) 
 		end 
 		if ValidTarget(u, W.width) and u.health < myHero:CalcMagicDamage(u, wdmg) and Ready(_W) and M.k.W:Value() then 
 			CastSpell(_W) 
+		end 
+		if ValidTarget(u, E.range) and u.health < myHero:CalcDamage(u, edmg) and Ready(_E) and M.k.E:Value() then 
+			CastSkillShot(_E, u) 
 		end 
 	end 
 end
@@ -339,7 +372,7 @@ local global_ticks = 0
 
 function Rengar_SwitchCombo()
 	local Ticker = GetTickCount()
-	if M.c.cm:Value() then
+	if M.c.cms:Value() then
 		if (global_ticks + 250) < Ticker then
 			if M.c.CM:Value() == 1 then 
 				M.c.CM:Value(2)
@@ -352,6 +385,54 @@ function Rengar_SwitchCombo()
 				print("<font color=\"#0fa2cd\"><b>[Rengar OnS]:</b></font><font color=\"#FFFFFF\"> Combo Mode: E</font>")
 			end
 			global_ticks = Ticker
+		end
+	end
+end
+
+function Rengar_Smite()
+	if smite and Ready(smite) then
+		for i, u in pairs(minionManager.objects) do
+			if u.team ~= MINION_ENEMY and u.team == 300 then
+				local smiteDMG = (({[1]=390,[2]=410,[3]=430,[4]=450,[5]=480,[6]=510,[7]=540,[8]=570,[9]=600,[10]=640,[11]=680,[12]=720,[13]=760,[14]=800,[15]=850,[16]=900,[17]=950,[18]=1000})[GetLevel(myHero)])
+				local wdmg1 = (80+30*GetCastLevel(myHero, _W) + .8*GetBonusAP(myHero)); 
+				local edmg1 = (50+50*GetCastLevel(myHero, _E)+.7*GetBonusDmg(myHero));
+				local wdmg = myHero:CalcMagicDamage(u, wdmg)
+				local edmg = myHero:CalcDamage(u, edmg)
+				if u.charName:lower():find("dragon") and M.l.D:Value() then
+					if u.health < smiteDMG then
+						CastTargetSpell(u, smite)
+						elseif u.health < smiteDMG + wdmg and ValidTarget(u, Q.range) then
+							CastSpell(_W)
+							DelayAction(function() CastTargetSpell(u, smite) end, W.delay+.25)
+							elseif u.health < smiteDMG + wdmg + edmg and ValidTarget(u, Q.range) then
+								CastSkillShot(_E, u)
+								CastSpell(_W)
+								DelayAction(function() CastTargetSpell(u, smite) end, Q.delay+W.delay+E.delay+.25)
+					end
+				end
+				local smiteable = {["SRU_Red"]={menu = M.l.R:Value()},["SRU_Blue"]={menu = M.l.B:Value()},["SRU_RiftHerald"]={menu = M.l.H:Value()},["SRU_Baron"]={menu = M.l.Ba:Value()}}
+				if smiteable[u.charName] and smiteable[u.charName].menu then
+					if u.health < smiteDMG then
+						CastTargetSpell(u, smite)
+					end
+					if u.health < smiteDMG + wdmg and ValidTarget(u, Q.range) then
+						CastSpell(_W)
+						DelayAction(function() CastTargetSpell(u, smite) end, W.delay+.25)
+					end
+					if u.health < smiteDMG + wdmg + edmg and ValidTarget(u, Q.range) then
+						CastSkillShot(_E, u)
+						CastSpell(_W)
+						DelayAction(function() CastTargetSpell(u, smite) end, Q.delay+W.delay+E.delay+.25)
+					end
+				end		
+			end
+		end
+		if GetCastName(myHero,smite) == "S5_SummonerSmitePlayerGanker" and M.l.K:Value() then
+			for i,enemy in pairs(GetEnemyHeroes()) do
+				if ValidTarget(enemy, 750) and GetCurrentHP(enemy) + GetDmgShield(enemy) <= 20+8*GetLevel(myHero) then
+					CastTargetSpell(enemy,smite)
+				end
+			end
 		end
 	end
 end
