@@ -1,4 +1,17 @@
 require("OpenPredict")
+local ver = "1.0"
+
+function AutoUpdate(data)
+    if tonumber(data) > tonumber(ver) then
+        PrintChat("New version found! " .. data)
+        PrintChat("Downloading update, please wait...")
+        DownloadFileAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Rengar.lua", SCRIPT_PATH .. "Rengar.lua", function() PrintChat("<font color=\"#0fa2cd\"><b>[Rengar OnS]:</b></font><font color=\"#FFFFFF\"> Update Complete, please 2x F6!</font>") return end)
+    else
+       PrintChat("<font color=\"#0fa2cd\"><b>[Rengar OnS]:</b></font><font color=\"#FFFFFF\"> No Updates Found!</font>")
+    end
+end
+
+GetWebResultAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Rengar.version", AutoUpdate)
 --[[
  ▄████████    ▄████████ ███▄▄▄▄      ▄██████▄     ▄████████    ▄████████ 
   ███    ███   ███    ███ ███▀▀▀██▄   ███    ███   ███    ███   ███    ███ 
