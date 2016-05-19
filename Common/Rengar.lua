@@ -69,7 +69,7 @@ function Rengar_Load()
 			M.d:Boolean("W", "W Blue", false)
 			M.d:Boolean("E", "E Green", false)
 			M.d:Boolean("R", "R detect Range White", true)
-			M.d:Boolean("S", "Selected Target Yellow", false)
+			M.d:Boolean("S", "Selected Target Yellow", true)
 
 	-- Vars
 	Mode = nil
