@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.3"
+local ver = "1.4"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -13,14 +13,14 @@ end
 
 GetWebResultAsync("https://raw.githubusercontent.com/Cloudhax23/GoS/master/Common/Rengar.version", AutoUpdate)
 --[[
- ▄████████    ▄████████ ███▄▄▄▄       ██████▄     ▄████████    ▄████████ 
-  ███    ███   ███    ███ ███▀▀▀██▄   ███    █     ███    ███   ███    ███ 
-  ███    ███   ███    █▀  ███   ███   ███          ███    ███   ███    ███ 
- ▄███▄▄▄▄██▀  ▄███▄▄▄     ███   ███   ███          ███    ███  ▄███▄▄▄▄██▀ 
-▀▀███▀▀▀▀▀   ▀▀███▀▀▀     ███   ███   ███ ████▄  ▀███████████ ▀▀███▀▀▀▀▀   
+ ▄████████    ▄████████ ███▄▄▄▄      ▄██████▄     ▄████████    ▄████████ 
+  ███    ███   ███    ███ ███▀▀▀██▄   ███    ███   ███    ███   ███    ███ 
+  ███    ███   ███    █▀  ███   ███   ███    █▀    ███    ███   ███    ███ 
+ ▄███▄▄▄▄██▀  ▄███▄▄▄     ███   ███  ▄███          ███    ███  ▄███▄▄▄▄██▀ 
+▀▀███▀▀▀▀▀   ▀▀███▀▀▀     ███   ███ ▀▀███ ████▄  ▀███████████ ▀▀███▀▀▀▀▀   
 ▀███████████   ███    █▄  ███   ███   ███    ███   ███    ███ ▀███████████ 
-  ███    ███   ███    ███ ███   ███   ███    ██    ███    ███   ███    ███ 
-  ███    ███   ██████████  ▀█   █▀    ████████     ███    █▀    ███    ███ 
+  ███    ███   ███    ███ ███   ███   ███    ███   ███    ███   ███    ███ 
+  ███    ███   ██████████  ▀█   █▀    ████████▀    ███    █▀    ███    ███ 
   ███    ███                                                    ███    ███ 
 ]]
 
@@ -129,7 +129,7 @@ function Rengar_Tick(m,c,l)
 	Rengar_Checks()
 	if m == c then
 		Rengar_Combo()
-		Rengar_CastItems(Qts:GetTarget())
+		Rengar_CastItems(GetCurrentTarget())
 		Mode = "Combo"
 	end
 	if m == l then
@@ -138,7 +138,7 @@ function Rengar_Tick(m,c,l)
 		Mode = "LaneClear"
 	end
 	if M.m.E:Value() then
-		Skills[_E].escape(Ets:GetTarget())
+		Skills[_E].escape(GetCurrentTarget())
 	end
 	if M.m.Y:Value() and Buffs.R > 0 then
 		DelayAction(function() local Youmuu = GetItemSlot(myHero, 3142); if Youmuu ~= nil and Ready(Youmuu) then CastSpell(Youmuu) end end, .1)
@@ -161,10 +161,6 @@ function Rengar_Checks()
 	Qr = Ready(_Q)
 	Wr = Ready(_W)
 	Er = Ready(_E)
-	Qts = TargetSelector(Q.range,TARGET_LESS_CAST, DAMAGE_PHYSICAL, true, false)
-	Wts = TargetSelector(W.width,TARGET_LESS_CAST, DAMAGE_MAGIC, true, false)
-	Ets = TargetSelector(E.range,TARGET_LESS_CAST, DAMAGE_PHYSICAL, true, false)
-	Rts = TargetSelector(725,TARGET_LESS_CAST, DAMAGE_PHYSICAL, true, false)
 	Youmuu = GetItemSlot(myHero, 3142)
 	Tiamat = GetItemSlot(myHero, 3077)
 	Hydra = GetItemSlot(myHero, 3074)
@@ -180,45 +176,45 @@ end
  	if unit.isMe and ani == "Spell5" then
  		if Mode == "Combo" and myHero.mana == 5 and (Buffs.R > 0 or Buffs.P > 0) then
  			if M.c.WJ:Value() == 1 and Er then
- 				local prediction = GetPrediction(Ets:GetTarget(), E)
- 				Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+ 				local prediction = GetPrediction(GetCurrentTarget(), E)
+ 				Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
  				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
- 					Skills[_W].combo(Wts:GetTarget())
+ 					Skills[_W].combo(GetCurrentTarget())
  					elseif M.c.WJ:Value() == 3 or Qr then
- 						Skills[_Q].combo(Qts:GetTarget())
+ 						Skills[_Q].combo(GetCurrentTarget())
  			end
  			DelayAction(function() 
  				if M.c.AL:Value() == 1 and Er then 
- 					local prediction = GetPrediction(Ets:GetTarget(), E)
- 					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+ 					local prediction = GetPrediction(GetCurrentTarget(), E)
+ 					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
  					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
- 						Skills[_W].combo(Wts:GetTarget())
+ 						Skills[_W].combo(GetCurrentTarget())
  						elseif M.c.AL:Value() == 3 or Qr then
- 							Skills[_Q].combo(Qts:GetTarget())
+ 							Skills[_Q].combo(GetCurrentTarget())
  				end
  			end, .450)
- 			Rengar_CastItems(Qts:GetTarget()) 
+ 			Rengar_CastItems(GetCurrentTarget()) 
  		end
  		if Mode == "Combo" and M.c.SWA:Value() and (Buffs.R > 0 or Buffs.P > 0) then
  			if M.c.WJ:Value() == 1 and Er then
- 				local prediction = GetPrediction(Ets:GetTarget(), E)
- 				Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+ 				local prediction = GetPrediction(GetCurrentTarget(), E)
+ 				Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
  				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
- 					Skills[_W].combo(Wts:GetTarget())
+ 					Skills[_W].combo(GetCurrentTarget())
  					elseif M.c.WJ:Value() == 3 or Qr then
- 						Skills[_Q].combo(Qts:GetTarget())
+ 						Skills[_Q].combo(GetCurrentTarget())
  			end
  			DelayAction(function() 
  				if M.c.AL:Value() == 1 and Er then 
- 					local prediction = GetPrediction(Ets:GetTarget(), E)
- 					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+ 					local prediction = GetPrediction(GetCurrentTarget(), E)
+ 					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
  					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
- 						Skills[_W].combo(Wts:GetTarget())
+ 						Skills[_W].combo(GetCurrentTarget())
  						elseif M.c.AL:Value() == 3 or Qr then
- 							Skills[_Q].combo(Qts:GetTarget())
+ 							Skills[_Q].combo(GetCurrentTarget())
  				end 
  			end, .450)
- 			Rengar_CastItems(Qts:GetTarget()) 
+ 			Rengar_CastItems(GetCurrentTarget()) 
  		end
  	end
  end
@@ -226,87 +222,87 @@ end
 function Rengar_Combo()
 	if Buffs.P == 0 and Mode == "Combo" then 
 		if myHero.mana == 5 and M.c.CM:Value() == 1 then
-			if Er and ValidTarget(Ets:GetTarget(), E.range) then
-				local prediction = GetPrediction(Ets:GetTarget(), E)
+			if Er and ValidTarget(GetCurrentTarget(), E.range) then
+				local prediction = GetPrediction(GetCurrentTarget(), E)
 				if prediction.hitChance > .65 and not prediction:mCollision(1) then 
-					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
 				end
 			end
-			if Qr and ValidTarget(Qts:GetTarget(), Q.range) then
-				Skills[_Q].combo(Qts:GetTarget())
+			if Qr and ValidTarget(GetCurrentTarget(), Q.range) then
+				Skills[_Q].combo(GetCurrentTarget())
 			end
-			if Wr and ValidTarget(Wts:GetTarget(), W.width) then
-				Skills[_W].combo(Wts:GetTarget())
+			if Wr and ValidTarget(GetCurrentTarget(), W.width) then
+				Skills[_W].combo(GetCurrentTarget())
 			end
 		end
 		if myHero.mana < 5 and M.c.CM:Value() == 1 then
-			if Er and ValidTarget(Ets:GetTarget(), E.range) then
-				local prediction = GetPrediction(Ets:GetTarget(), E)
+			if Er and ValidTarget(GetCurrentTarget(), E.range) then
+				local prediction = GetPrediction(GetCurrentTarget(), E)
 				if prediction.hitChance > .65 and not prediction:mCollision(1) then 
-					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
 				end
 			end
-			if Qr and myHero.mana < 5 and ValidTarget(Qts:GetTarget(), Q.range) then
-				Skills[_Q].combo(Qts:GetTarget())
+			if Qr and myHero.mana < 5 and ValidTarget(GetCurrentTarget(), Q.range) then
+				Skills[_Q].combo(GetCurrentTarget())
 			end
-			if Wr and myHero.mana < 5 and ValidTarget(Wts:GetTarget(), W.width) then
-				Skills[_W].combo(Wts:GetTarget())
+			if Wr and myHero.mana < 5 and ValidTarget(GetCurrentTarget(), W.width) then
+				Skills[_W].combo(GetCurrentTarget())
 			end
 		end
 		if myHero.mana == 5 and M.c.CM:Value() == 2 then
-			if Qr and ValidTarget(Qts:GetTarget(), Q.range) then
-				Skills[_Q].combo(Qts:GetTarget())
+			if Qr and ValidTarget(GetCurrentTarget(), Q.range) then
+				Skills[_Q].combo(GetCurrentTarget())
 			end
-			if Er and ValidTarget(Ets:GetTarget(), E.range) then
-				local prediction = GetPrediction(Ets:GetTarget(), E)
+			if Er and ValidTarget(GetCurrentTarget(), E.range) then
+				local prediction = GetPrediction(GetCurrentTarget(), E)
 				if prediction.hitChance > .65 and not prediction:mCollision(1) then 
-					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
 				end
 			end
-			if Wr and ValidTarget(Wts:GetTarget(), W.width) then
-				Skills[_W].combo(Ets:GetTarget())
+			if Wr and ValidTarget(GetCurrentTarget(), W.width) then
+				Skills[_W].combo(GetCurrentTarget())
 			end
 		end
 		if myHero.mana < 5 and M.c.CM:Value() == 2 then
-			if Qr and ValidTarget(Qts:GetTarget(), Q.range) then
-				Skills[_Q].combo(Qts:GetTarget())
+			if Qr and ValidTarget(GetCurrentTarget(), Q.range) then
+				Skills[_Q].combo(GetCurrentTarget())
 			end
-			if Er and myHero.mana < 5 and ValidTarget(Ets:GetTarget(), E.range) then
-				local prediction = GetPrediction(Ets:GetTarget(), E)
+			if Er and myHero.mana < 5 and ValidTarget(GetCurrentTarget(), E.range) then
+				local prediction = GetPrediction(GetCurrentTarget(), E)
 				if prediction.hitChance > .65 and not prediction:mCollision(1) then 
-					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
 				end
 			end
-			if Wr and myHero.mana < 5 and ValidTarget(Wts:GetTarget(), W.width) then
-				Skills[_W].combo(Wts:GetTarget())
+			if Wr and myHero.mana < 5 and ValidTarget(GetCurrentTarget(), W.width) then
+				Skills[_W].combo(GetCurrentTarget())
 			end
 		end
 		if myHero.mana == 5 and M.c.CM:Value() == 3 then
-			if Wr and ValidTarget(Wts:GetTarget(), W.width) then
-				Skills[_W].combo(Wts:GetTarget())
+			if Wr and ValidTarget(GetCurrentTarget(), W.width) then
+				Skills[_W].combo(GetCurrentTarget())
 			end
-			if Er and ValidTarget(Ets:GetTarget(), E.range) then
-				local prediction = GetPrediction(Ets:GetTarget(), E)
+			if Er and ValidTarget(GetCurrentTarget(), E.range) then
+				local prediction = GetPrediction(GetCurrentTarget(), E)
 				if prediction.hitChance > .65 and not prediction:mCollision(1) then 
-					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
 				end
 			end
-			if Qr and ValidTarget(Qts:GetTarget(), Q.range)  then
-				Skills[_Q].combo(Qts:GetTarget())		
+			if Qr and ValidTarget(GetCurrentTarget(), Q.range)  then
+				Skills[_Q].combo(GetCurrentTarget())		
 			end
 		end
 		if myHero.mana < 5 and M.c.CM:Value() == 3 then
-			if Wr and ValidTarget(Wts:GetTarget(), W.width) and myHero.mana < 5 then
-				Skills[_W].combo(Wts:GetTarget())
+			if Wr and ValidTarget(GetCurrentTarget(), W.width) and myHero.mana < 5 then
+				Skills[_W].combo(GetCurrentTarget())
 			end
-			if Er and ValidTarget(Ets:GetTarget(), E.range) and myHero.mana < 5 then
-				local prediction = GetPrediction(Ets:GetTarget(), E)
+			if Er and ValidTarget(GetCurrentTarget(), E.range) and myHero.mana < 5 then
+				local prediction = GetPrediction(GetCurrentTarget(), E)
 				if prediction.hitChance > .65 and not prediction:mCollision(1) then 
-					Skills[_E].combo(Ets:GetTarget(), prediction.castPos)
+					Skills[_E].combo(GetCurrentTarget(), prediction.castPos)
 				end
 			end
-			if Qr and ValidTarget(Qts:GetTarget(), Q.range) and myHero.mana < 5 then
-				Skills[_Q].combo(Qts:GetTarget())			
+			if Qr and ValidTarget(GetCurrentTarget(), Q.range) and myHero.mana < 5 then
+				Skills[_Q].combo(GetCurrentTarget())			
 			end
 		end
 	end 
