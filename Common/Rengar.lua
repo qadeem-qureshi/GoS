@@ -180,9 +180,6 @@ function Rengar_Checks()
 	Tiamat = GetItemSlot(myHero, 3077)
 	Hydra = GetItemSlot(myHero, 3074)
 	Titanic = GetItemSlot(myHero, 3053)
-	if smite ~= nil then
-		print(GetCastName(myHero, smite))
-	end
 end
 
  function Rengar_OnJump(unit, ani)
