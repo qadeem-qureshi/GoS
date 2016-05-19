@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.5"
+local ver = "1.6"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -37,8 +37,7 @@ function Rengar_Load()
 			M.c:Boolean("E", "Use E", true)
 			M.c:DropDown("CM", "Combo Mode", 1, {"QWE (E Prio)", "QWE (Q Prio)", "QWE (W Prio)"})
 			M.c:KeyBinding("cms", "Change Combo Mode", string.byte("T"))
-			M.c:DropDown("WJ", "While Jumping", 1, {"E", "W", "Q"})
-			M.c:DropDown("AL", "After Landing", 3, {"E", "W", "Q"})
+			M.c:DropDown("WJ", "While Jumping", 1, {"E","Q"})
 			M.c:Boolean("SWA", "Use Spells Leap w/o 5 Stacks", true)
 		M:Menu("f", "LaneClear/ JunglerClear")
 			M.f:Boolean("Q", "Use LC Q", true)
@@ -70,6 +69,7 @@ function Rengar_Load()
 			M.d:Boolean("W", "W Blue", false)
 			M.d:Boolean("E", "E Green", false)
 			M.d:Boolean("R", "R detect Range White", true)
+			M.d:Boolean("S", "Selected Target Yellow", false)
 
 	-- Vars
 	Mode = nil
@@ -78,6 +78,12 @@ function Rengar_Load()
 	ignite = (summonerNameOne:lower():find("summonerdot") and SUMMONER_1 or (summonerNameTwo:lower():find("summonerdot") and SUMMONER_2 or nil))
 	smite = nil
 	smitetable = {"SummonerSmite","S5_SummonerSmitePlayerGanker","S5_SummonerSmiteDuel"}
+		for i=1,3 do 
+			if smite == nil then
+				smite = (summonerNameOne:lower():find(smitetable[i]:lower()) and SUMMONER_1 or (summonerNameTwo:lower():find(smitetable[i]:lower()) and SUMMONER_2 or nil))
+			end
+		end
+	selected = nil
 	Q = { delay = 0.25, speed = math.huge, width = 0, range = 200}
 	W = { delay = 0.25, speed = math.huge, width = 490, range = myHero.boundingRadius+700}
 	E = { delay = 0.25, speed = 1500, width = 70, range = myHero.boundingRadius+1000}
@@ -93,8 +99,10 @@ function Rengar_Load()
 	Callback.Add("Animation",function(unit,ani) Rengar_OnJump(unit,ani) end)
 	Callback.Add("UpdateBuff", function(unit, buff) Rengar_UBuff(unit, buff) end)
 	Callback.Add("RemoveBuff", function(unit, buff) Rengar_RBuff(unit, buff) end)
+	Callback.Add("WndMsg", function(Msg, Key) Rengar_OnWndMsg(Msg, Key) end)
+	Callback.Add("ProcessPacket", function(p) Rengar_Packet(p) end)
 	Callback.Add("Draw", function() 	
-		if M.d.W:Value() or M.d.E:Value() or M.d.R:Value() then
+		if M.d.W:Value() or M.d.E:Value() or M.d.R:Value() or M.d.S:Value() then
 			if M.d.W:Value() and Ready(_W) then
 				DrawCircle(myHero, W.width+myHero.boundingRadius, 1,1,GoS.Blue)
 			end
@@ -104,7 +112,10 @@ function Rengar_Load()
 			if M.d.R:Value() and (Ready(_R) or Buffs.R > 0) then
 				DrawCircle(myHero, 1450, 1,1,GoS.White)
 			end
-		end 
+			if M.d.S:Value() and selected ~= nil and selected.valid and selected.distance < 1500 then
+				DrawCircle(selected, selected.boundingRadius, 1,1,GoS.Yellow)
+			end
+ 		end 
 	end)
 	print("<font color=\"#0fa2cd\"><b>[Rengar OnS]:</b></font><font color=\"#FFFFFF\"> Loaded!</font>")
 end
@@ -152,6 +163,9 @@ function Rengar_Tick(m,c,l)
 	if M.m.A:Value() then  
 		Rengar_Autolevel()
 	end
+	if selected ~= nil and (selected.dead or selected.distance > 1500) then
+		selected = nil
+	end
 	Rengar_KillSteal()
 	Rengar_SwitchCombo()
 	Rengar_Smite()
@@ -161,61 +175,61 @@ function Rengar_Checks()
 	Qr = Ready(_Q)
 	Wr = Ready(_W)
 	Er = Ready(_E)
-	Enemy = GetCurrentTarget()
+	Enemy = selected ~= nil and selected.valid and selected.distance < 1500 and selected or GetCurrentTarget()
 	Youmuu = GetItemSlot(myHero, 3142)
 	Tiamat = GetItemSlot(myHero, 3077)
 	Hydra = GetItemSlot(myHero, 3074)
 	Titanic = GetItemSlot(myHero, 3053)
-	for i=1,3 do 
-		if smite == nil then
-			smite = (summonerNameOne:lower():find(smitetable[i]:lower()) and SUMMONER_1 or (summonerNameTwo:lower():find(smitetable[i]:lower()) and SUMMONER_2 or nil))
-		end
+	if smite ~= nil then
+		print(GetCastName(myHero, smite))
 	end
 end
 
  function Rengar_OnJump(unit, ani)
  	if unit.isMe and ani == "Spell5" then
- 		if Mode == "Combo" and myHero.mana == 5 and (Buffs.R > 0 or Buffs.P > 0) then
- 			if M.c.WJ:Value() == 1 and Er then
+ 		if Mode == "Combo" and myHero.mana == 5 then
+ 			if Ready(_E) and M.c.WJ:Value() == 1 then
  				local prediction = GetPrediction(Enemy, E)
- 				Skills[_E].combo(Enemy, prediction.castPos)
- 				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
- 					Skills[_W].combo(Enemy)
- 					elseif M.c.WJ:Value() == 3 or Qr then
- 						Skills[_Q].combo(Enemy)
+					Skills[_E].combo(Enemy, prediction.castPos)
+					if Ready(_Q) then
+						CastSpell(_Q)
+					end
+					if Ready(_W) then
+						CastSpell(_W)
+					end
+				elseif Ready(_Q) and M.c.WJ:Value() == 2 then
+					CastSpell(_Q)
+					if Ready(_E) then
+						local prediction = GetPrediction(Enemy, E)
+						Skills[_E].combo(Enemy, prediction.castPos)
+					end
+					if Ready(_W) then
+						CastSpell(_W)
+					end
  			end
- 			DelayAction(function() 
- 				if M.c.AL:Value() == 1 and Er then 
- 					local prediction = GetPrediction(Enemy, E)
- 					Skills[_E].combo(Enemy, prediction.castPos)
- 					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
- 						Skills[_W].combo(Enemy)
- 						elseif M.c.AL:Value() == 3 or Qr then
- 							Skills[_Q].combo(Enemy)
- 				end
- 			end, .450)
- 			Rengar_CastItems(Enemy) 
+ 			Rengar_CastItems(Enemy)
  		end
- 		if Mode == "Combo" and M.c.SWA:Value() and (Buffs.R > 0 or Buffs.P > 0) then
- 			if M.c.WJ:Value() == 1 and Er then
+ 		if Mode == "Combo" and myHero.mana > 5 and M.c.SWA:Value() then
+  			if Ready(_E) and M.c.WJ:Value() == 1 then
  				local prediction = GetPrediction(Enemy, E)
- 				Skills[_E].combo(Enemy, prediction.castPos)
- 				elseif (M.c.WJ:Value() == 2 or Wr) and M.c.WJ:Value() ~= 3 and M.c.AL:Value() ~= 2 and not Er then
- 					Skills[_W].combo(Enemy)
- 					elseif M.c.WJ:Value() == 3 or Qr then
- 						Skills[_Q].combo(Enemy)
+					Skills[_E].combo(Enemy, prediction.castPos)
+					if Ready(_Q) then
+						CastSpell(_Q)
+					end
+					if Ready(_W) then
+						CastSpell(_W)
+					end
+				elseif Ready(_Q) and M.c.WJ:Value() == 2 then
+					CastSpell(_Q)
+					if Ready(_E) then
+						local prediction = GetPrediction(Enemy, E)
+						Skills[_E].combo(Enemy, prediction.castPos)
+					end
+					if Ready(_W) then
+						CastSpell(_W)
+					end
  			end
- 			DelayAction(function() 
- 				if M.c.AL:Value() == 1 and Er then 
- 					local prediction = GetPrediction(Enemy, E)
- 					Skills[_E].combo(Enemy, prediction.castPos)
- 					elseif (M.c.AL:Value() == 2 or Wr) and M.c.AL:Value() ~= 3 and not Er then
- 						Skills[_W].combo(Enemy)
- 						elseif M.c.AL:Value() == 3 or Qr then
- 							Skills[_Q].combo(Enemy)
- 				end 
- 			end, .450)
- 			Rengar_CastItems(Enemy) 
+ 			Rengar_CastItems(Enemy)
  		end
  	end
  end
@@ -475,5 +489,29 @@ function Rengar_Autolevel()
 	if GetLevelPoints(myHero) == 1 then 
 	    local leveltable = M.m.AL:Value() == 1 and (({_Q, _W, _E, _Q, _Q, _R, _Q, _W, _Q, _W, _R, _W, _W, _E, _E, _R, _E, _E})[myHero.level]) or (({_Q, _W, _E, _Q, _Q, _R, _Q, _E, _Q, _E, _R, _E, _E, _W, _W, _R, _W, _W})[myHero.level])
 	    DelayAction(function() LevelSpell(leveltable) end, math.random(1000,3000)*0.001)
+	end
+end
+
+function Rengar_OnWndMsg(Msg, Key) 
+	if Msg == WM_LBUTTONDOWN then 
+		for i, enemy in pairs(GetEnemyHeroes()) do
+			if GetDistance(enemy, GetMousePos()) <= 200 then
+				selected = enemy
+				return
+			end 
+		end
+		selected = nil
+	end
+end
+
+function Rengar_Packet(p)
+	local packets = {99,110,257}
+	if table.contains(packets, p.header) then
+		smite = nil 
+		for i=1,3 do 
+			if smite == nil then
+				smite = (summonerNameOne:lower():find(smitetable[i]:lower()) and SUMMONER_1 or (summonerNameTwo:lower():find(smitetable[i]:lower()) and SUMMONER_2 or nil))
+			end
+		end
 	end
 end
