@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.6"
+local ver = "1.7"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -69,20 +69,14 @@ function Rengar_Load()
 			M.d:Boolean("W", "W Blue", false)
 			M.d:Boolean("E", "E Green", false)
 			M.d:Boolean("R", "R detect Range White", true)
-			M.d:Boolean("S", "Selected Target Yellow", true)
+			M.d:Boolean("S", "Selected Target Yellow", false)
+			M.d:Boolean("D", "DrawDmg On Enemy Hp", true)
 
 	-- Vars
 	Mode = nil
 	summonerNameOne = myHero:GetSpellData(SUMMONER_1).name 
 	summonerNameTwo = myHero:GetSpellData(SUMMONER_2).name
 	ignite = (summonerNameOne:lower():find("summonerdot") and SUMMONER_1 or (summonerNameTwo:lower():find("summonerdot") and SUMMONER_2 or nil))
-	smite = nil
-	smitetable = {"SummonerSmite","S5_SummonerSmitePlayerGanker","S5_SummonerSmiteDuel"}
-		for i=1,3 do 
-			if smite == nil then
-				smite = (summonerNameOne:lower():find(smitetable[i]:lower()) and SUMMONER_1 or (summonerNameTwo:lower():find(smitetable[i]:lower()) and SUMMONER_2 or nil))
-			end
-		end
 	selected = nil
 	Q = { delay = 0.25, speed = math.huge, width = 0, range = 200}
 	W = { delay = 0.25, speed = math.huge, width = 490, range = myHero.boundingRadius+700}
@@ -100,8 +94,10 @@ function Rengar_Load()
 	Callback.Add("UpdateBuff", function(unit, buff) Rengar_UBuff(unit, buff) end)
 	Callback.Add("RemoveBuff", function(unit, buff) Rengar_RBuff(unit, buff) end)
 	Callback.Add("WndMsg", function(Msg, Key) Rengar_OnWndMsg(Msg, Key) end)
-	Callback.Add("ProcessPacket", function(p) Rengar_Packet(p) end)
-	Callback.Add("Draw", function() 	
+	Callback.Add("Draw", function() 
+		local qdmg1 = myHero.mana > 5 and (30+30*GetCastLevel(myHero, _Q)+(.5*GetCastLevel(myHero, _Q))*GetBonusDmg(myHero)+GetBaseDamage(myHero)) or (({30,45,60,75,90,105,120,135,150,160,170,180,190,200,210,220,230,240})[myHero.level]+.3*GetBonusDmg(myHero)+GetBaseDamage(myHero))
+		local wdmg1 = (80+30*GetCastLevel(myHero, _W) + .8*GetBonusAP(myHero)); 
+		local edmg1 = myHero.mana > 5 and (50+50*GetCastLevel(myHero, _E)+.7*GetBonusDmg(myHero)+GetBaseDamage(myHero)) or (({50,75,100,125,150,175,200,225,250,260,270,280,290,300,310,320,330,340})[myHero.level])
 		if M.d.W:Value() or M.d.E:Value() or M.d.R:Value() or M.d.S:Value() then
 			if M.d.W:Value() and Ready(_W) then
 				DrawCircle(myHero, W.width+myHero.boundingRadius, 1,1,GoS.Blue)
@@ -114,6 +110,18 @@ function Rengar_Load()
 			end
 			if M.d.S:Value() and selected ~= nil and selected.valid and selected.distance < 1500 then
 				DrawCircle(selected, selected.boundingRadius, 1,1,GoS.Yellow)
+			end
+			if M.d.D:Value() then
+				for i,u in pairs(GetEnemyHeroes()) do
+					local qdmg = Ready(_Q) and myHero:CalcDamage(u, qdmg1) or 0
+					local wdmg = Ready(_W) and myHero:CalcMagicDamage(u, wdmg1) or 0
+					local edmg = Ready(_E) and myHero:CalcDamage(u, edmg1) or 0
+					local aa = myHero:CalcDamage(u, GetBaseDamage(myHero)+GetBonusDmg(myHero))
+					local dmg = qdmg + wdmg + edmg + aa 
+					if ValidTarget(u, 3000) then
+						DrawDmgOverHpBar(u,u.health,dmg,0,GoS.Red)
+					end 
+				end
 			end
  		end 
 	end)
@@ -180,6 +188,7 @@ function Rengar_Checks()
 	Tiamat = GetItemSlot(myHero, 3077)
 	Hydra = GetItemSlot(myHero, 3074)
 	Titanic = GetItemSlot(myHero, 3053)
+	smite = (summonerNameOne:lower():find("smite") and SUMMONER_1 or (summonerNameTwo:lower():find("smite") and SUMMONER_2 or nil))
 end
 
  function Rengar_OnJump(unit, ani)
@@ -438,11 +447,11 @@ function Rengar_Smite()
 	if smite and Ready(smite) then
 		for i, u in pairs(minionManager.objects) do
 			if u.team ~= MINION_ENEMY and u.team == 300 and ValidTarget(u, 650) then
-				local smiteDMG = (({[1]=390,[2]=410,[3]=430,[4]=450,[5]=480,[6]=510,[7]=540,[8]=570,[9]=600,[10]=640,[11]=680,[12]=720,[13]=760,[14]=800,[15]=850,[16]=900,[17]=950,[18]=1000})[GetLevel(myHero)])
+				local smiteDMG = ({390, 410, 430, 450, 480, 510, 540, 570, 600, 640, 680, 720, 760, 800, 850, 900, 950, 1000})[myHero.level]
 				local wdmg1 = (80+30*GetCastLevel(myHero, _W) + .8*GetBonusAP(myHero)); 
-				local edmg1 = (50+50*GetCastLevel(myHero, _E)+.7*GetBonusDmg(myHero));
-				local wdmg = myHero:CalcMagicDamage(u, wdmg)
-				local edmg = myHero:CalcDamage(u, edmg)
+				local edmg1 = myHero.mana > 5 and (50+50*GetCastLevel(myHero, _E)+.7*GetBonusDmg(myHero)+GetBaseDamage(myHero)) or (({50,75,100,125,150,175,200,225,250,260,270,280,290,300,310,320,330,340})[myHero.level])
+				local wdmg = myHero:CalcMagicDamage(u, wdmg1)
+				local edmg = myHero:CalcDamage(u, edmg1)
 				if u.charName:lower():find("dragon") and M.l.D:Value() then
 					if u.health < smiteDMG then
 						CastTargetSpell(u, smite)
@@ -498,17 +507,5 @@ function Rengar_OnWndMsg(Msg, Key)
 			end 
 		end
 		selected = nil
-	end
-end
-
-function Rengar_Packet(p)
-	local packets = {99,110,257}
-	if table.contains(packets, p.header) then
-		smite = nil 
-		for i=1,3 do 
-			if smite == nil then
-				smite = (summonerNameOne:lower():find(smitetable[i]:lower()) and SUMMONER_1 or (summonerNameTwo:lower():find(smitetable[i]:lower()) and SUMMONER_2 or nil))
-			end
-		end
 	end
 end
