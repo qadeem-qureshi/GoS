@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.7"
+local ver = "1.8"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -58,6 +58,10 @@ function Rengar_Load()
 			M.m:KeyBinding("E", "Flee", string.byte("Z"))
 			M.m:Boolean("A", "AutoLevel", false)
 			M.m:DropDown("AL", "Auto Level Mode", 1, {"QEW", "QWE"})
+			M.m:Slider("D", "Ticks Delay", 30, 1, 150, 1)
+			M.m:Info("Dd","The Higher = More FPS")
+			M.m:Info("DdDD","Also Slower Script")
+			M.m:Info("DdD","The Lower = Faster Script")
 		M:Menu("l", "Smite Settings")
 			M.l:Boolean("B", "Blue", true)
 			M.l:Boolean("R", "Red", true)
@@ -71,6 +75,9 @@ function Rengar_Load()
 			M.d:Boolean("R", "R detect Range White", true)
 			M.d:Boolean("S", "Selected Target Yellow", false)
 			M.d:Boolean("D", "DrawDmg On Enemy Hp", true)
+		M:Menu("p", "Skin Settings")
+			M.p:Boolean("E","Enabled", true)
+			M.p:DropDown("S", "Skin", 3, {"Classic", "Headhunter", "Night Hunter", "SSW"}, function(kapap) Rengar_Skin() end)
 
 	-- Vars
 	Mode = nil
@@ -89,6 +96,7 @@ function Rengar_Load()
 		[_E] = {combo = function(unit,pos) if ValidTarget(unit, E.range) and Ready(_E) and M.c.E:Value() then CastSkillShot(_E, pos) end end, laneclear = function(unit, pos) if Ready(_E) and ValidTarget(unit, E.range) then CastSkillShot(_E, pos) end end, jungleclear = function(unit, pos) if Ready(_E) and ValidTarget(unit, E.range) then CastSkillShot(_E, pos) end end, escape = function(pos) MoveToXYZ(GetMousePos()) if Ready(_E) and ValidTarget(pos, E.range) then local prediction = GetPrediction(pos, E); if prediction.hitChance > .65 and not prediction:mCollision(1) then CastSkillShot(_E, prediction.castPos) end end end},
 	}
 	--Callbacks
+	OneTick(function() smite = (summonerNameOne:lower():find("smite") and SUMMONER_1 or (summonerNameTwo:lower():find("smite") and SUMMONER_2 or nil)); end, 12000)
 	Rengar_LoadWalker()
 	Callback.Add("Animation",function(unit,ani) Rengar_OnJump(unit,ani) end)
 	Callback.Add("UpdateBuff", function(unit, buff) Rengar_UBuff(unit, buff) end)
@@ -130,16 +138,16 @@ end
 
 function Rengar_LoadWalker()
 	if IOW_Loaded then
-		Callback.Add("Tick", function() Rengar_Tick(IOW:Mode(), "Combo", "LaneClear") end)
+		OneTick(function() Rengar_Tick(IOW:Mode(), "Combo", "LaneClear") end)
 	end
 	if DAC_Loaded then
-		Callback.Add("Tick", function() Rengar_Tick(DAC:Mode(), "Combo", "LaneClear") end)
+		OneTick(function() Rengar_Tick(DAC:Mode(), "Combo", "LaneClear") end)
 	end
 	if PW_Loaded then
-		Callback.Add("Tick", function() Rengar_Tick(PW:Mode(), "Combo", "LaneClear") end)
+		OneTick(function() Rengar_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
 	if GosWalk_Loaded then
-		Callback.Add("Tick", function() Rengar_Tick(GosWalk.CurrentMode, 0, 3) end)
+		OneTick(function() Rengar_Tick(GosWalk.CurrentMode, 0, 3) end)
 	end
 end
 
@@ -188,7 +196,6 @@ function Rengar_Checks()
 	Tiamat = GetItemSlot(myHero, 3077)
 	Hydra = GetItemSlot(myHero, 3074)
 	Titanic = GetItemSlot(myHero, 3053)
-	smite = (summonerNameOne:lower():find("smite") and SUMMONER_1 or (summonerNameTwo:lower():find("smite") and SUMMONER_2 or nil))
 end
 
  function Rengar_OnJump(unit, ani)
@@ -455,9 +462,12 @@ function Rengar_Smite()
 				if u.charName:lower():find("dragon") and M.l.D:Value() then
 					if u.health < smiteDMG then
 						CastTargetSpell(u, smite)
-						elseif u.health < smiteDMG + wdmg and Ready(_W) and ValidTarget(u, W.range) then
+						elseif u.health < smiteDMG + wdmg and Ready(_W) and ValidTarget(u, W.width) then
 							CastSpell(_W)
 							DelayAction(function() CastTargetSpell(u, smite) end, W.delay+.25)
+							elseif u.health < smiteDMG + edmg and Ready(_E) and ValidTarget(u, E.range) then
+								CastSkillShot(_E, u)
+								DelayAction(function() CastTargetSpell(u, smite) end, E.delay+.25)
 							elseif u.health < smiteDMG + wdmg + edmg and Ready(_W) and Ready(_E) and ValidTarget(u, E.range) then
 								CastSkillShot(_E, u)
 								CastSpell(_W)
@@ -469,9 +479,13 @@ function Rengar_Smite()
 					if u.health < smiteDMG then
 						CastTargetSpell(u, smite)
 					end
-					if u.health < smiteDMG + wdmg  and Ready(_W) and ValidTarget(u, W.range) then
+					if u.health < smiteDMG + wdmg  and Ready(_W) and ValidTarget(u, W.width) then
 						CastSpell(_W)
 						DelayAction(function() CastTargetSpell(u, smite) end, W.delay+.25)
+					end
+					if u.health < smiteDMG + edmg and Ready(_E) and ValidTarget(u, E.range) then
+						CastSkillShot(_E, u)
+						DelayAction(function() CastTargetSpell(u, smite) end, E.delay+.25)
 					end
 					if u.health < smiteDMG + wdmg + edmg and Ready(_W) and Ready(_E) and ValidTarget(u, E.range) then
 						CastSkillShot(_E, u)
@@ -507,5 +521,28 @@ function Rengar_OnWndMsg(Msg, Key)
 			end 
 		end
 		selected = nil
+	end
+end
+
+function Rengar_Skin()
+	if M.p.E:Value() then
+		myHero:Skin(M.p.S:Value()-1)
+	end
+end
+
+local Tick, Tick2 = 0, 0
+function OneTick(name, custom)
+	Callback.Add("Tick", function() ZeTick(name, custom) end)	
+end
+
+function ZeTick(thing, one)
+	local time = GetTickCount()
+	if time > Tick + M.m.D:Value() and not one then
+		Tick = time 
+		thing()
+	end
+	if one and time > Tick2 + one then
+		Tick2 = time 
+		thing()
 	end
 end
