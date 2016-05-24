@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.8"
+local ver = "1.9"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -205,19 +205,19 @@ end
  				local prediction = GetPrediction(Enemy, E)
 					Skills[_E].combo(Enemy, prediction.castPos)
 					if Ready(_Q) then
-						CastSpell(_Q)
+						Skills[_Q].combo(Enemy)
 					end
 					if Ready(_W) then
-						CastSpell(_W)
+						Skills[_W].combo(Enemy)
 					end
 				elseif Ready(_Q) and M.c.WJ:Value() == 2 then
-					CastSpell(_Q)
+					Skills[_Q].combo(Enemy)
 					if Ready(_E) then
 						local prediction = GetPrediction(Enemy, E)
 						Skills[_E].combo(Enemy, prediction.castPos)
 					end
 					if Ready(_W) then
-						CastSpell(_W)
+						Skills[_W].combo(Enemy)
 					end
  			end
  			Rengar_CastItems(Enemy)
@@ -227,19 +227,19 @@ end
  				local prediction = GetPrediction(Enemy, E)
 					Skills[_E].combo(Enemy, prediction.castPos)
 					if Ready(_Q) then
-						CastSpell(_Q)
+						Skills[_Q].combo(Enemy)
 					end
 					if Ready(_W) then
-						CastSpell(_W)
+						Skills[_W].combo(Enemy)
 					end
 				elseif Ready(_Q) and M.c.WJ:Value() == 2 then
-					CastSpell(_Q)
+					Skills[_Q].combo(Enemy)
 					if Ready(_E) then
 						local prediction = GetPrediction(Enemy, E)
 						Skills[_E].combo(Enemy, prediction.castPos)
 					end
 					if Ready(_W) then
-						CastSpell(_W)
+						Skills[_W].combo(Enemy)
 					end
  			end
  			Rengar_CastItems(Enemy)
