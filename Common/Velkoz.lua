@@ -1,3 +1,5 @@
+if myHero.charName =~ "Velkoz" then return end
+
 require("OpenPredict")
 local ver = "1.2"
 
