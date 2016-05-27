@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.0"
+local ver = "1.1"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -29,7 +29,7 @@ function Vel_Load()
 			M.f:Boolean("WJ", "Use JC W", true)
 			M.f:Boolean("EJ", "Use JC E", true)
 		M:Menu("m", "Misc")
-			M.m:Slider("E", "Extra Q Buffer", -15, -1, -35, 1)
+			M.m:Slider("E", "Extra Q Buffer", 15, 1, 35, 1)
 			M.m:Info("Ee","Adds Range to QBall")
 			M.m:Info("EeE","The Higher = Faster Detonate lower Accuracy")
 			M.m:Info("EeEe","The Lower = Slower Detonate Higher Accuracy")
@@ -115,7 +115,7 @@ function Vel_Draw(myHero)
 	if QObj ~= nil and M.c.Qs:Value() then
 		local Endpos = GetObjectSpellEndPos(QObj)
 		local Stapos = GetObjectSpellStartPos(QObj)
-		local Qpos = VectorExtend(QObj, myHero.pos, M.m.E:Value())
+		local Qpos = VectorExtend(QObj, myHero.pos, -M.m.E:Value())
 		local TE = Qpos + Vector(Vector(Qpos)-Stapos):perpendicular2():normalized()*1300
 		local TE2 = Qpos + Vector(Vector(Qpos)-Stapos):perpendicular():normalized()*1300
 		local pred = GetPrediction(Enemy, Q, Qpos)
