@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "1.1"
+local ver = "1.2"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -49,7 +49,7 @@ function Vel_Load()
 	Q = {range= 1050, delay =.5, width=50, speed= 1300}
 	QSplit = {range = 1150, width = 55, speed = 2100, delay=.25}
 	W = {range = 1050, width = 80, speed = 1700, delay=0.064}
-	E = {range = 850, width = 225, speed = 1500, delay=0.333}
+	E = {range = 850, width = 225, speed = math.huge, delay=0.333}
 	Mode = nil
 	-- Callbacks
 	Vel_LoadWalker()
@@ -110,7 +110,7 @@ end
 lastQtick = 0
 
 function Vel_Draw(myHero)
-	local Ticker = GetTickCount()
+	Ticker = GetTickCount()
 	Enemy = GetCurrentTarget()
 	if QObj ~= nil and M.c.Qs:Value() then
 		local Endpos = GetObjectSpellEndPos(QObj)
@@ -146,7 +146,7 @@ function Vel_Draw(myHero)
 					if lastQtick + 1000 < Ticker and GetCastName(myHero, _Q) == "VelkozQ" then 
 						CastSkillShot(_Q,Vector(an))
 					end
-					lastQTick = Ticker 
+					lastQtick = Ticker 
 				end
 			end
 		end
@@ -175,9 +175,10 @@ function Vel_Combo()
 	if M.c.W:Value() and Ready(_W) and ValidTarget(Enemy, W.range) and Wpred.hitChance >= .65 and not Wpred:mCollision(1) then
 		CastSkillShot(_W, Wpred.castPos)
 	end
-	if M.c.Q:Value() and Ready(_Q) and ValidTarget(Enemy, Q.range) and Qpred.hitChance >= .65 and not Qpred:mCollision(1) then
+	if M.c.Q:Value() and Ready(_Q) and ValidTarget(Enemy, Q.range) and GetCastName(myHero, _Q) == "VelkozQ" and Qpred.hitChance >= .65 and not Qpred:mCollision(1) and lastQtick + 1000 < Ticker then
+		lastQtick = Ticker
 		CastSkillShot(_Q, Qpred.castPos)
-	end
+	end  
 end
 
 function Vel_Clear()
