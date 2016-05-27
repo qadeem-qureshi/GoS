@@ -1,12 +1,10 @@
 if myHero.charName =~ "Velkoz" then return end
 
 if not FileExist(COMMON_PATH.. "Analytics.lua") then
-  DownloadFileAsync("https://raw.githubusercontent.com/LoggeL/GoS/master/Analytics.lua", COMMON_PATH .. "Analytics.lua", function() print("Downloaded Analytics by Zwei, please 2x F6!") return end)
-else
-  require "Analytics"
-  Analytics("Cloud VelKoz")
+  DownloadFileAsync("https://raw.githubusercontent.com/LoggeL/GoS/master/Analytics.lua", COMMON_PATH .. "Analytics.lua", function() end)
 end
 
+require("Analytics")
 require("OpenPredict")
 local ver = "1.3"
 
@@ -67,6 +65,7 @@ function Vel_Load()
 	Callback.Add("Draw", function(myHero) Vel_Draw(myHero) end)
 	Callback.Add("UnLoad",function() myHero:Skin(0) end)
 	--Misc
+	Analytics("Cloud VelKoz")
 	print("<font color=\"#FF1493\"><b>[Velkoz OnS]:</b></font><font color=\"#FFFFFF\"> Loaded!</font>")
 	if M.p.E:Value() then
 		Vel_Skin()
