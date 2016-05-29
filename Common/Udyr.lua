@@ -7,7 +7,7 @@ end
 require("Analytics")
 require("OpenPredict")
 
-local ver = "1.1"
+local ver = "1.2"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -124,10 +124,10 @@ function Udyr_Combo()
 	if M.c.CM:Value() == 1 and ValidTarget(Enemy, 700) and GetCastLevel(myHero, _E) >= 1 then
 		if Ready(_E) and GetDistance(Enemy, myHero) > myHero.boundingRadius+myHero.range then
 			CastSpell(_E)
-			elseif Ready(_E) and EBuff and EBuff[Enemy.networkID] == 0 and GetDistance(Enemy,myHero) < myHero.boundingRadius+myHero.range then
+			elseif Ready(_E) and EBuff and EBuff[Enemy.networkID] and EBuff[Enemy.networkID] == 0 and GetDistance(Enemy,myHero) < myHero.boundingRadius+myHero.range then
 				CastSpell(_E)
 		end
-		if Ready(_R) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff then
+		if Ready(_R) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] and EBuff[Enemy.networkID] >= 1  then
 			CastSpell(_R)
 			elseif Ready(_R) and GetDistance(Enemy, myHero) > myHero.boundingRadius+myHero.range and GetDistance(myHero, Enemy) < 650 then
 				for i, u in pairs(minionManager.objects) do
@@ -140,7 +140,7 @@ function Udyr_Combo()
 					end
 				end
 		end
-		if Ready(_Q) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] >= 1 and Buffs.R < 3 and not Ready(_R) then
+		if Ready(_Q) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] and EBuff[Enemy.networkID] >= 1 and Buffs.R < 3 and not Ready(_R) then
 			CastSpell(_Q)
 		end
 		if Ready(_W) and GetDistance(Enemy,myHero) < myHero.boundingRadius+myHero.range and M.c.W:Value() and GetPercentHP(myHero) <= M.c.Wh:Value() and Buffs.R < 3  then
@@ -153,10 +153,10 @@ function Udyr_Combo()
 			elseif Ready(_E) and EBuff and EBuff[Enemy.networkID] >= 1 and GetDistance(Enemy,myHero) < myHero.boundingRadius+myHero.range then
 				CastSpell(_E)
 		end
-		if Ready(_Q) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] >= 1 then
+		if Ready(_Q) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] and EBuff[Enemy.networkID] >= 1 then
 			CastSpell(_Q)
 		end
-		if Ready(_R) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] >= 1 and not Ready(_Q) then
+		if Ready(_R) and GetDistance(Enemy, myHero) < myHero.boundingRadius+myHero.range and EBuff and EBuff[Enemy.networkID] and EBuff[Enemy.networkID] >= 1 and not Ready(_Q) then
 			CastSpell(_R)
 			elseif Ready(_R) and GetDistance(Enemy, myHero) > myHero.boundingRadius+myHero.range and GetDistance(myHero, Enemy) < 650 then
 				for i, u in pairs(minionManager.objects) do
