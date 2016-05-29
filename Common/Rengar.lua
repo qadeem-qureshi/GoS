@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "2.1"
+local ver = "2.2"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -102,6 +102,7 @@ function Rengar_Load()
 	Callback.Add("UpdateBuff", function(unit, buff) Rengar_UBuff(unit, buff) end)
 	Callback.Add("RemoveBuff", function(unit, buff) Rengar_RBuff(unit, buff) end)
 	Callback.Add("WndMsg", function(Msg, Key) Rengar_OnWndMsg(Msg, Key) end)
+	Callback.Add("SpellCast", function(cast) Rengar_StopQ(cast) end)
 	Callback.Add("Draw", function() 
 		local qdmg1 = myHero.mana > 5 and (30+30*GetCastLevel(myHero, _Q)+(.5*GetCastLevel(myHero, _Q))*GetBonusDmg(myHero)+GetBaseDamage(myHero)) or (({30,45,60,75,90,105,120,135,150,160,170,180,190,200,210,220,230,240})[myHero.level]+.3*GetBonusDmg(myHero)+GetBaseDamage(myHero))
 		local wdmg1 = (80+30*GetCastLevel(myHero, _W) + .8*GetBonusAP(myHero)); 
@@ -154,7 +155,7 @@ end
 function Rengar_Tick(m,c,l)
 	if myHero.dead then return end
 	Rengar_Checks()
-	if m == c then
+	if m == c and Buffs.R == 0 then
 		Rengar_Combo()
 		Rengar_CastItems(Enemy)
 		Mode = "Combo"
@@ -371,6 +372,12 @@ function Rengar_JungleClear()
 				Skills[_E].jungleclear(u, u)
 			end
 		end
+	end
+end
+
+function Rengar_StopQ(cast)
+	if cast.spellID == _Q and Buffs.P == 0 then
+		BlockCast()
 	end
 end
 
