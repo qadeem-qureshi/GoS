@@ -1,4 +1,4 @@
-if myHero.charName ~= "Udyr" then return end
+\if myHero.charName ~= "Udyr" then return end
 
 if not FileExist(COMMON_PATH.. "Analytics.lua") then
   DownloadFileAsync("https://raw.githubusercontent.com/LoggeL/GoS/master/Analytics.lua", COMMON_PATH .. "Analytics.lua", function() end)
@@ -7,7 +7,7 @@ end
 require("Analytics")
 require("OpenPredict")
 
-local ver = "1.0"
+local ver = "1.1"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -202,7 +202,7 @@ function Udyr_Clear()
 				end
 			end
 		if u.team == MINION_JUNGLE and u.team ~= MINION_ENEMY then
-			if Ready(_Q) and M.f.EJ:Value() and ValidTarget(u, 450) then
+			if Ready(_E) and M.f.EJ:Value() and ValidTarget(u, 450) then
 				CastSpell(_E) 
 			end
 			if Ready(_R) and M.f.RJ:Value() and ValidTarget(u, myHero.range+myHero.boundingRadius+100) then
