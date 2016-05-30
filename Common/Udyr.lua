@@ -7,7 +7,7 @@ end
 require("Analytics")
 require("OpenPredict")
 
-local ver = "1.2"
+local ver = "1.3"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -97,8 +97,8 @@ function Udyr_LoadWalker()
 	if PW_Loaded then
 		OneTick(function() Udyr_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
-	if GosWalk_Loaded then
-		OneTick(function() Udyr_Tick(GosWalk.CurrentMode, 0, 3) end)
+	if GoSWalk_Loaded then
+		OneTick(function() Udyr_Tick(GoSWalk.CurrentMode, 0, 3) end)
 	end
 	if _G.AutoCarry_Loaded then
 		OneTick(function() Udyr_Tick(DACR:Mode(), "Combo", "LaneClear") end)
