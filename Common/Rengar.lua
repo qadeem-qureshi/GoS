@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "2.3"
+local ver = "2.4"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -147,8 +147,8 @@ function Rengar_LoadWalker()
 	if PW_Loaded then
 		OneTick(function() Rengar_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
-	if GosWalk_Loaded then
-		OneTick(function() Rengar_Tick(GosWalk.CurrentMode, 0, 3) end)
+	if GoSWalk_Loaded then
+		OneTick(function() Rengar_Tick(GoSWalk.CurrentMode, 0, 3) end)
 	end
 end
 
