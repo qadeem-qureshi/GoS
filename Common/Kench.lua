@@ -1,6 +1,6 @@
 require("OpenPredict")
 require("DamageLib")
-local ver = "1.0"
+local ver = "1.1"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
