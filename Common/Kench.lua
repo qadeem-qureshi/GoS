@@ -46,8 +46,11 @@ function Kench_LoadWalker()
 	if PW_Loaded then
 		Callback.Add("Tick", function() Kench_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
-	if GosWalk_Loaded then
-		Callback.Add("Tick", function() Kench_Tick(GosWalk:GetCurrentMode(), 0, 3) end)
+	if GoSWalk_Loaded then
+		Callback.Add("Tick", function() Kench_Tick(GoSWalk:GetCurrentMode(), 0, 3) end)
+	end
+	if _G.AutoCarry_Loaded then
+		Callback.Add("Tick", function() Kench_Tick(DACR:Mode(), "Combo", "LaneClear") end)
 	end
 end
 
