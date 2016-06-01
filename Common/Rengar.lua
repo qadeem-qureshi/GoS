@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "2.4"
+local ver = "2.5"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
