@@ -148,7 +148,7 @@ function Rengar_LoadWalker()
 		OneTick(function() Rengar_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
 	if GoSWalk_Loaded then
-		OneTick(function() Rengar_Tick(GoSWalk.CurrentMode, 0, 3) end)
+		OneTick(function() Rengar_Tick(GoSWalk.CurrentMode, 0, 2) end)
 	end
 end
 
