@@ -98,7 +98,7 @@ function Udyr_LoadWalker()
 		OneTick(function() Udyr_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
 	if GoSWalk_Loaded then
-		OneTick(function() Udyr_Tick(GoSWalk.CurrentMode, 0, 3) end)
+		OneTick(function() Udyr_Tick(GoSWalk.CurrentMode, 0, 2) end)
 	end
 	if _G.AutoCarry_Loaded then
 		OneTick(function() Udyr_Tick(DACR:Mode(), "Combo", "LaneClear") end)
