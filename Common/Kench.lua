@@ -1,6 +1,6 @@
 require("OpenPredict")
 require("DamageLib")
-local ver = "1.1"
+local ver = "1.2"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -47,7 +47,7 @@ function Kench_LoadWalker()
 		Callback.Add("Tick", function() Kench_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
 	if GoSWalk_Loaded then
-		Callback.Add("Tick", function() Kench_Tick(GoSWalk:GetCurrentMode(), 0, 3) end)
+		Callback.Add("Tick", function() Kench_Tick(GoSWalk:GetCurrentMode(), 0, 2) end)
 	end
 	if _G.AutoCarry_Loaded then
 		Callback.Add("Tick", function() Kench_Tick(DACR:Mode(), "Combo", "LaneClear") end)
