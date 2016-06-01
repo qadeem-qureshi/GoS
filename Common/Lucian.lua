@@ -88,7 +88,7 @@ function Lucian_LoadWalker()
 		Callback.Add("Tick", function() Lucian_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
 	if _G.GoSWalkLoaded then
-		Callback.Add("Tick", function() Lucian_Tick(GoSWalk.CurrentMode, 0, 3) end)
+		Callback.Add("Tick", function() Lucian_Tick(GoSWalk.CurrentMode, 0, 2) end)
 	end
 	if _G.AutoCarry_Loaded then
 		Callback.Add("Tick", function() Lucian_Tick(DACR:Mode(), "Combo", "LaneClear") end)
