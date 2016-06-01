@@ -6,7 +6,7 @@ end
 
 require("Analytics")
 require("OpenPredict")
-local ver = "1.4"
+local ver = "1.5"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -83,7 +83,7 @@ function Vel_LoadWalker()
 		OneTick(function() Vel_Tick(PW:Mode(), "Combo", "LaneClear") end)
 	end
 	if GoSWalk_Loaded then
-		OneTick(function() Vel_Tick(GoSWalk.CurrentMode, 0, 3) end)
+		OneTick(function() Vel_Tick(GoSWalk.CurrentMode, 0, 2) end)
 	end
 	if _G.AutoCarry_Loaded then
 		OneTick(function() Vel_Tick(DACR:Mode(), "Combo", "LaneClear") end)
