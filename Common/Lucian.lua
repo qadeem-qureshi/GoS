@@ -8,7 +8,7 @@ Callback.Add("Load", function() Lucian_Load() end)
 require("Analytics")
 require("OpenPredict")
 
-local ver = "1.0"
+local ver = "1.1"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
