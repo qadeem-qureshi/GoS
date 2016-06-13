@@ -1,5 +1,5 @@
 require("OpenPredict")
-local ver = "2.5"
+local ver = "2.6"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -376,7 +376,7 @@ function Rengar_JungleClear()
 end
 
 function Rengar_StopQ(cast)
-	if cast.spellID == _Q and Buffs.P >0 then
+	if cast.spellID == _Q and Buffs.P >0 and EnemiesAround(myHero, 400) == 0 then
 		BlockCast()
 	end
 end
