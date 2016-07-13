@@ -1,7 +1,6 @@
-require("2DGeometry")
 
 Callback.Add("Load", function() Load() end)
-Callback.Add("Draw", function() Draw() end)
+--Callback.Add("Tick", function() Draw() end)
 Callback.Add("ProcessWaypoint", function(unit, point) PW(unit, point) end)
 Callback.Add("CreateObj", function(obj) CreateObj(obj) end)
 Callback.Add("DeleteObj", function(obj) DeleteObj(obj) end)
@@ -19,6 +18,7 @@ function Load()
 	local m = nil 
 end
 -- Example usage.
+--[[
 function Draw()
 	unit = GetCurrentTarget()
     local pred, hitChance = GLP(unit, RStats)
@@ -31,7 +31,7 @@ function Draw()
 	if Ready(_W) and pred and hitChance == "High" and ValidTarget(unit, RStats.range) and KeyIsDown(32) then
 		CastSkillShot(_W, pred)
 	end
-end
+end]]
 
 function PW(unit, wProc)
     if not wPoint[unit.networkID] then 
