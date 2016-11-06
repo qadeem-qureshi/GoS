@@ -1,10 +1,10 @@
-
 Callback.Add("Load", function() Load() end)
---Callback.Add("Tick", function() Draw() end)
+Callback.Add("Tick", function() Draw() end)
 Callback.Add("ProcessWaypoint", function(unit, point) PW(unit, point) end)
 Callback.Add("CreateObj", function(obj) CreateObj(obj) end)
 Callback.Add("DeleteObj", function(obj) DeleteObj(obj) end)
 Callback.Add("ObjectLoad", function(obj) ObjectLoad(obj) end)
+
 local wPoint = {}
 local samples = {}
 local minions = {}
@@ -13,25 +13,25 @@ local avgreaction = 0
 
 
 local RStats = {delay = 0.25, range = 1400, width = 40, speed = 5000, collision = false}
-local QStats = {delay = 0.25, range = 1500, width = 35, speed = 1600, collision = true}
+local QStats = {delay = 0.25, range = 925, width = 65, speed = 1750, collision = true}
 function Load()
 	local m = nil 
 end
 -- Example usage.
---[[
+
 function Draw()
 	unit = GetCurrentTarget()
-    local pred, hitChance = GLP(unit, RStats)
-    if pred then
-    	DrawCircle(pred, 30, 1, 1, GoS.White)
-    end
-
-    --local predQ, hitChanceQ = GLP(unit, QStats)
-    	--print(hitChance)
-	if Ready(_W) and pred and hitChance == "High" and ValidTarget(unit, RStats.range) and KeyIsDown(32) then
-		CastSkillShot(_W, pred)
+    local pred, hitChance = GLP(unit, QStats)
+    if hitChance and pred then
+	    if pred then
+	    	DrawCircle(pred, 30, 1, 1, GoS.White)
+	    end
+	    --local predQ, hitChanceQ = GLP(unit, QStats)
+		if Ready(_Q) and pred and hitChance == "High" and ValidTarget(unit, QStats.range) and KeyIsDown(32) then
+			CastSkillShot(_Q, pred)
+		end
 	end
-end]]
+end
 
 function PW(unit, wProc)
     if not wPoint[unit.networkID] then 
