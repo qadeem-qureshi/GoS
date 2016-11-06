@@ -14,6 +14,7 @@ myIAC = IAC()
 supportedHero = {["Ahri"] = true}
 class "Ahri"
 --Initializing "Ahri"
+-- Updated
 function Ahri:__init()
 -- To save FPS we make everything with functions! Thus the only onloop is used for Ahri:Loop!
 OnLoop(function(myHero) self:Loop(myHero) end)
