@@ -115,7 +115,7 @@ function GLP(target, width, delay, missilespeed, range, collision)
 	local range1 = type(width) == "table" and width.range or range
 	local width1 =  type(width) == "table" and width.width or width
 	local collision1 = type(width) == "table" and width.collision or collision
-	if GBW and collision1 == true and GetDistance(GBW, myHero) <= range1 and GetMinionCollision(GBW, width1, target) == false then
+	if GBW and collision1 == true and GetDistance(GBW, myHero) <= range1 and GetMinionCollision(GBW, width1) == false then
 		return GBW, hitChance
 	end
 	if GBW and collision1 == false and GetDistance(GBW, myHero) <= range1 then
@@ -136,7 +136,7 @@ function GetHitChance(unit, timeFly, avgt, movt, avgp)
 	end
 end
 
-function GetMinionCollision(u, width, target)
+function GetMinionCollision(u, width)
 for i=1, #minions, 1 do
 	local TE = u + Vector(Vector(u)-myHero.pos):perpendicular2():normalized()*(width/2)  -- A
 	local TE1 = u + Vector(Vector(u)-myHero.pos):perpendicular():normalized()*(width/2)   -- C
