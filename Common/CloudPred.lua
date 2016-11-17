@@ -1,5 +1,6 @@
-Callback.Add("Load", function() Load() end)
-Callback.Add("Tick", function() Draw() end)
+require("2DGeometry")
+--Callback.Add("Load", function() Load() end)
+--Callback.Add("Tick", function() Draw() end) DEBUG
 Callback.Add("ProcessWaypoint", function(unit, point) PW(unit, point) end)
 Callback.Add("CreateObj", function(obj) CreateObj(obj) end)
 Callback.Add("DeleteObj", function(obj) DeleteObj(obj) end)
@@ -13,7 +14,7 @@ local avgreaction = 0
 
 
 local RStats = {delay = 0.25, range = 1400, width = 40, speed = 5000, collision = false}
-local QStats = {delay = 0.25, range = 925, width = 65, speed = 1750, collision = true}
+local QStats = {delay = 0.25, range = 925, width = 90, speed = 1750, collision = true}
 function Load()
 	local m = nil 
 end
@@ -114,7 +115,7 @@ function GLP(target, width, delay, missilespeed, range, collision)
 	local range1 = type(width) == "table" and width.range or range
 	local width1 =  type(width) == "table" and width.width or width
 	local collision1 = type(width) == "table" and width.collision or collision
-	if GBW and collision1 == true and GetDistance(GBW, myHero) <= range1 and GetMinionCollision(GBW, width1) == false then
+	if GBW and collision1 == true and GetDistance(GBW, myHero) <= range1 and GetMinionCollision(GBW, width1, target) == false then
 		return GBW, hitChance
 	end
 	if GBW and collision1 == false and GetDistance(GBW, myHero) <= range1 then
@@ -135,8 +136,8 @@ function GetHitChance(unit, timeFly, avgt, movt, avgp)
 	end
 end
 
-function GetMinionCollision(u, width)
-	--[[for i=1, #minions, 1 do
+function GetMinionCollision(u, width, target)
+for i=1, #minions, 1 do
 	local TE = u + Vector(Vector(u)-myHero.pos):perpendicular2():normalized()*(width/2)  -- A
 	local TE1 = u + Vector(Vector(u)-myHero.pos):perpendicular():normalized()*(width/2)   -- C
 	local TE2 =  myHero.pos + Vector(Vector(myHero.pos)-u):perpendicular2():normalized()*(width/2)
@@ -163,14 +164,17 @@ function GetMinionCollision(u, width)
 			return true 
 		end
 	end
-	return false]]
-	for i=1, #minions, 1 do
+	return false
+	--[[for i=1, #minions, 1 do
 		local proj2, pointLine, isOnSegment = VectorPointProjectionOnLineSegment(myHero, u, Vector(minions[i]))
+		local proj3, pointLine1, isOnSegment1 = VectorPointProjectionOnLineSegment(target, u, Vector(minions[i]))
         if isOnSegment and GetDistance(myHero, minions[i]) > 50 and (GetDistanceSqr(minions[i], proj2) <= (minions[i].boundingRadius + width + 20) ^ 2) then
-            return true
+            if isOnSegment1 and GetDistance(target, minions[i]) > 50 and (GetDistanceSqr(minions[i], proj3) <= (minions[i].boundingRadius + width + 20) ^ 2) then
+            	return true
+        	end
         end
 	end
-	return false
+	return false]]
 end
 
 function AvgPathLength(unit)
